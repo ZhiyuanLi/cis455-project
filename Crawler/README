@@ -1,0 +1,41 @@
+Full name:  Wei Song
+SEAS login: weisong
+
+Which features did you implement? 
+  (list features, or write 'Entire assignment')
+   Entire assignment
+
+Did you complete any extra-credit tasks? If so, which ones?
+  (list extra-credit tasks)
+  Three extra credit(up to 35% in total)
+
+  1. Finished Extra Credit 6.1: Advanced crawler design:
+  Design pattern is based on Mercator which has URL Frontier and Content Seen test. The URL Frontier is a separate class and Content Seen test method in XPathCrawler class. (15%)
+
+  2. Finished Extra Credit 6.3: Channel subscription:
+  Will display user channels when user login besides displaying all channels. User can also select which spacific channels to delete and seen detail information. (5%)
+
+ 3. Finished Extra Credit 6.4: Crawler Web Interface.(15%)
+  Please user userName and password as both "admin" to test.
+ After user created channels, you can crawl after you login admin. Another option to run crawler is from command line, please add sudo to run to insure you have access to the database. After either way you run the crawler, admin page will show all updated information as required.
+
+Any special instructions for building and running your solution?
+  (include detailed instructions, or write 'None')
+  In another .txt file named readme.txt within this same folder.
+  Attention: if you cannot crawler after you run servlets, please try to add sudo before command line to get the same access priority. This is mentioned by professor on Piazza.
+  Please read before start testing, thanks!
+
+Did you personally write _all_ the code you are submitting
+(other than code from the course web page)?
+  [Yes] Yes
+  [ ] No
+
+Did you copy any code from the Internet, or from classmates?
+  [ ] Yes
+  [No] No
+  rss.xml is referenced from w3school given by professor on piazza.(select each, attribute check etc.)
+  servlet pages is referenced from tutorial w3school html tutorial pages.(form format, input format, action redirect to other pages etc.)  
+
+Did you collaborate with anyone on this assignment?
+  [ ] Yes
+  [No] No
