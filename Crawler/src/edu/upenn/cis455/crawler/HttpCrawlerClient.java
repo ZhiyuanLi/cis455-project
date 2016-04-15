@@ -11,6 +11,7 @@ import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -170,7 +171,7 @@ public class HttpCrawlerClient {
 	}
 
 	/**
-	 * From HW2 MS1: Given string content, generate document using db factory and
+	 * From MS1: Given string content, generate document using db factory and
 	 * tidy
 	 * 
 	 * @param content
@@ -178,27 +179,54 @@ public class HttpCrawlerClient {
 	 */
 	public Document generateHTMLDom(String content) {
 		// System.out.println("HTML Dom");
+		//TODO
 		Document d = null;
 		try {
 			Tidy tidy = new Tidy();
 			// HTML true
+			tidy.setMakeClean(true);
 			tidy.setXHTML(true);
 			tidy.setXmlTags(false);
 			tidy.setDocType("omit");
+			tidy.setShowErrors(0);
 			tidy.setEncloseText(true);
-			tidy.setShowWarnings(true);
-			ByteArrayInputStream in = new ByteArrayInputStream(content.getBytes("UTF-8"));
+			tidy.setShowWarnings(false);
+			tidy.setQuiet(true);
+//			ByteArrayInputStream in = new ByteArrayInputStream(content.getBytes("UTF-8"));
+			ByteArrayInputStream in = new ByteArrayInputStream(content.getBytes());
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			tidy.parseDOM(in, out);
+//			tidy.parseDOM(in, out);
+			d = tidy.parseDOM(in,null);
+			return d;
 
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			d = db.parse(new ByteArrayInputStream(out.toString("UTF-8").getBytes()));
+
+//			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//			DocumentBuilder db = dbf.newDocumentBuilder();
+//			d = db.parse(new ByteArrayInputStream(out.toString("UTF-8").getBytes()));
 		} catch (Exception e) {
 			System.out.println("Parse HTML Fail");
 			e.printStackTrace();
 		}
 		return d;
+	}
+
+	/**
+	 * From MS1: Generate document from url xml file
+	 * 
+	 * @param urlString
+	 * @return
+	 */
+	public Document generateXMLDom(String content) {
+		Document d = null;
+		try {
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			d = dBuilder.parse(new ByteArrayInputStream(content.getBytes()));
+			return d;
+		} catch (Exception e) {
+			System.out.println("Parse XML Fail");
+			return null;
+		}
 	}
 
 	/**
@@ -339,7 +367,7 @@ public class HttpCrawlerClient {
 	}
 
 	/**
-	 * get content body of HTML file
+	 * get content body of HTML of XML file
 	 * 
 	 * @return
 	 */

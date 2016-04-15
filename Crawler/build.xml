@@ -16,8 +16,19 @@
     <property name="src.test.dir"  location="${build.dir}${file.separator}src${file.separator}test"/>
     <property name="resources.dir" location="${build.dir}${file.separator}resources"/>
     <property name="conf.dir"      location="${build.dir}${file.separator}conf"/>
+
+    <target name="compile-xpathengine" description="Compiles the XPath engine">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="src/edu/upenn/cis455/xpathengine" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
+            <classpath>
+                <fileset dir="${inputlib.dir}">
+                    <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
     
-    <target name="compile-storage" description="Compiles the storage system">
+    <target name="compile-storage" depends="compile-xpathengine" description="Compiles the storage system">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="src/edu/upenn/cis455/storage" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
             <classpath>
@@ -28,7 +39,7 @@
         </javac>
     </target>
     
-    <target name="compile-crawler" depends="compile-storage" description="Compiles the crawler">
+    <target name="compile-crawler" depends="compile-xpathengine,compile-storage" description="Compiles the crawler">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="src/edu/upenn/cis455/crawler" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
             <classpath>
@@ -39,7 +50,7 @@
         </javac>
     </target>
     
-    <target name="compile-servlet" depends="compile-storage" description="Compiles the servlet">
+    <target name="compile-servlet" depends="compile-xpathengine,compile-storage" description="Compiles the servlet">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="src/edu/upenn/cis455/servlet" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
             <classpath>
@@ -109,6 +120,12 @@
     </target>
 
     <target name="build" depends="crawler-jar,servlet-war">
+    </target>
+
+    <target name="pack" description="Create an archive for submission">
+      <zip destfile="submit-hw2.zip">
+        <zipfileset dir="." excludes="target/**,examples/**,**/*.class,submit-hw2.zip,servlet.war,crawler.jar"/>
+      </zip>
     </target>
 
 </project>

@@ -14,7 +14,6 @@ sudo java -cp crawler.jar:[all jar files] + edu.upenn.cis455.crawler.XPathCrawle
 
 ========================web.xml database path========================
 web.xml: database path in my submission is: /home/cis455/workspace/HW2/src/database. If you want to change to another folder, just replace you path into param-value under context-param with param-name BDBstore.
-
 Database will be created if not exist and retrieved if already exist.
 
 ========================HTML servlet relative path========================
@@ -30,9 +29,6 @@ To start: please user /create to start testing!
 RSS 2.0
 rss.xml and warandpeace.xp is under /rss folder.
 
-To test in browser, please use absolute path of rss.xml file
-such as home/cis455/workspace/HW2/rss/rss.xsl
-
 
 ========================Extra Credits========================
 1. Finished Extra Credit 6.1: Advanced crawler design. 
@@ -40,9 +36,5 @@ such as home/cis455/workspace/HW2/rss/rss.xsl
 
 2. Finished Extra Credit 6.3: Channel subscription
    Will display user channels when user login besides displaying all channels. User can also select which spacific channels to delete and seen detail information. (5%)
-
-3. Finished Extra Credit 6.4: Crawler Web Interface.
-  Please user userName and password as both "admin" to test.
- After user created channels, you can crawl after you login admin. Another option to run crawler is from command line, please add sudo to run to insure you have access to the database. After either way you run the crawler, admin page will show all updated information as required.
 
 

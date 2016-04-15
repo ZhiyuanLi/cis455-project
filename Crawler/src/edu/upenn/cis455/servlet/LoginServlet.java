@@ -30,7 +30,7 @@ public class LoginServlet extends HttpServlet {
 			out.println("<p>User Login</p>");
 			out.println("<form method = \"post\" action = \"login\">");
 			out.println("User Name: <input type = \"text\" name = \"userName\">");
-			out.println("<br><br>");
+			out.println("<br><br>"); 
 			out.println("Password: <input type = \"password\" name = \"password\">");
 			out.println("<br><br>");
 			out.println("<button type= \"submit\">Login</button>");

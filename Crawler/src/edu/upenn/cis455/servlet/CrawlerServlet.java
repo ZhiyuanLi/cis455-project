@@ -49,6 +49,7 @@ public class CrawlerServlet extends HttpServlet {
 		int maxSize = Integer.parseInt(maxSizeRaw);
 		int maxNumber = Integer.parseInt(maxFileNumber);
 		String dbPath = getServletContext().getInitParameter("BDBstore");
+		String indexDBPath = getServletContext().getInitParameter("indexDBstore");
 
 		// using write because crawling will take some time but the UI should
 		// show immediately
@@ -63,7 +64,7 @@ public class CrawlerServlet extends HttpServlet {
 		out.write("</body></html>");
 		out.flush();
 		// System.out.println("dbPath start is "+dbPath);
-		crawler = new XPathCrawler(url, dbPath, maxSize, maxNumber);
+		crawler = new XPathCrawler(url, dbPath, indexDBPath, maxSize, maxNumber);
 		// crawler.isStop = false;
 		System.out.println("Crawling Start");
 		// while (!crawler.isStop) {

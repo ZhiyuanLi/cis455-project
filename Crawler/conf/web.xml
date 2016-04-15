@@ -9,7 +9,7 @@
 
    <context-param>
      <param-name>BDBstore</param-name>
-     <param-value>/home/cis455/workspace/HW2/src/database</param-value>
+     <param-value>/media/sf_share/HW2/src/database</param-value>
    </context-param>
     
    <servlet>

@@ -28,7 +28,6 @@ public class XPathCrawlerTest extends TestCase {
 		maxSize = 100000;
 		maxNum = 1000000;
 		db = new DatabaseWrapper(dbPath);
-
 	}
 
 	/**
