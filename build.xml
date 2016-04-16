@@ -39,9 +39,9 @@
 		</javac>
 	</target>
 
-	<target name="compile-ui" description="Compiles ui">
+	<target name="compile-search" description="Compiles search">
 		<mkdir dir="${classes.dir}" />
-		<javac srcdir="src/edu/upenn/cis455/ui" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
+		<javac srcdir="src/edu/upenn/cis455/search" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
 			<classpath>
 				<fileset dir="${inputlib.dir}">
 					<include name="*.jar" />
