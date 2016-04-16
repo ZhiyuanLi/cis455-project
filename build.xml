@@ -140,8 +140,17 @@
 			</fileset>
 		</jar>
 	</target>
+	
+	<target name="indexer-jar" depends="compile-indexer" description="Makes the JAR file for the indexer">
+			<delete file="indexer.jar" />
+			<jar destfile="indexer.jar" update="true">
+				<fileset dir="${classes.dir}">
+					<include name="**/*.class" />
+				</fileset>
+			</jar>
+		</target>
 
-	<target name="build" depends="crawler-jar,servlet-war">
+	<target name="build" depends="crawler-jar,servlet-war,indexer-jar">
 	</target>
 
 </project>
