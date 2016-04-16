@@ -7,7 +7,7 @@ import junit.framework.TestSuite;
 public class RunAllTests extends TestCase {
 	public static Test suite() {
 		try {
-			Class[] testClasses = { XPathEngineImplTest.class, XPathServletTest.class,DatabaseWrapperTest.class,XPathCrawlerTest.class};
+			Class[] testClasses = {DatabaseWrapperTest.class,XPathCrawlerTest.class};
 			return new TestSuite(testClasses);
 		} catch (Exception e) {
 			e.printStackTrace();
