@@ -318,6 +318,9 @@ public class HttpCrawlerClient {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		catch (ArrayIndexOutOfBoundsException e2)
+		{
+		}
 	}
 
 	// ********** getters *************

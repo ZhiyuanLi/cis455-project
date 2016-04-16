@@ -7,18 +7,15 @@ import org.apache.hadoop.mapreduce.Reducer;
 public class ShuffleReducer extends Reducer<Text, Text, Text, Text>
 {
 	/**
-	 * The shuffler pseudo-randomly assigned lines to mappers. Just output them.
-	 * @param node - the current node
-	 * @param urls - the list of lines
+	 * The shuffler hashed assigned URLs to mappers. Just output them to files.
+	 * @param url - the read URL from the frontier
+	 * @param count - contains 1 element per time url appeared in the frontier
 	 * @param context - the MapReduce context
 	 * @throws IOException if a read/write error occurs
 	 * @throws InterruptedException if a write is interrupted
 	 */
-	public void reduce(Text node, Iterable<Text> urls, Context context) throws IOException, InterruptedException
+	public void reduce(Text url, Iterable<Text> count, Context context) throws IOException, InterruptedException
 	{
-		for (Text t: urls)
-		{
-			context.write(new Text(t), new Text(""));
-		}
+		context.write(new Text(url), new Text(""));
 	}
 }

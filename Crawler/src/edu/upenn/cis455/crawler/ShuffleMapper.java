@@ -18,6 +18,6 @@ public class ShuffleMapper extends Mapper<LongWritable, Text, Text, Text>
 	public void map(LongWritable num, Text line, Context context) throws IOException, InterruptedException
 	{
 		// We want to distribute lines roughly evenly, so we let shuffle step cover this
-		context.write(new Text("" + System.currentTimeMillis()), new Text(line));
+		context.write(new Text(line), new Text(""));
 	}
 }

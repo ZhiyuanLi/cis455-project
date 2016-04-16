@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Queue;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -14,7 +14,6 @@ import org.w3c.dom.NodeList;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import edu.upenn.cis455.storage.*;
-import edu.upenn.cis455.xpathengine.XPathEngineImpl;
 import java.io.IOException;
 import java.io.PrintWriter;
 /**
@@ -41,7 +40,6 @@ public class XPathCrawler {
 	private DatabaseWrapper db;
 	private DatabaseWrapper indexdb;
 	private WebDocument webDocument;
-	private XPathEngineImpl xengine;
 	// url and host map
 	private Map<String, String> urlHostPair = new HashMap<String, String>();
 	// time host last crawled
@@ -89,9 +87,10 @@ public class XPathCrawler {
 	public void flushFrontier() throws IOException
 	{
 		PrintWriter writer = new PrintWriter(URLFile);
-		while (!frontier.isEmpty())
+		Queue<String> urlQueue = frontier.getQueue();
+		for (String s: urlQueue)
 		{
-			writer.println(frontier.poll());
+			writer.println(s);
 		}
 		writer.close();
 	}
@@ -126,7 +125,6 @@ public class XPathCrawler {
 			// System.out.println("frontier URL is " + currentURL);
 			// Step 2. send head and get response to check if document is valid
 			HttpCrawlerClient client = new HttpCrawlerClient();
-			//TODO normalize URL
 			client.parseURL(currentURL);
 			
 			// System.out.println("current URL is "+currentURL);
@@ -383,16 +381,12 @@ public class XPathCrawler {
 			webDocument.setLastCrawlTime(crawlTime);
 			webDocument.setDocumentContent(body);
 			String noHTML = webDocument.getDocumentContent().toLowerCase();
-//			System.out.println("ORIGINAL CONTENT = " + noHTML);
 			// Remove all EJS from the HTML script
 			noHTML = noHTML.replaceAll("<script(.*)/script>", "");
-//			System.out.println("REMOVED HTML = " + noHTML);
 			// Remove all images from the HTML script
 			noHTML = noHTML.replaceAll("<img(.*)/img>", "");
-//			System.out.println("REMOVED IMAGES = " + noHTML);
 			// Remove all other tags (but not their content) from the HTML script
 			noHTML = noHTML.replaceAll("\\<.*?>", "");
-//			System.out.println("REMOVED TAGS = " + noHTML);
 			WebDocument contents = new WebDocument(currentURL);
 			contents.setDocumentContent(noHTML);
 			contents.setLastCrawlTime(crawlTime);
@@ -446,17 +440,6 @@ public class XPathCrawler {
 				// System.out.println("### matched url " + currentURL + "
 				// already exist");
 				continue;
-			}
-			boolean[] result = xengineSearch(eachChannel, doc);
-
-			for (int k = 0; k < result.length; k++) {
-				// System.out.println("Result " + k + " is " + result[k]);
-				if (result[k]) {
-					eachChannel.putMatchedURLs(currentURL);
-					// db.addChannel(eachChannel, eachChannel.getUserName());
-					db.addChannel(eachChannel);
-					break;
-				}
 			}
 		}
 	}
@@ -527,25 +510,6 @@ public class XPathCrawler {
 
 	// ********** helper functions *************
 	/**
-	 * xpath search from MS1, get evaluate boolean array
-	 * 
-	 * @param channel
-	 * @param doc
-	 * @return
-	 */
-	private boolean[] xengineSearch(Channel channel, Document doc) {
-		List<String> xpaths = channel.getChannelXpaths();
-
-		xengine = new XPathEngineImpl();
-		String[] xpathArray = new String[xpaths.size()];
-		for (int j = 0; j < xpaths.size(); j++) {
-			xpathArray[j] = xpaths.get(j);
-		}
-		xengine.setXPaths(xpathArray);
-		return xengine.evaluate(doc);
-	}
-
-	/**
 	 * Extra credits, check if a different URL has same content, if yes, don't
 	 * download again
 	 * 
@@ -554,6 +518,7 @@ public class XPathCrawler {
 	 */
 	public boolean contentSeenTest(String content) {
 		if (uniqueContents.contains(content)) {
+			count++;
 			return true;
 		} else {
 			return false;
@@ -561,7 +526,7 @@ public class XPathCrawler {
 	}
 
 	/**
-	 * check type first, if not xml or html file, appedn / at the end if needed
+	 * check type first, if not xml or html file, append / at the end if needed
 	 * 
 	 * @param url
 	 * @return

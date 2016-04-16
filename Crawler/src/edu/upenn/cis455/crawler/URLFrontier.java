@@ -43,4 +43,12 @@ public class URLFrontier {
 		return urlQueue.poll();
 	}
 
+	/**
+	 * Get the URL queue
+	 * @return Returns the current queue
+	 */
+	public Queue<String> getQueue()
+	{
+		return urlQueue;
+	}
 }

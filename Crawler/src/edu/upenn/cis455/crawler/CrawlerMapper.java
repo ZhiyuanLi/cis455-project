@@ -13,7 +13,7 @@ public class CrawlerMapper extends Mapper<LongWritable, Text, Text, Text>
 	 * @param line - the line read in from the URL list
 	 * @param context - the MapReduce context
 	 * @throws IOException if a read error occurs
-	 * @throws IOException if the job is interrupted
+	 * @throws InterruptedException if the job is interrupted
 	 */
 	public void map(LongWritable num, Text line, Context context) throws IOException, InterruptedException
 	{
