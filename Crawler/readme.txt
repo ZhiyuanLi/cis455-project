@@ -9,7 +9,7 @@ You can run the server by
 You can run the crawler by:
 1: Please make sure you add "sudo" in the command line to get same permission access as servets.
 2: you can use command line given in test guild with sudo added to front:
-sudo java -cp crawler.jar:[all jar files] + edu.upenn.cis455.crawler.XPathCrawler URL DBDPath MaxSize [MaxNumOfFiles]
+sudo java -cp crawler.jar:[all jar files] + edu.upenn.cis455.crawler.XPathCrawler URL DBDPath IndexerDBPath MaxSize [MaxNumOfFiles]
 
 
 ========================web.xml database path========================

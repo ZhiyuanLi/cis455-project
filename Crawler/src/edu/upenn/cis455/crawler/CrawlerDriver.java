@@ -32,8 +32,8 @@ public class CrawlerDriver
 		job.submit();
 		while (!job.isComplete())
 		{
-			// Run the shuffle job every 1 minute
-			Thread.sleep(60000);
+			// Run the shuffle job every 2 minutes
+			Thread.sleep(120000);
 			Job job2 = new Job();
 			job.setJarByClass(CrawlerDriver.class);
 			FileInputFormat.addInputPath(job, new Path(args[0]));

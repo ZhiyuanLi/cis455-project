@@ -1,4 +1,0 @@
-You can run the server by 
-1:ant build in current folder
-2:move servlet.war to /usr/share/jetty
-3:use Jetty server to run localhost:8080/servlet/xpath to start.

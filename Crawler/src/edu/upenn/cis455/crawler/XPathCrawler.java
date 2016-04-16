@@ -11,12 +11,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
+import java.io.BufferedReader;
+import java.io.FileReader;
 import edu.upenn.cis455.storage.*;
 import edu.upenn.cis455.xpathengine.XPathEngineImpl;
-
+import java.io.IOException;
+import java.io.PrintWriter;
 /**
- * XPath Crawler for CIS 555 HW2 MS2
+ * XPath Crawler for CIS 555 Final Project
  * 
  * @author weisong
  *
@@ -28,7 +30,8 @@ public class XPathCrawler {
 	private int maxSize = Integer.MAX_VALUE;
 	private int maxNum = Integer.MAX_VALUE;
 	private String indexerDBDir = "";
-
+	// Default file. Second, third workers' files are part-r-00001, part-r-00002, etc.
+	private String URLFile = "/src/urls/part-r-00000";
 	// header response
 	private String contentType;
 	private int contentLen;
@@ -57,10 +60,11 @@ public class XPathCrawler {
 	 * @param urlStart
 	 * @param dbDirectory
 	 * @param indexerDBDir - the directory of the indexer database directory
+	 * @param URLFile - the path to the disk backed URL frontier
 	 * @param maxSize
 	 * @param maxNum
 	 */
-	public XPathCrawler(String urlStart, String dbDirectory, String indexerDBDir, int maxSize, int maxNum) {
+	public XPathCrawler(String urlStart, String dbDirectory, String indexerDBDir, String URLFile, int maxSize, int maxNum) {
 		this.urlStart = urlStart;
 		this.dbDirectory = dbDirectory;
 		this.maxSize = maxSize;
@@ -73,8 +77,38 @@ public class XPathCrawler {
 		// db.getDocumentList().size());
 		// System.out.println("database channel list size is " +
 		// db.getChannelList().size());
+		this.URLFile = URLFile;
 		frontier = new URLFrontier();
 		frontier.add(fixURL(this.urlStart));
+	}
+
+	/**
+	 * Flush contents of URLFrontier to disk
+	 * @throws IOException if a write fails
+	 */
+	public void flushFrontier() throws IOException
+	{
+		PrintWriter writer = new PrintWriter(URLFile);
+		while (!frontier.isEmpty())
+		{
+			writer.println(frontier.poll());
+		}
+		writer.close();
+	}
+
+	/**
+	 * Replace the contents of the crawler's URL frontier after a shuffle job
+	 * @throws IOException if the reader fails to read
+	 */
+	public void reloadFrontier() throws IOException
+	{
+		frontier = new URLFrontier();
+		BufferedReader reader = new BufferedReader(new FileReader(URLFile));
+		while (reader.ready())
+		{
+			frontier.add(fixURL(reader.readLine()));
+		}
+		reader.close();
 	}
 
 	/**
@@ -548,21 +582,22 @@ public class XPathCrawler {
 	 * @param args
 	 */
 	public static void main(String args[]) {
-		if (args.length < 4) {
+		if (args.length < 5) {
 			System.out.println(
-					"Should have at least four arguments: <start URL> <db root> <index db root> <file max size> [num of files]");
+					"Should have at least five arguments: <start URL> <db root> <index db root> <url frontier path> <file max size> [num of files]");
 		}
 		String urlStart = args[0];
 		urlStart = fixURL(urlStart);
 		// System.out.println("start: "+urlStart);;
 		String dbDirectory = args[1];
 		String indexDBDir = args[2];
-		int maxSize = Integer.parseInt(args[3]);
+		String URLPath = args[3];
+		int maxSize = Integer.parseInt(args[4]);
 		int maxNum = Integer.MAX_VALUE;
-		if (args.length == 5) {
-			maxNum = Integer.parseInt(args[4]);
+		if (args.length == 6) {
+			maxNum = Integer.parseInt(args[5]);
 		}
-		XPathCrawler crawler = new XPathCrawler(urlStart, dbDirectory, indexDBDir, maxSize, maxNum);
+		XPathCrawler crawler = new XPathCrawler(urlStart, dbDirectory, indexDBDir, URLPath, maxSize, maxNum);
 		crawler.startCrawling();
 	}
 }
