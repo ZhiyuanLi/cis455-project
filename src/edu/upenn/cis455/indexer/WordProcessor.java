@@ -1,7 +1,15 @@
 package edu.upenn.cis455.indexer;
 
+/**
+ * This class is used to pre-process each word
+ * @author woody
+ *
+ */
 public class WordProcessor {
 
+	/**
+	 * Instance of WordProcessor
+	 */
 	private static StopWords STOPWORDS = new StopWords();
 	private static Stemmer STEMMER = new Stemmer();
 
@@ -16,14 +24,9 @@ public class WordProcessor {
 		if (!STOPWORDS.isStopWord(word)) {
 			STEMMER.add(word.toCharArray(), word.length());
 			STEMMER.stem();
-			System.out.println(STEMMER);
 			return STEMMER.toString();
 		} else {
 			return null;
 		}
 	}
-//	for test
-//	public static void main(String[] args) {
-//		WordProcessor.process("syzys");
-//	}
 }

@@ -26,11 +26,18 @@ public class InterKey implements WritableComparable<InterKey>{
 	public InterKey(String word) {
 		set(new Text(word));
 	}
-
+	
+	/**
+	 * Constructor of InterKey
+	 */
 	public InterKey() {
 		set(new Text());
 	}
 	
+	/**
+	 * Set instance
+	 * @param word
+	 */
 	public void set(Text word) {
 		this.word = word;
 	}

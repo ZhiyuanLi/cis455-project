@@ -30,14 +30,27 @@ public class InterValue implements WritableComparable<InterValue> {
 		set(new Text(docId), new DoubleWritable(tf));
 	}
 	
-	public InterValue(Text docId, DoubleWritable tf) {
-		set(docId, tf);
-	}
-
+	/**
+	 * Constructor
+	 */
 	public InterValue() {
 		set(new Text(), new DoubleWritable());
 	}
 	
+	/**
+	 * Constructor 
+	 * @param docId
+	 * @param tf
+	 */
+	public InterValue(Text docId, DoubleWritable tf) {
+		set(docId, tf);
+	}
+	
+	/**
+	 * Set instance
+	 * @param docId
+	 * @param tf
+	 */
 	public void set(Text docId, DoubleWritable tf) {
 		this.docId = docId;
 		this.tf = tf;
@@ -72,7 +85,6 @@ public class InterValue implements WritableComparable<InterValue> {
 	@Override
 	public int compareTo(InterValue o) {
 		int cmp = tf.compareTo(o.tf);
-
 		return -cmp;
 //		return docId.compareTo(o.docId);
 	}

@@ -2,6 +2,11 @@ package edu.upenn.cis455.indexer;
 
 import java.util.HashSet;
 
+/**
+ * This class used to store stop words
+ * @author woody
+ *
+ */
 public class StopWords {
 
 	/**
