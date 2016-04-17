@@ -17,6 +17,6 @@ public class CrawlerMapper extends Mapper<LongWritable, Text, Text, Text>
 	 */
 	public void map(LongWritable num, Text line, Context context) throws IOException, InterruptedException
 	{
-		
+		context.write(new Text(line), new Text(""));
 	}
 }

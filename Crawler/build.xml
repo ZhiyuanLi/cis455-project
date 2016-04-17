@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="HW2" default="build" basedir=".">
+<project name="FinalProjectCrawler" default="build" basedir=".">
     <property name="shared.root" location="${basedir}"/>
     <property name="file.separator" location="/"/>
     <property name="project.root" location="${basedir}"/>

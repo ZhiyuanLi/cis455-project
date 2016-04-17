@@ -4,6 +4,8 @@ package edu.upenn.cis455.crawler;
 import java.io.IOException;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+import java.util.LinkedList;
+import java.util.Queue;
 public class CrawlerReducer extends Reducer<Text, Text, Text, Text>
 {
 	/**
@@ -14,7 +16,24 @@ public class CrawlerReducer extends Reducer<Text, Text, Text, Text>
 	 * @throws IOException if a write error occurs
 	 * @throws InterrupedException if the job is interrupted
 	 */
-	public void reduce(Text key, Text vals, Context context) throws IOException, InterruptedException
+	public void reduce(Text key, Iterable<Text> vals, Context context) throws IOException, InterruptedException
 	{
+		String dbDir = context.getConfiguration().get("dbDir");
+		String indexDBDir = context.getConfiguration().get("indexDBDir");
+		String frontierPath = context.getConfiguration().get("frontierPath");
+		String URLPath = context.getConfiguration().get("URLPath");
+		int maxSize = Integer.parseInt(context.getConfiguration().get("maxSize"));
+		LinkedList<String> list = new LinkedList<String>();
+		for (Text t: vals)
+		{
+			list.addLast(t.toString());
+		}
+		Crawler crawler = new Crawler(list, dbDir, indexDBDir, URLPath, maxSize, 1);
+		crawler.startCrawling();
+		Queue<String> frontier = crawler.getFrontier();
+		for (String s: frontier)
+		{
+			context.write(new Text(s), new Text(""));
+		}
 	}
 }
