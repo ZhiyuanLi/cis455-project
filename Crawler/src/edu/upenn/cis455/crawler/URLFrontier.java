@@ -1,45 +1,45 @@
 package edu.upenn.cis455.crawler;
-
 import java.util.LinkedList;
 import java.util.Queue;
-
 /**
  * URL Frontier API similar to the one in Mercator Architecture
- * 
  * @author weisong
- *
  */
-public class URLFrontier {
+public class URLFrontier
+{
 	// url queue to store urls that will be evaluated later
 	Queue<String> urlQueue = new LinkedList<String>();
-
-	public URLFrontier() {
+	/**
+	 * Create a new frontier
+	 */
+	public URLFrontier()
+	{
 	}
 
 	/**
 	 * add a url to frontier queue
-	 * 
-	 * @param urlStart
+	 * @param urlStart - the new URL to add to the queue
 	 */
-	public void add(String url) {
+	public void add(String url)
+	{
 		urlQueue.offer(url);
 	}
 
 	/**
 	 * check if frontier queue is empty
-	 * 
-	 * @return
+	 * @return Returns true if the frontier is empty
 	 */
-	public boolean isEmpty() {
+	public boolean isEmpty()
+	{
 		return urlQueue.isEmpty();
 	}
 
 	/**
 	 * return the first url in the queue
-	 * 
-	 * @return
+	 * @return Returns the first item in the queue
 	 */
-	public String poll() {
+	public String poll()
+	{
 		return urlQueue.poll();
 	}
 

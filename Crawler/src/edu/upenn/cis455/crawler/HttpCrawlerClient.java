@@ -1,5 +1,4 @@
 package edu.upenn.cis455.crawler;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -15,31 +14,24 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.tidy.Tidy;
-
 /**
- * HTTP Crawler Client for user to fetch document using socket and parse content
- * as Document using tidy parser
- * 
+ * HTTP Crawler Client for user to fetch document using socket and parse content as Document using tidy parser
  * @author weisong
- *
  */
-public class HttpCrawlerClient {
+public class HttpCrawlerClient
+{
 	// socket argument
 	private String host = "";
 	private String path = "";
 	private int portNum = 80;
-
 	// header response
 	private String contentType = "";
 	private int contentLen = -1;
 	private long lastModified = -1;
-
 	private URL urlObject;
 	private int code = -1;
 	private String body = "";
@@ -47,30 +39,35 @@ public class HttpCrawlerClient {
 
 	/**
 	 * parse url and seperate host, path and portNum, create urlObject
-	 * 
-	 * @param url
+	 * @param url - the URL to parse
 	 */
-	public void parseURL(String url) {
-		if (!url.startsWith("http")) {
+	public void parseURL(String url)
+	{
+		if (!url.startsWith("http"))
+		{
 			url = "http://" + url;
 		}
-		try {
+		try
+		{
 			urlObject = new URL(url);
-		} catch (MalformedURLException e) {
+		}
+		catch (MalformedURLException e)
+		{
 			e.printStackTrace();
 		}
 		host = urlObject.getHost();
 		path = urlObject.getPath();
-		portNum = urlObject.getPort() == -1 ? 80 : urlObject.getPort();
+		portNum = (urlObject.getPort() == -1) ? 80 : urlObject.getPort();
 	}
 
 	// ***** send GET and HEAD ********
 	/**
 	 * send HEAD request and parse HEAD response to check if file is valid
 	 */
-	public void headRequest() {
-		try {
-//			System.out.print("!!! "+host + "@@@ "+path);
+	public void headRequest()
+	{
+		try
+		{
 			Socket socket = new Socket(host, portNum);
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			out.write("HEAD " + path + " HTTP/1.1\r\n");
@@ -78,7 +75,6 @@ public class HttpCrawlerClient {
 			out.write("User-Agent: cis455crawler\r\n");
 			out.write("Connection: close\r\n\r\n");
 			out.flush();
-
 			// parse head response
 			InputStreamReader inputReader = new InputStreamReader(socket.getInputStream());
 			BufferedReader bufferReader = new BufferedReader(inputReader);
@@ -87,33 +83,36 @@ public class HttpCrawlerClient {
 			// check code
 			code = Integer.parseInt(nextLine.split(" ")[1]);
 			// if connection not success, return
-			if (code != 200) {
+			if (code != 200)
+			{
 				socket.close();
 				return;
 			}
-
-			while (nextLine != null) {
-				if (nextLine.toLowerCase().contains("content-length")) {
+			while (nextLine != null)
+			{
+				if (nextLine.toLowerCase().contains("content-length"))
+				{
 					contentLen = Integer.parseInt(nextLine.split(":")[1].trim());
 				}
-				if (nextLine.toLowerCase().contains("content-type")) {
+				if (nextLine.toLowerCase().contains("content-type"))
+				{
 					contentType = nextLine.split(":")[1].trim();
 				}
-				if (nextLine.toLowerCase().contains("last-modified")) {
+				if (nextLine.toLowerCase().contains("last-modified"))
+				{
 					String timeStr = nextLine.split(":")[1].trim();
-					// System.out.println(timeStr);
 					lastModified = getLastModified(timeStr);
 				}
 				nextLine = bufferReader.readLine();
 			}
-			// System.out.println("content len: " + contentLen);
-			// System.out.println("content type: " + contentType);
-			// System.out.println("last modified: " + lastModified);
 			socket.close();
 		}
-		catch (IOException e) {
+		catch (IOException e)
+		{
 			code = 404;
-		} catch (NumberFormatException e1) {
+		}
+		catch (NumberFormatException e1)
+		{
 			code = 404;
 		}
 	}
@@ -121,8 +120,10 @@ public class HttpCrawlerClient {
 	/**
 	 * Send GET request
 	 */
-	public void sendGetRequest() {
-		try {
+	public void sendGetRequest()
+	{
+		try
+		{
 			Socket socket = new Socket(host, portNum);
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			out.write("GET " + path + " HTTP/1.1\r\n");
@@ -133,38 +134,45 @@ public class HttpCrawlerClient {
 			// get response body
 			body = parseGetResponse(socket.getInputStream());
 			socket.close();
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			e.printStackTrace();
 		}
 	}
 
-	// ****** parser ********
 	/**
 	 * parse GET response and store content in field body
-	 * 
-	 * @param inputStream
-	 * @return
+	 * @param inputStream - the input stream for the response body
+	 * @return Returns the response content
 	 */
-	private String parseGetResponse(InputStream inputStream) {
-		try {
+	private String parseGetResponse(InputStream inputStream)
+	{
+		try
+		{
 			InputStreamReader inputReader = new InputStreamReader(inputStream);
 			BufferedReader bufferReader = new BufferedReader(inputReader);
-
 			int emptyLineNum = 0;
 			String nextLine = bufferReader.readLine();
 			StringBuilder sb = new StringBuilder();
-			while (nextLine != null) {
-				// System.out.println("next line is " + nextLine);
-				if (emptyLineNum > 0) {
-					sb.append(nextLine); // append after first empty line
+			while (nextLine != null)
+			{
+				if (emptyLineNum > 0)
+				{
+					// append after first empty line
+					sb.append(nextLine);
 				}
-				if (nextLine.equals("")) {
-					emptyLineNum++; // quit after second empty line
+				if (nextLine.equals(""))
+				{
+					// quit after second empty line
+					emptyLineNum++;
 				}
 				nextLine = bufferReader.readLine();
 			}
 			return sb.toString();
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			e.printStackTrace();
 		}
 		return null;

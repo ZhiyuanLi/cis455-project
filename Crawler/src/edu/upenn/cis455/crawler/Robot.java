@@ -1,28 +1,23 @@
 package edu.upenn.cis455.crawler;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 /**
  * robot wrapper that contains robots.txt information
- * 
  * @author weisong
- *
  */
-
-public class Robot {
-
+public class Robot
+{
 	private List<String> agents;
 	private Map<String, ArrayList<String>> allowed;
 	private Map<String, ArrayList<String>> banned;
 	private Map<String, Integer> delay;
-
 	/**
 	 * constructor
 	 */
-	public Robot() {
+	public Robot()
+	{
 		agents = new ArrayList<String>();
 		banned = new HashMap<String, ArrayList<String>>();
 		allowed = new HashMap<String, ArrayList<String>>();
@@ -31,39 +26,44 @@ public class Robot {
 
 	/**
 	 * check if contains agent
-	 * 
-	 * @param agent
-	 * @return
+	 * @param agent - the agent to check for
+	 * @return Returns true if this robot contains the agent
 	 */
-	public boolean containsAgent(String agent) {
+	public boolean containsAgent(String agent)
+	{
 		return this.agents.contains(agent);
 	}
 
 	/**
 	 * add agent to agent list
-	 * 
-	 * @param agent
+	 * @param agent - the agent to add
 	 */
-	public void addAgent(String agent) {
-		if (!this.agents.contains(agent)) {
+	public void addAgent(String agent)
+	{
+		if (!this.agents.contains(agent))
+		{
 			this.agents.add(agent);
 		}
 	}
 
 	/**
 	 * add allowed url under given agent
-	 * 
-	 * @param agent
-	 * @param allow
+	 * @param agent - the agent to add URL permission to
+	 * @param allow - the URL to allow
 	 */
-	public void addAllow(String agent, String allow) {
+	public void addAllow(String agent, String allow)
+	{
 		ArrayList<String> allowList = this.allowed.get(agent);
-		if (allowList == null || allowList.size() == 0) {
+		if ((allowList == null) || (allowList.size() == 0))
+		{
 			ArrayList<String> newList = new ArrayList<String>();
 			newList.add(allow);
 			this.allowed.put(agent, newList);
-		} else {
-			if (!allowList.contains(allow)) {
+		}
+		else
+		{
+			if (!allowList.contains(allow))
+			{
 				allowList.add(allow);
 			}
 			this.allowed.put(agent, allowList);
@@ -72,18 +72,22 @@ public class Robot {
 
 	/**
 	 * add banned url under given agent
-	 * 
-	 * @param agent
-	 * @param ban
+	 * @param agent - the agent to add URL ban to
+	 * @param ban - the URL to ban
 	 */
-	public void addBanned(String agent, String ban) {
+	public void addBanned(String agent, String ban)
+	{
 		ArrayList<String> bannedList = this.banned.get(agent);
-		if (bannedList == null || bannedList.size() == 0) {
+		if ((bannedList == null) || (bannedList.size() == 0))
+		{
 			ArrayList<String> newList = new ArrayList<String>();
 			newList.add(ban);
 			this.banned.put(agent, newList);
-		} else {
-			if (!bannedList.contains(ban)) {
+		}
+		else
+		{
+			if (!bannedList.contains(ban))
+			{
 				bannedList.add(ban);
 			}
 			this.banned.put(agent, bannedList);
@@ -92,23 +96,41 @@ public class Robot {
 
 	/**
 	 * add delay under given agent
-	 * 
-	 * @param agent
-	 * @param delay
+	 * @param agent - the agent to add a delay to
+	 * @param delay - the delay
 	 */
-	public void addDelay(String agent, int delay) {
+	public void addDelay(String agent, int delay)
+	{
 		this.delay.put(agent, delay);
 	}
 
-	public List<String> getAllowed(String agent) {
+	/**
+	 * Retrieve URLs the agent allows
+	 * @param agent - the agent to poll
+	 * @return Returns the list of URLs the agent allows
+	 */
+	public List<String> getAllowed(String agent)
+	{
 		return this.allowed.get(agent);
 	}
 
-	public List<String> getBanned(String agent) {
+	/**
+	 * Retrieve URLs the agent bans
+	 * @param agent - the agent to poll
+	 * @return Returns the list of URLs the agent bans
+	 */
+	public List<String> getBanned(String agent)
+	{
 		return this.banned.get(agent);
 	}
 
-	public int getDelay(String agent) {
+	/**
+	 * Retrieve all associated delays
+	 * @param agent - the agent to poll
+	 * @return Returns the list of associated delays
+	 */
+	public int getDelay(String agent)
+	{
 		return this.delay.get(agent);
 	}
 }

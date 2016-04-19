@@ -1,29 +1,31 @@
 package test.edu.upenn.cis455;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import edu.upenn.cis455.storage.Channel;
 import edu.upenn.cis455.storage.DatabaseWrapper;
 import edu.upenn.cis455.storage.User;
 import edu.upenn.cis455.storage.WebDocument;
 import junit.framework.TestCase;
-
-public class DatabaseWrapperTest extends TestCase {
-
+public class DatabaseWrapperTest extends TestCase
+{
 	DatabaseWrapper db;
 	String path;
 
-	protected void setUp() throws Exception {
+	/**
+	 * Setup the test suite
+	 * @throws Exception if the database cannot be opened
+	 */
+	protected void setUp() throws Exception
+	{
 		path = "./testDatabase";
 		db = new DatabaseWrapper(path);
-
 	}
 
 	/**
 	 * test channel entity
 	 */
-	public void testChannel() {
+	public void testChannel()
+	{
 		// db already created
 		assertFalse(db == null);
 		List<String> xPaths = new ArrayList<String>();
@@ -33,12 +35,10 @@ public class DatabaseWrapperTest extends TestCase {
 		db.addUser(user);
 		c.setUserName("hahaha");
 		db.addChannel(c, "hahaha");
-
 		Channel getChannel = db.getChannel("testChannel");
 		assertEquals(getChannel.getCName(), "testChannel");
 		assertEquals(getChannel.getChannelXpaths(), xPaths);
 		assertEquals(getChannel.getUserName(), "hahaha");
-
 		db.deleteChannel("hahaha", "testChannel");
 		assertEquals(db.getChannel("testChannel"), null);
 		assertEquals(db.getUser("hahaha").getChannelNames().size(), 0);
@@ -47,7 +47,8 @@ public class DatabaseWrapperTest extends TestCase {
 	/**
 	 * test user entity
 	 */
-	public void testUser() {
+	public void testUser()
+	{
 		// db already created
 		assertFalse(db == null);
 		User newUser = new User("weisong");
@@ -58,9 +59,10 @@ public class DatabaseWrapperTest extends TestCase {
 	}
 
 	/**
-	 * test documen entity
+	 * test document entity
 	 */
-	public void testDocument() {
+	public void testDocument()
+	{
 		// db already created
 		assertFalse(db == null);
 		WebDocument doc = new WebDocument("www.google.com");
