@@ -10,39 +10,48 @@ import org.apache.hadoop.io.*;
 import org.apache.hadoop.util.*;
 
 public class HDFSWrapper {
-	public static void main(String[] args) throws IOException, URISyntaxException {
-		// 1. Get the instance of Configuration
-		Configuration configuration = new Configuration();
-//		// 2. URI of the file to be read
-//		URI uri = new URI("hdfs://localhost:9000/user/input/inout_index1");
-//		// 3. Get the instance of the HDFS
-//		FileSystem hdfs = FileSystem.get(uri, configuration);
-//		// 4. A reference to hold the InputStream
-//		InputStream inputStream = null;
-//		try {
-//			// 5. Prepare the Path, i.e similar to File class in Java, Path
-//			// represents file in HDFS
-//			Path path = new Path(uri);
-//			// 6. Open a Input Stream to read the data from HDFS
-//			inputStream = hdfs.open(path);
-//			// 7. Use the IOUtils to flush the data from the file to console
-//			IOUtils.copyBytes(inputStream, System.out, 4096, false);
-//		} finally {
-//			// 8. Close the InputStream once the data is read
-//			IOUtils.closeStream(inputStream);
-//		}
+
+	private Configuration configuration;
+	private FileSystem fs;
+	private DatabaseWrapper db;
+
+	public HDFSWrapper() throws IOException {
+		// TODO Auto-generated constructor stub
+		db = new DatabaseWrapper("indexdatabase");
+		configuration = new Configuration();
 		configuration.addResource(new Path("/usr/local/Cellar/hadoop/2.7.1/libexec/etc/hadoop/core-site.xml"));
-		FileSystem fs = FileSystem.get(configuration);
-		FileStatus[] status = fs.listStatus(new Path("hdfs://localhost:9000/user/input/"));
-        for (int i=0;i<status.length;i++){
-                BufferedReader br=new BufferedReader(new InputStreamReader(fs.open(status[i].getPath())));
-                String line;
-                line=br.readLine();
-                while (line != null){
-                        System.out.println(line);
-                        line=br.readLine();
-                }
-        }
+		fs = FileSystem.get(configuration);
+	}
+
+	public void readFromHDFS(String path) throws IOException, URISyntaxException {
+		FileStatus[] status = fs.listStatus(new Path(path));
+		for (int i = 0; i < status.length; i++) {
+			BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(status[i].getPath())));
+			String line;
+			line = br.readLine();
+			while (line != null) {
+				System.out.println(line);
+				line = br.readLine();
+			}
+		}
+	}
+
+	public void writeToHDFS(String path) throws IOException {
+		Path filenamePath = new Path(path);
+		if (fs.exists(filenamePath)) {
+			fs.delete(filenamePath, true);
+		}
+		FSDataOutputStream fin = fs.create(filenamePath);
+		List<WebDocument> docs = db.getDocumentList();
+		for (WebDocument doc : docs) {
+			fin.writeBytes(doc.getURL() + "\t" + doc.getDocumentContent());
+		}
+		fin.close();
+	}
+
+	public static void main(String[] args) throws IOException {
+		HDFSWrapper h = new HDFSWrapper();
+		h.writeToHDFS("hdfs://localhost:9000/user/input/input.txt");
 
 	}
 
