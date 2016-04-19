@@ -1,3 +1,4 @@
+#!/bin/bash
 /usr/local/bin/hdfs dfs -rm -r /user/output_index
 /usr/local/bin/hadoop jar build/jar/index.jar /user/input/index_input1 /user/output_index
 echo 'Job Input1'
