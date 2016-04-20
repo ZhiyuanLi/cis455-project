@@ -18,8 +18,7 @@ public class CrawlerTest extends TestCase
 	int maxSize;
 	int maxNum;
 	DatabaseWrapper db;
-	DatabaseWrapper indexDB;
-
+	IndexWrapper indexDB;
 	/**
 	 * Setup the test suite
 	 * @throws Exception if a database cannot be opened
@@ -33,7 +32,7 @@ public class CrawlerTest extends TestCase
 		maxSize = 100000;
 		maxNum = 1000000;
 		db = new DatabaseWrapper(dbPath);
-		indexDB = new DatabaseWrapper(indexDBPath);
+		indexDB = new IndexWrapper(indexDBPath);
 	}
 
 	/**
@@ -41,8 +40,7 @@ public class CrawlerTest extends TestCase
 	 */
 	public void testXML()
 	{
-		startURL = "http://crawltest.cis.upenn.edu/bbc/frontpage.xml";
-		crawler = new Crawler(startURL, dbPath, indexDBPath, urlFile, maxSize, maxNum);
+		crawler = new Crawler(dbPath, indexDBPath, urlFile, maxSize, maxNum);
 		List<String> xPaths1 = new ArrayList<String>();
 		List<String> xPaths2 = new ArrayList<String>();
 		xPaths1.add("/rss/channel/title");
@@ -69,8 +67,7 @@ public class CrawlerTest extends TestCase
 	 */
 	public void testHTML()
 	{
-		startURL = "http://crawltest.cis.upenn.edu/bbc/";
-		crawler = new Crawler(startURL, dbPath, indexDBPath, urlFile, maxSize, maxNum);
+		crawler = new Crawler(dbPath, indexDBPath, urlFile, maxSize, maxNum);
 		List<String> xPaths1 = new ArrayList<String>();
 		List<String> xPaths2 = new ArrayList<String>();
 		xPaths1.add("/rss/channel/title");
@@ -97,9 +94,7 @@ public class CrawlerTest extends TestCase
 	 */
 	public void testExtractContent()
 	{
-		// Dummy value. This page isn't crawled
-		startURL = "http://crawltest.cis.upenn.edu/bbc/";
-		crawler = new Crawler(startURL, dbPath, indexDBPath, urlFile, maxSize, maxNum);
+		crawler = new Crawler(dbPath, indexDBPath, urlFile, maxSize, maxNum);
 		String content = "<volume>15</volume><number>2</number><articles><article><title>Load balancing in a locally distributed DB system</title><initPage>15</initPage>";
 		String noHTML = crawler.extractContent(content);
 		System.out.println(noHTML);
