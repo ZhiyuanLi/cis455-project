@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.upenn.cis455.search.SearchEngine;
 
 /**
  * Search Servlet
@@ -17,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @SuppressWarnings("serial")
 public class SearchServlet extends HttpServlet {
+
+	private SearchEngine searchEngine;
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -37,13 +40,13 @@ public class SearchServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String[] words = request.getParameter("query").split("\\b");
-		
+		searchEngine.setQuery(request.getParameter("query"));
+
 	}
 
 	@Override
 	public void init() throws ServletException {
-		// set worker status for this worker
+		searchEngine = new SearchEngine();
 
 	}
 
