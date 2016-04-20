@@ -2,8 +2,6 @@ package edu.upenn.cis455.indexer;
 
 import java.io.*;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.LongWritable;
@@ -25,7 +23,7 @@ public class IndexerMapper extends Mapper<LongWritable, Text, InterKey, InterVal
 			// Get word frequency map
 			Hashtable<String, Integer> wordFrequencyMap = new Hashtable<String, Integer>();
 			while (tokenizer.hasNext()) {
-				String word = preProcess(tokenizer.nextToken());
+				String word = WordProcessor.preProcess(tokenizer.nextToken());
 				if (!word.equals("") && !word.matches("\\W+")) {
 					String pWord = WordProcessor.process(word.toLowerCase());
 					if (pWord != null) {
@@ -44,24 +42,10 @@ public class IndexerMapper extends Mapper<LongWritable, Text, InterKey, InterVal
 				// Compute the TF score and emit
 				for (String word : wordFrequencyMap.keySet()) {
 					double tf = TF_FACTOR + (1 - TF_FACTOR) * ((double)wordFrequencyMap.get(word) / maxFrequency);
-					//					System.out.println(word + ":::" + inputKey + "," + tf);
+//					System.out.println(word + ":::" + inputKey + "," + tf);
 					context.write(new InterKey(word), new InterValue(inputKey, tf));
 				}
 			}
 		}
-	}
-	
-	/**
-	 * Pre-process word, get rid of non-word character at the end of the word, such as '?' '.' ','
-	 * @param word
-	 * @return a string
-	 */
-	private String preProcess(String word) {
-		Pattern p = Pattern.compile("(\\p{L}+(?:-?\\p{L}+)*)+\\W*");
-		Matcher m = p.matcher(word);
-		if (m.matches()) { 
-			word = m.group(1);
-		}
-		return word;
 	}
 }
