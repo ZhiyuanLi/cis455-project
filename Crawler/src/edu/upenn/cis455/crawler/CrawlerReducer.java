@@ -23,7 +23,8 @@ public class CrawlerReducer extends Reducer<Text, Text, Text, Text>
 		String frontierPath = context.getConfiguration().get("frontierPath");
 		String URLPath = context.getConfiguration().get("URLPath");
 		int maxSize = Integer.parseInt(context.getConfiguration().get("maxSize"));
-		Crawler crawler = new Crawler(dbDir, indexDBDir, URLPath, maxSize, 1);
+		String linksPath = context.getConfiguration().get("linksPath");
+		Crawler crawler = new Crawler(dbDir, indexDBDir, URLPath, linksPath, maxSize, 1);
 		crawler.startCrawling();
 		Queue<String> frontier = crawler.getFrontier();
 		for (String s: frontier)

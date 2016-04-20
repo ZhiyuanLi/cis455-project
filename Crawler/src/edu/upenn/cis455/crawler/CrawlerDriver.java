@@ -19,6 +19,7 @@ public class CrawlerDriver
 	private static String dbDir = "";
 	private static String indexDBDir = "";
 	private static int maxSize = 0;
+	private static String linksPath = "";
 	/**
 	 * Launch the shuffle job
 	 * @param args - <URL dir> <output dir>
@@ -40,7 +41,7 @@ public class CrawlerDriver
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 		return job.waitForCompletion(true);
 	}
-	
+
 	/**
 	 * Launch the crawler job
 	 * @param args - <source dir> <frontier dir>
@@ -55,6 +56,7 @@ public class CrawlerDriver
 		conf.set("frontierPath", args[1]);
 		conf.set("URLPath", args[0]);
 		conf.set("maxSize", "" + maxSize);
+		conf.set("linksPath", linksPath);
 		Job job = new Job(conf);
 		job.setJarByClass(CrawlerDriver.class);
 		FileInputFormat.setInputPaths(job, new Path(args[0]));
@@ -67,7 +69,6 @@ public class CrawlerDriver
 		job.setReducerClass(CrawlerReducer.class);
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 		return job.waitForCompletion(true);
-		
 	}
 
 	/**
@@ -79,7 +80,7 @@ public class CrawlerDriver
 	{
 		if ((args.length < 6) || (args.length > 7))
 		{
-			System.out.println("Usage: CrawlerDriver <seed URLs path> <db root> <index db root> <interm URLs path> <URL frontier path> <max file size> [num of files]");
+			System.out.println("Usage: CrawlerDriver <seed URLs path> <db root> <index db root> <interm URLs path> <URL frontier path> <max file size> <out links log path> [num of files]");
 			return;
 		}
 		String seedPath = args[0];
@@ -96,7 +97,8 @@ public class CrawlerDriver
 		String frontierPath = args[4];
 		String URLPath = args[3];
 		maxSize = Integer.parseInt(args[5]);
-		int maxFiles = (args.length == 7) ? Integer.parseInt(args[6]) : Integer.MAX_VALUE;
+		linksPath = args[6];
+		int maxFiles = (args.length == 8) ? Integer.parseInt(args[7]) : Integer.MAX_VALUE;
 		runCrawler(new String[] {seedPath, frontierPath, "" + workers});
 		int iterations = 1;
 		// we process workers URLs at a time

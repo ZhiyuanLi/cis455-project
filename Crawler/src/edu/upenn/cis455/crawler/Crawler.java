@@ -19,6 +19,9 @@ import java.util.LinkedList;
 import org.jsoup.Jsoup;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 /**
  * Crawler for CIS 555 Final Project
  * @author weisong, cbesser
@@ -30,6 +33,7 @@ public class Crawler
 	private int maxNum = Integer.MAX_VALUE;
 	private String indexerDBDir = "";
 	private String URLFile = "";
+	private PrintWriter writer;
 	// header response
 	private String contentType;
 	private int contentLen;
@@ -46,7 +50,8 @@ public class Crawler
 	private Map<String, Long> timeMap = new HashMap<String, Long>();
 	// hash host to robot
 	private Map<String, Robot> hostRobotMap = new HashMap<String, Robot>();
-	private Map<String, Integer> pagesPerHost = new HashMap<String, Integer>();
+	private String lastHost = "";
+	private int pagesSkipped = 0;
 	// extra credits to test content seen
 	private URLFrontier frontier;
 	private HashSet<String> uniqueContents = new HashSet<String>();
@@ -57,10 +62,11 @@ public class Crawler
 	 * @param dbDirectory - the path to the PageRank directory
 	 * @param indexerDBDir - the directory of the indexer database directory
 	 * @param URLFile - the path to the disk backed URL frontier (or seed file)
+	 * @param linksPath - the path to the links.txt file
 	 * @param maxSize  - the maximum file size
 	 * @param maxNum - the maximum number of files to crawl
 	 */
-	public Crawler(String dbDirectory, String indexerDBDir, String URLFile, int maxSize, int maxNum)
+	public Crawler(String dbDirectory, String indexerDBDir, String URLFile, String linksPath, int maxSize, int maxNum)
 	{
 		this.dbDirectory = dbDirectory;
 		this.maxSize = maxSize;
@@ -79,6 +85,7 @@ public class Crawler
 				frontier.add(fixURL(url));
 			}
 			reader.close();
+			writer = new PrintWriter(new BufferedWriter(new FileWriter(linksPath, true)));
 		}
 		catch (IOException e)
 		{
@@ -92,6 +99,22 @@ public class Crawler
 	public Queue<String> getFrontier()
 	{
 		return frontier.getQueue();
+	}
+
+	/**
+	 * Write a line to the linksfile
+	 * @param line - the line to write
+	 */
+	private synchronized void writeLinks(String line)
+	{
+		try
+		{
+			writer.println(line);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -120,7 +143,14 @@ public class Crawler
 			}
 			if (!isValidFile(client, maxSize))
 			{
-				//System.out.println(currentURL + " : Invalid File");
+//				System.out.println(currentURL + " : Invalid File");
+				continue;
+			}
+			String host = client.getHost();
+			if (lastHost.equals(host) && (pagesSkipped < 10))
+			{
+				frontier.add(currentURL);
+				pagesSkipped++;
 				continue;
 			}
 			webDocument = db.getDocument(currentURL);
@@ -146,7 +176,7 @@ public class Crawler
 				if (contentType.trim().equalsIgnoreCase("text/html"))
 				{
 					// html: extract and add to queue
-					String host = urlHostPair.get(currentURL);
+					host = urlHostPair.get(currentURL);
 					extractAndEnqueue(currentURL, doc, host);
 				}
 				else if (contentType.trim().equalsIgnoreCase("text/xml") || contentType.trim().equalsIgnoreCase("application/xml")
@@ -157,13 +187,8 @@ public class Crawler
 				}
 				continue;
 			}
+			host = client.getHost();
 			// case 2: not crawled yet. check if robot allowed!
-			String host = client.getHost();
-			// this limit can only affect standalone mode
-			if ((pagesPerHost.get(host) != null) && (pagesPerHost.get(host) > 100))
-			{
-				continue;
-			}
 			boolean isValidByRobot = isPolite(client, host, currentURL);
 			if (!isValidByRobot)
 			{
@@ -174,7 +199,8 @@ public class Crawler
 			{
 				timeMap.put(currentURL, 0l);
 			}
-			pagesPerHost.put(host, pagesPerHost.containsKey(host) ? pagesPerHost.get(host) + 1 : 1);
+			lastHost = host;
+			pagesSkipped = 0;
 			// Step 3. download and store in database
 			downloadAndStore(client, currentURL);
 			if (count >= maxNum)
@@ -473,6 +499,7 @@ public class Crawler
 	private void extractAndEnqueue(String url, Document doc, String host)
 	{
 		NodeList nl = doc.getElementsByTagName("a");
+		String line = url + "\t";
 		for (int i = 0; i < nl.getLength(); i++)
 		{
 			Element element = (Element) nl.item(i);
@@ -486,10 +513,12 @@ public class Crawler
 					{
 						extractedLink = extractedLink + "/";
 					}
+					line = line + extractedLink + " ";
 					frontier.add(extractedLink);
 				}
 			}
 		}
+		writeLinks(line);
 	}
 
 	/**
@@ -506,8 +535,13 @@ public class Crawler
 		{
 			return relativePath;
 		}
+		// Tolerate links missing the http: prefix
+		else if (relativePath.startsWith("//"))
+		{
+			return relativePath.endsWith("/") ? "http:" + relativePath : "http:" + relativePath + "/";
+		}
 		// remove first slash in relative path
-		if (relativePath.startsWith("/"))
+		else if (relativePath.startsWith("/"))
 		{
 			relativePath = relativePath.substring(1);
 		}
@@ -584,22 +618,19 @@ public class Crawler
 	 */
 	public static void main(String args[])
 	{
-		if (args.length < 4)
+		if ((args.length < 5) || (args.length > 6))
 		{
 			System.out.println("Should have at least five arguments: <db root> <index db root> <url frontier path>" +
-					   " <file max size> [num of files]");
+					   " <file max size> <out links log path> [num of files]");
 			return;
 		}
 		String dbDirectory = args[0];
 		String indexDBDir = args[1];
 		String URLPath = args[2];
+		String linksPath = args[4];
 		int maxSize = Integer.parseInt(args[3]);
-		int maxNum = Integer.MAX_VALUE;
-		if (args.length == 5)
-		{
-			maxNum = Integer.parseInt(args[4]);
-		}
-		Crawler crawler = new Crawler(dbDirectory, indexDBDir, URLPath, maxSize, maxNum);
+		int maxNum = (args.length == 6) ? maxNum = Integer.parseInt(args[5]) : Integer.MAX_VALUE;
+		Crawler crawler = new Crawler(dbDirectory, indexDBDir, URLPath, linksPath, maxSize, maxNum);
 		crawler.startCrawling();
 	}
 }

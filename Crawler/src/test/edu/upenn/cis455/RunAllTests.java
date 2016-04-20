@@ -8,7 +8,7 @@ public class RunAllTests extends TestCase
 	{
 		try
 		{
-			Class[] testClasses = {DatabaseWrapperTest.class, CrawlerTest.class};
+			Class[] testClasses = {DatabaseWrapperTest.class, CrawlerTest.class, URLFrontierTest.class};
 			return new TestSuite(testClasses);
 		}
 		catch (Exception e)
