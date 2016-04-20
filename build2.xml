@@ -1,0 +1,36 @@
+<project name="HadoopTest" basedir="." default="main">
+	<property name="src.dir" value="src" />
+	<property name="build.dir" value="build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="lib.dir" value="lib" />
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+	</path>
+	<property name="main-class-index" value="edu.upenn.cis455.indexer.IndexerDriver" />
+	
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+	<target name="compile">
+		<mkdir dir="${classes.dir}" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
+	</target>
+
+	<target name="jar-index" depends="compile">
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.dir}/index.jar" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main-class-index}" />
+			</manifest>
+		</jar>
+	</target>
+
+<target name="run" depends="jar-index">
+<exec executable="echo">
+<arg value="All Set. Ready to run."/>
+</exec>
+</target>
+<target name="clean-build" depends="clean,jar-index"/>
+<target name="main" depends="clean,run"/>
+</project>
