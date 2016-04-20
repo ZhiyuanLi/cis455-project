@@ -9,8 +9,8 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 public class IndexerReducer extends Reducer<InterKey, InterValue, Text, Text> {
 
-	private final int N = 600;
-	private final int OUPUTSIZE = 200;
+	private final int N = 610000;
+	private final int OUPUTSIZE = 500;
 
 	@Override
 	public void reduce(InterKey interKey, Iterable<InterValue> interValues, Context context)
@@ -28,13 +28,10 @@ public class IndexerReducer extends Reducer<InterKey, InterValue, Text, Text> {
 		double idf = Math.log((double) N / count) + 1;
 		// get sort interValues by tf
 		Collections.sort(vTemp);
-		StringBuffer sBuffter = new StringBuffer("");
 		for (int i = 0; i < OUPUTSIZE && i < count; i++) {
 			InterValue v = vTemp.get(i);
-			sBuffter.append(v.toString());
+			OutValue outValue = new OutValue(v.getDocId(), idf, v.getTf().get() * idf);
+			context.write(interKey.getWord(), new Text(outValue.toString()));
 		}
-		// emit word: <docid:tf> idf
-//		System.out.println(interKey.getWord() + "\t" + sBuffter.toString() + idf);
-		context.write(interKey.getWord(), new Text(sBuffter.toString() + "::" + idf));
 	}
 }
