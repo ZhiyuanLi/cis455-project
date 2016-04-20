@@ -16,6 +16,7 @@ import edu.upenn.cis455.storage.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
+import org.jsoup.Jsoup;
 /**
  * Crawler for CIS 555 Final Project
  * @author weisong, cbesser
@@ -28,7 +29,6 @@ public class Crawler
 	private int maxSize = Integer.MAX_VALUE;
 	private int maxNum = Integer.MAX_VALUE;
 	private String indexerDBDir = "";
-	// Default file. Second, third workers' files are part-r-00001, part-r-00002, etc.
 	private String URLFile = "";
 	// header response
 	private String contentType;
@@ -48,7 +48,7 @@ public class Crawler
 	private URLFrontier frontier;
 	private HashSet<String> uniqueContents = new HashSet<String>();
 	public boolean isStop = false;
-	
+
 	/**
 	 * constructor. Use this one when not pre-loading the URL frontier
 	 * @param urlStart - the seed URL
@@ -131,6 +131,7 @@ public class Crawler
 			}
 			if (!isValidFile(client, maxSize))
 			{
+				System.out.println(currentURL + " : Invalid File");
 				continue;
 			}
 			webDocument = db.getDocument(currentURL);
@@ -153,7 +154,6 @@ public class Crawler
 				{
 					continue;
 				}
-
 				if (contentType.trim().equalsIgnoreCase("text/html"))
 				{
 					// html: extract and add to queue
@@ -173,6 +173,7 @@ public class Crawler
 			boolean isValidByRobot = isPolite(client, host, currentURL);
 			if (!isValidByRobot)
 			{
+				System.out.println(currentURL + " : Blocked by robots.txt");
 				continue;
 			}
 			if (!timeMap.containsKey(currentURL))
@@ -350,7 +351,6 @@ public class Crawler
 		timeMap.put(client.getHost(), System.currentTimeMillis());
 		// response content body
 		String body = client.getBody();
-		// System.out.println("Body = " + body);
 		// ! extra credits: check if different URL has same content
 		if (contentSeenTest(body))
 		{
@@ -362,12 +362,10 @@ public class Crawler
 			uniqueContents.add(body);
 		}
 		Document doc = null;
-//		System.out.println("## "+contentType);
 		if (contentType.trim().contains("text/html"))
 		{
 			// html: extract and add to queue
 			doc = client.generateHTMLDom(body);
-//			System.out.println("## "+contentType);
 			// for bug fixing
 			if (doc == null)
 			{
@@ -390,7 +388,9 @@ public class Crawler
 			long crawlTime = System.currentTimeMillis();
 			webDocument.setLastCrawlTime(crawlTime);
 			webDocument.setDocumentContent(body);
-			String noHTML = extractContent(webDocument.getDocumentContent());
+// 			System.out.println("Original body: " + body);
+			String noHTML = Jsoup.parse(body).text().toLowerCase().trim();
+			System.out.println("Removed HTML: " + noHTML);
 			WebDocument contents = new WebDocument(currentURL);
 			contents.setDocumentContent(noHTML);
 			contents.setLastCrawlTime(crawlTime);
@@ -402,26 +402,6 @@ public class Crawler
 		{
 			return;
 		}
-	}
-
-	/**
-	 * Extract the content body of the HTML/XML file
-	 * @param raw - the raw HTML/XML file contents
-	 * @return Returns the file with all EJS, images, and HTML/XML tags stripped out
-	 */
-	public String extractContent(String raw)
-	{
-		System.out.println("Raw data: " + raw);
-		// Remove all EJS scripts (anything between <script></script> tags)
-		String noEJS = raw.toLowerCase().replaceAll("<script(.*)/script>", "");
-		System.out.println("Minus scripts: " + noEJS);
-		// Remove all images (anything between <img></img> tags)
-		String noImages = noEJS.replaceAll("<img(.*)/img>", "");
-		System.out.println("Minus images: " + noImages);
-		// Remove all tags
-		String noTags = noImages.replaceAll("(<.*?>\\s*)+", " ");
-		System.out.println("Minus tags: " + noTags);
-		return noTags.trim();
 	}
 
 	/**
@@ -444,7 +424,7 @@ public class Crawler
 			return false;
 		}
 		// check length
-		if (contentLen > maxSize * 1000000)
+		if (contentLen > (maxSize * 1000000))
 		{
 			return false;
 		}
@@ -485,13 +465,12 @@ public class Crawler
 			if (linkNode != null)
 			{
 				String extractedLink = uniformURL(host, linkNode.getNodeValue().trim() + "", url);
-				if (extractedLink != null && extractedLink.length() > 0)
+				if ((extractedLink != null) && (extractedLink.length() > 0))
 				{
 					if (extractedLink.charAt(extractedLink.length() - 1) != '/')
 					{
 						extractedLink = extractedLink + "/";
 					}
-					// System.out.println("link is " + extractedLink);
 					frontier.add(extractedLink);
 				}
 			}

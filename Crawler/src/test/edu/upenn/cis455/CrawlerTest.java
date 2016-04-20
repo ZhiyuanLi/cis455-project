@@ -97,6 +97,7 @@ public class CrawlerTest extends TestCase
 	 */
 	public void testExtractContent()
 	{
+		// Dummy value. This page isn't crawled
 		startURL = "http://crawltest.cis.upenn.edu/bbc/";
 		crawler = new Crawler(startURL, dbPath, indexDBPath, urlFile, maxSize, maxNum);
 		String content = "<volume>15</volume><number>2</number><articles><article><title>Load balancing in a locally distributed DB system</title><initPage>15</initPage>";
