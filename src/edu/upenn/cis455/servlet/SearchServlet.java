@@ -1,13 +1,13 @@
 package edu.upenn.cis455.servlet;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 
 /**
  * Search Servlet
@@ -18,12 +18,27 @@ import javax.servlet.http.HttpServletResponse;
 @SuppressWarnings("serial")
 public class SearchServlet extends HttpServlet {
 
-	private String jspResultPath;
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
+		String docType = "<!DOCTYPE html>\n";
+		String title = "Search Engine";
+		out.println(docType + "<html>\n" + "<head><title>" + title + "</title></head>\n"
+				+ "<body bgcolor=\"#f0f0f0\">\n" + "<h1 align=\"center\">" + title + "</h1>\n"
+				+ "<form method=\"post\"><ul>\n" + "<input type=\"text\" name=\"query\" size=\"35\" required>" + "\n"
+				+ "<input type=\"submit\" value=\"Search\">" + "</ul></form>\n" + "</body></html>");
+
+	}
 
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		dispatchReply(req, resp);
+		String[] words = request.getParameter("query").split("\\b");
+		
 	}
 
 	@Override
@@ -32,9 +47,4 @@ public class SearchServlet extends HttpServlet {
 
 	}
 
-	public void dispatchReply(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		RequestDispatcher view = req.getRequestDispatcher(jspResultPath);
-		view.forward(req, resp);
-
-	}
 }

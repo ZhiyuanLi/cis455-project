@@ -6,5 +6,16 @@
 
 <web-app>
 	<display-name>Search Servlets</display-name>
+	
+	<servlet>
+		<servlet-name>SearchServlet</servlet-name>
+		<servlet-class>edu.upenn.cis455.servlet.SearchServlet</servlet-class>
+		<load-on-startup/>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>SearchServlet</servlet-name>
+		<url-pattern>/search</url-pattern>
+	</servlet-mapping>
 
 </web-app>

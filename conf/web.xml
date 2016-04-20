@@ -10,10 +10,6 @@
 	<servlet>
 		<servlet-name>SearchServlet</servlet-name>
 		<servlet-class>edu.upenn.cis455.servlet.SearchServlet</servlet-class>
-		<init-param>
-			<param-name>jspResult</param-name>
-			<param-value>ui/result.jsp</param-value>
-		</init-param>
 		<load-on-startup/>
 	</servlet>
 	
