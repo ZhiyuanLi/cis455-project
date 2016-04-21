@@ -15,9 +15,7 @@ public class IndexWrapper
 	private static String dbPath;
 	private static Environment environment;
 	private static EntityStore store;
-	private static PrimaryIndex<String, User> userIndex;
 	private static PrimaryIndex<String, WebDocument> webDocIndex;
-	private static PrimaryIndex<String, Channel> channelIndex;
 	private static File datebaseDir;
 
 	/**
@@ -81,9 +79,7 @@ public class IndexWrapper
 		// initial fields
 		environment = new Environment(datebaseDir, envConfig);
 		store = new EntityStore(environment, "EntityStore", storeConfig);
-		userIndex = store.getPrimaryIndex(String.class, User.class);
 		webDocIndex = store.getPrimaryIndex(String.class, WebDocument.class);
-		channelIndex = store.getPrimaryIndex(String.class, Channel.class);
 	}
 
 	/**
@@ -99,180 +95,6 @@ public class IndexWrapper
 		{
 			environment.close();
 		}
-	}
-
-	/**
-	 * get user index
-	 * @return Returns the index of users
-	 */
-	public PrimaryIndex<String, User> getUsers()
-	{
-		return userIndex;
-	}
-
-	/**
-	 * add user to user index
-	 * @param user - the user to add
-	 */
-	public void addUser(User user)
-	{
-		userIndex.put(user);
-	}
-
-	/**
-	 * check if user already exist
-	 * @param userName - the name to search for
-	 * @return Returns true if the user exists in the index
-	 */
-	public boolean containsUser(String userName)
-	{
-		return userIndex.contains(userName);
-	}
-
-	/**
-	 * get user given user name
-	 * @param userName - the username to search for
-	 * @return Returns the associated user
-	 */
-	public User getUser(String userName)
-	{
-		return userIndex.get(userName);
-	}
-
-	/**
-	 * get users as a list using entity cursor
-	 * @return - returns all users
-	 */
-	public List<User> getUserList()
-	{
-		List<User> userList = new ArrayList<User>();
-		EntityCursor<User> cursor = userIndex.entities();
-		try
-		{
-			Iterator<User> i = cursor.iterator();
-			while (i.hasNext())
-			{
-				userList.add(i.next());
-			}
-		}
-		finally
-		{
-			cursor.close();
-		}
-		return userList;
-	}
-
-	/**
-	 * delete user in user index and also channels under this user
-	 * @param userName - the username to remove
-	 */
-	public void deleteUser(String userName)
-	{
-		// 1. delete user from user index
-		userIndex.delete(userName);
-		// 2. delete all channels under this user
-		EntityCursor<Channel> cursor = channelIndex.entities();
-		try
-		{
-			Iterator<Channel> i = cursor.iterator();
-			while (i.hasNext())
-			{
-				// only delete all channels if channel's user name match with current user name
-				Channel channel = i.next();
-				if (channel.getUserName() != null && channel.getUserName().equals(userName))
-				{
-					channelIndex.delete(channel.getCName());
-				}
-			}
-		}
-		finally
-		{
-			cursor.close();
-		}
-	}
-
-	/**
-	 * get channel index
-	 * @return - Returns the list of channels
-	 */
-	public PrimaryIndex<String, Channel> getChannels()
-	{
-		return channelIndex;
-	}
-
-	/**
-	 * get channels as a list using entity cursor
-	 * @return Returns the list of channels
-	 */
-	public List<Channel> getChannelList()
-	{
-		List<Channel> channelList = new ArrayList<Channel>();
-		EntityCursor<Channel> cursor = channelIndex.entities();
-		try
-		{
-			Iterator<Channel> i = cursor.iterator();
-			while (i.hasNext())
-			{
-				channelList.add(i.next());
-			}
-		}
-		finally
-		{
-			cursor.close();
-		}
-		return channelList;
-	}
-
-	/**
-	 * get channel object given channel name
-	 * @param cName - the name of the channel
-	 * @return Returns the channel
-	 */
-	public Channel getChannel(String cName)
-	{
-		return channelIndex.get(cName);
-	}
-
-	/**
-	 * add a channel to database
-	 * @param channel - the channel to add
-	 */
-	public void addChannel(Channel channel)
-	{
-		if (channel == null)
-		{
-			return;
-		}
-		channelIndex.put(channel);
-	}
-
-	/**
-	 * add a channel to database
-	 * @param channel - the channel to add
-	 * @param userName - the username to associate the channel to
-	 */
-	public void addChannel(Channel channel, String userName)
-	{
-		channelIndex.put(channel);
-		User user = userIndex.get(userName);
-		user.addChannelName(channel.getCName());
-		userIndex.put(user);
-	}
-
-	/**
-	 * remove a channel from user who own this channel
-	 * @param username - the user whose channel should be removed
-	 * @param cname - the name of the channel
-	 */
-	public void deleteChannel(String userName, String cName)
-	{
-		// 1. delete channel from channel index
-		channelIndex.delete(cName);
-		// 2. delete channel under corresponding user
-		User channelUser = userIndex.get(userName);
-		channelUser.removeChannel(cName);
-		userIndex.delete(userName);
-		userIndex.put(channelUser);
 	}
 
 	/**

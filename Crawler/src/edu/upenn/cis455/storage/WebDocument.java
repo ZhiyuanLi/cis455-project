@@ -9,13 +9,21 @@ import com.sleepycat.persist.model.PrimaryKey;
 public class WebDocument
 {
 	private String content;
+	private String title = "";
 	private long lastCrawlTime;
 	@PrimaryKey
 	private String url;
+	/**
+	 * Constructor
+	 */
 	public WebDocument()
 	{
 	}
 
+	/**
+	 * Constructor
+	 * @param url - the url of the document
+	 */
 	public WebDocument(String url)
 	{
 		this.url = url;
@@ -73,5 +81,23 @@ public class WebDocument
 	public String getDocumentContent()
 	{
 		return this.content;
+	}
+
+	/**
+	 * Set document title
+	 * @param title - the document title
+	 */
+	public void setDocumentTitle(String title)
+	{
+		this.title = title;
+	}
+
+	/**
+	 * Get the document title
+	 * @return returns the document title
+	 */
+	public String getDocumentTitle()
+	{
+		return title;
 	}
 }

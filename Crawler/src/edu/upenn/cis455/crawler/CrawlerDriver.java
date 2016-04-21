@@ -28,6 +28,8 @@ public class CrawlerDriver
 	 */
 	public static boolean runShuffle(String[] args) throws Exception
 	{
+		System.out.println("Frontier dir = " + args[0] + " Output dir = " + args[1]);
+		deleteDirectory(args[1]);
 		Job job = new Job();
 		job.setJarByClass(CrawlerDriver.class);
 		FileInputFormat.setInputPaths(job, new Path(args[0]));
@@ -50,6 +52,8 @@ public class CrawlerDriver
 	 */
 	public static boolean runCrawler(String[] args) throws Exception
 	{
+		System.out.println("Input URL dir = " + args[0] + " Output URL dir = " + args[1]);
+		deleteDirectory(args[1]);
 		Configuration conf = new Configuration();
 		conf.set("dbDir", dbDir);
 		conf.set("indexDBDir", indexDBDir);
@@ -78,9 +82,9 @@ public class CrawlerDriver
 	 */
 	public static void main(String[] args) throws Exception
 	{
-		if ((args.length < 6) || (args.length > 7))
+		if ((args.length < 7) || (args.length > 8))
 		{
-			System.out.println("Usage: CrawlerDriver <seed URLs path> <db root> <index db root> <interm URLs path> <URL frontier path> <max file size> <out links log path> [num of files]");
+			System.out.println("Usage: CrawlerDriver <seed urls path> <db root> <index db root> <shuffle out path> <crawler out path> <max file size> <out links log path> [num of files]");
 			return;
 		}
 		String seedPath = args[0];
@@ -96,6 +100,8 @@ public class CrawlerDriver
 		indexDBDir = args[2];
 		String frontierPath = args[4];
 		String URLPath = args[3];
+		deleteDirectory(frontierPath);
+		deleteDirectory(URLPath);
 		maxSize = Integer.parseInt(args[5]);
 		linksPath = args[6];
 		int maxFiles = (args.length == 8) ? Integer.parseInt(args[7]) : Integer.MAX_VALUE;
@@ -104,29 +110,12 @@ public class CrawlerDriver
 		// we process workers URLs at a time
 		while (iterations < (maxFiles / workers))
 		{
-			runShuffle(new String[] {frontierPath, URLPath, "" + workers});
-			runCrawler(new String[] {URLPath, frontierPath, "" + workers});
+			runShuffle(new String[] {frontierPath, URLPath});
+			runCrawler(new String[] {URLPath, frontierPath});
 			iterations++;
 		}
 		deleteDirectory(URLPath);
 		deleteDirectory(frontierPath);
-	}
-
-	/**
-	 * Create the specified temporary directory
-	 * @param name - the name of the directory
-	 * @throws Exception if an error occurs
-	 */
-	private static void createDirectory(String path) throws Exception
-	{
-		Path toCreate = new Path(path);
-		Configuration conf = new Configuration();
-		FileSystem fs = FileSystem.get(URI.create(path), conf);
-		if (!fs.exists(toCreate))
-		{
-			fs.mkdirs(toCreate);
-		}
-		fs.close();
 	}
 
 	/**

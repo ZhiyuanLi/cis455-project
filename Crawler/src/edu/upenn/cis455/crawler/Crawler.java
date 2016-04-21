@@ -141,12 +141,13 @@ public class Crawler
 			{
 				contentType = contentType.substring(0, contentType.indexOf(";")).trim();
 			}
-			if (!isValidFile(client, maxSize))
+			if ((currentURL.length() > 200) || !isValidFile(client, maxSize))
 			{
 //				System.out.println(currentURL + " : Invalid File");
 				continue;
 			}
 			String host = client.getHost();
+			// this functionality only affects standalone mode
 			if (lastHost.equals(host) && (pagesSkipped < 10))
 			{
 				frontier.add(currentURL);
@@ -209,7 +210,7 @@ public class Crawler
 			}
 		}
 		System.out.println("Final count: " + count + " pages crawled.");
-		// close();
+		close();
 		// done
 	}
 
@@ -410,6 +411,8 @@ public class Crawler
 		if (doc != null)
 		{
 			System.out.println(currentURL + ": Downloading");
+			String title = Jsoup.parse(body).select("title").first().text();
+			System.out.println("Title: " + title);
 			webDocument = new WebDocument(currentURL);
 			long crawlTime = System.currentTimeMillis();
 			webDocument.setLastCrawlTime(crawlTime);
@@ -418,6 +421,7 @@ public class Crawler
 			WebDocument contents = new WebDocument(currentURL);
 			contents.setDocumentContent(noHTML);
 			contents.setLastCrawlTime(crawlTime);
+			contents.setDocumentTitle(title);
 			indexdb.addDocument(contents);
 			db.addDocument(webDocument);
 			count++;
