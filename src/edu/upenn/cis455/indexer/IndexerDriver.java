@@ -10,6 +10,9 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class IndexerDriver {
 
+	public static final double TF_FACTOR = 0.5;
+	public static final int N = 610000;
+	public static final int OUPUTSIZE = 100000;
 	
 	public static void main(String[] args) throws Exception {
 		Configuration jobConf = new Configuration();
@@ -20,10 +23,15 @@ public class IndexerDriver {
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 		
-		job.setMapperClass(IndexerMapper.class);
+		if (args[2].equals("singleword")) {
+			job.setMapperClass(SinglewordIndexerMapper.class);
+		} else if (args[2].equals("biword")) {
+			job.setMapperClass(BiwordIndexerMapper.class);
+		}
+		
 		job.setReducerClass(IndexerReducer.class);
 	
-		job.setMapOutputKeyClass(InterKey.class);
+		job.setMapOutputKeyClass(Text.class);
 		job.setMapOutputValueClass(InterValue.class);
 		
 		job.setOutputKeyClass(Text.class);

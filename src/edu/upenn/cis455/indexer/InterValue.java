@@ -19,7 +19,6 @@ public class InterValue implements WritableComparable<InterValue> {
 	 * Instance variables for InterValue
 	 */
 	private Text docId;
-	private Text hitsPosition;
 	private DoubleWritable tf;
 
 	/**
@@ -27,15 +26,15 @@ public class InterValue implements WritableComparable<InterValue> {
 	 * @param docId
 	 * @param tf
 	 */
-	public InterValue(String docId, String hitsPosition, double tf) {
-		set(new Text(docId), new Text(hitsPosition), new DoubleWritable(tf));
+	public InterValue(String docId, double tf) {
+		set(new Text(docId), new DoubleWritable(tf));
 	}
 	
 	/**
 	 * Constructor
 	 */
 	public InterValue() {
-		set(new Text(), new Text(), new DoubleWritable());
+		set(new Text(), new DoubleWritable());
 	}
 	
 	/**
@@ -43,8 +42,8 @@ public class InterValue implements WritableComparable<InterValue> {
 	 * @param docId
 	 * @param tf
 	 */
-	public InterValue(Text docId, Text hitsPosition, DoubleWritable tf) {
-		set(docId, hitsPosition, tf);
+	public InterValue(Text docId, DoubleWritable tf) {
+		set(docId, tf);
 	}
 	
 	/**
@@ -52,9 +51,8 @@ public class InterValue implements WritableComparable<InterValue> {
 	 * @param docId
 	 * @param tf
 	 */
-	public void set(Text docId, Text hitsPosition, DoubleWritable tf) {
+	public void set(Text docId, DoubleWritable tf) {
 		this.docId = docId;
-		this.hitsPosition = hitsPosition;
 		this.tf = tf;
 	}
 	
@@ -63,13 +61,6 @@ public class InterValue implements WritableComparable<InterValue> {
 	 */
 	public Text getDocId() {
 		return docId;
-	}
-	
-	/**
-	 * @return the hitsPosition
-	 */
-	public Text getHitsPosition() {
-		return hitsPosition;
 	}
 
 	/**
@@ -82,14 +73,12 @@ public class InterValue implements WritableComparable<InterValue> {
 	@Override
 	public void readFields(DataInput arg0) throws IOException {
 		docId.readFields(arg0);
-		hitsPosition.readFields(arg0);
 		tf.readFields(arg0);
 	}
 
 	@Override
 	public void write(DataOutput arg0) throws IOException {
 		docId.write(arg0);
-		hitsPosition.write(arg0);
 		tf.write(arg0);
 	}
 
