@@ -73,7 +73,7 @@ public class OutValue implements WritableComparable<OutValue> {
 	
 	@Override
 	public String toString() {
-		return this.docId.toString() + ";" + this.idf.toString() + ";" + this.tf_idf.toString();
+		return this.docId.toString() + "\t" + this.idf.toString() + "\t" + this.tf_idf.toString();
 	}
 	
 }
