@@ -5,16 +5,24 @@ import java.util.*;
 import java.net.*;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.conf.*;
-import org.apache.hadoop.io.*;
 
-import org.apache.hadoop.util.*;
-
+/**
+ * wrapper to read files from bdb and write to hdfs
+ * 
+ * @author zhiyuanli
+ *
+ */
 public class HDFSWrapper {
 
 	private Configuration configuration;
 	private FileSystem fs;
 	private DatabaseWrapper db;
 
+	/**
+	 * init
+	 * 
+	 * @throws IOException
+	 */
 	public HDFSWrapper() throws IOException {
 		// TODO Auto-generated constructor stub
 		db = new DatabaseWrapper("indexdatabase");
@@ -23,6 +31,13 @@ public class HDFSWrapper {
 		fs = FileSystem.get(configuration);
 	}
 
+	/**
+	 * read files from hdfs
+	 * 
+	 * @param path
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
 	public void readFromHDFS(String path) throws IOException, URISyntaxException {
 		FileStatus[] status = fs.listStatus(new Path(path));
 		for (int i = 0; i < status.length; i++) {
@@ -36,6 +51,12 @@ public class HDFSWrapper {
 		}
 	}
 
+	/**
+	 * read files from bdb and write to hdfs
+	 * 
+	 * @param path
+	 * @throws IOException
+	 */
 	public void writeToHDFS(String path) throws IOException {
 		Path filenamePath = new Path(path);
 		if (fs.exists(filenamePath)) {
@@ -44,7 +65,8 @@ public class HDFSWrapper {
 		FSDataOutputStream fin = fs.create(filenamePath);
 		List<WebDocument> docs = db.getDocumentList();
 		for (WebDocument doc : docs) {
-			fin.writeBytes(doc.getURL() + "\t" + doc.getDocumentContent());
+			byte[] b = (doc.getURL() + "\t" + doc.getDocumentContent() + "\n").getBytes("utf-8");
+			fin.write(b);
 		}
 		fin.close();
 	}
@@ -52,7 +74,6 @@ public class HDFSWrapper {
 	public static void main(String[] args) throws IOException {
 		HDFSWrapper h = new HDFSWrapper();
 		h.writeToHDFS("hdfs://localhost:9000/user/input/input.txt");
-
 	}
 
 }

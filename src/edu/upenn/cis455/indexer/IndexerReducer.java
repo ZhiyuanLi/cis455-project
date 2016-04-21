@@ -25,7 +25,7 @@ public class IndexerReducer extends Reducer<InterKey, InterValue, Text, Text> {
 					new DoubleWritable(Double.parseDouble(interValue.getTf().toString()))));
 		}
 		// compute idf
-		double idf = Math.log((double) N / count) + 1;
+		double idf = Math.log((double) N / count);
 		// get sort interValues by tf
 		Collections.sort(vTemp);
 		for (int i = 0; i < OUPUTSIZE && i < count; i++) {

@@ -20,10 +20,10 @@ public class Tokenizer {
 	/**
 	 * Constructor of Tokenizer
 	 * 
-	 * @param word
+	 * @param fileContent
 	 */
-	public Tokenizer(String word) {
-		set(word);
+	public Tokenizer(String fileContent) {
+		set(fileContent);
 	}
 
 	/**
@@ -62,5 +62,13 @@ public class Tokenizer {
 	public boolean hasNext() throws IOException {
 		sTokenizer.nextToken();
 		return (sTokenizer.ttype != StreamTokenizer.TT_EOF && sTokenizer.ttype != StreamTokenizer.TT_EOL);
+	}
+	
+	public static void main(String[] args) throws IOException {
+		
+		Tokenizer t = new Tokenizer("z�e	iA��[ۄ'�");
+		while (t.hasNext()) {
+			System.out.println(t.nextToken());
+		}
 	}
 }
