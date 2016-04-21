@@ -14,21 +14,31 @@ public class IndexerMapper extends Mapper<LongWritable, Text, InterKey, InterVal
 	@Override
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		String[] temp = value.toString().split("\t", 2);
+		// System.out.println("split complete");
 		if (temp.length == 2) {
 			// Get input key value pair
 			String inputKey = temp[0];
 			String inputValue = temp[1];
-			// pre-deal with content 
+			// System.out.println("get key value");
+			// System.out.println(inputKey);
+			// pre-deal with content
 			Tokenizer tokenizer = new Tokenizer(inputValue);
 			// Get word frequency map
 			Hashtable<String, Integer> wordFrequencyMap = new Hashtable<String, Integer>();
 			Hashtable<String, ArrayList<Integer>> wordHitsMap = new Hashtable<String, ArrayList<Integer>>();
 			int position = 0;
 			while (tokenizer.hasNext()) {
-				String word = WordProcessor.preProcess(tokenizer.nextToken());
+				// System.out.println("hasnext=true");
+				String k = tokenizer.nextToken();
+				// System.out.println("getnext");
+				// System.out.println("token: " + k);
+				String word = WordProcessor.preProcess(k);
+				// System.out.println("preprocess: "+ word);
 				if (!word.equals("") && !word.matches("\\W+")) {
-					position ++;
+					position++;
+					// System.out.println("hello: " + word.toLowerCase());
 					String pWord = WordProcessor.process(word.toLowerCase());
+					// System.out.println("process: " + pWord);
 					if (pWord != null) {
 						Integer frequecy = 1;
 						ArrayList<Integer> hits = new ArrayList<Integer>();
@@ -40,8 +50,10 @@ public class IndexerMapper extends Mapper<LongWritable, Text, InterKey, InterVal
 						wordFrequencyMap.put(pWord, frequecy);
 						wordHitsMap.put(pWord, hits);
 					}
+					// System.out.println("endofwhile");
 				}
 			}
+			// System.out.println("tokenizer finished");
 			// Do emit if word frequency is not empty
 			if (!wordFrequencyMap.isEmpty()) {
 				// Get max frequency
@@ -49,8 +61,8 @@ public class IndexerMapper extends Mapper<LongWritable, Text, InterKey, InterVal
 				// Compute the TF score and emit
 				for (String word : wordFrequencyMap.keySet()) {
 					// get tf score of that word
-					double tf = TF_FACTOR + (1 - TF_FACTOR) * ((double)wordFrequencyMap.get(word) / maxFrequency);
-					//					System.out.println(word + ":::" + inputKey + "," + tf);
+					double tf = TF_FACTOR + (1 - TF_FACTOR) * ((double) wordFrequencyMap.get(word) / maxFrequency);
+					// System.out.println(word + ":::" + inputKey + "," + tf);
 					// get hits position of that word
 					StringBuffer hitsBuffer = new StringBuffer("[");
 					ArrayList<Integer> hits = wordHitsMap.get(word);
@@ -62,6 +74,8 @@ public class IndexerMapper extends Mapper<LongWritable, Text, InterKey, InterVal
 						}
 					}
 					hitsBuffer.append("]");
+					// System.out.println("current url is : " + inputKey + ":: "
+					// + word);
 					context.write(new InterKey(word), new InterValue(inputKey, hitsBuffer.toString(), tf));
 				}
 			}

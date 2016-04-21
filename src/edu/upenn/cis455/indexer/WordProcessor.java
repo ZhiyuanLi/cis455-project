@@ -1,10 +1,8 @@
 package edu.upenn.cis455.indexer;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * This class is used to pre-process each word
+ * 
  * @author woody
  *
  */
@@ -15,21 +13,52 @@ public class WordProcessor {
 	 */
 	private static StopWords STOPWORDS = new StopWords();
 	private static Stemmer STEMMER = new Stemmer();
+	private static String pattern = "^[a-zA-Z0-9_']*$";
 
 	/**
-	 * Pre-process word, get rid of non-word character at the end of the word, such as '?' '.' ','
+	 * Pre-process word, get rid of non-english word, and just get the word
+	 * befor "'"
+	 * 
 	 * @param word
 	 * @return a string
 	 */
 	public static String preProcess(String word) {
-		Pattern p = Pattern.compile("(\\p{L}+(?:-?\\p{L}+)*)+\\W*");
-		Matcher m = p.matcher(word);
-		if (m.matches()) { 
-			word = m.group(1);
+		if (!word.matches(pattern)) {
+			return "";
+		}
+		if (word.contains("'")) {
+			word = word.substring(0, word.indexOf("'"));
 		}
 		return word;
+		// if (word.isEmpty()) {
+		// return word;
+		// }
+		// if (word.length() == 1) {
+		// if (checkLetter(word.charAt(0))) {
+		// return word;
+		// } else {
+		// return "";
+		// }
+		// }
+		// char first = word.charAt(0);
+		// char last = word.charAt(word.length() - 1);
+		// boolean isFirstValid = checkLetter(first);
+		// boolean isLastValid = checkLetter(last);
+		// if (isFirstValid && isLastValid) {
+		// return word;
+		// } else if (isFirstValid && !isLastValid) {
+		// return preProcess(word.substring(0, word.length() - 1));
+		// } else if (!isFirstValid && isLastValid) {
+		// return preProcess(word.substring(1));
+		// } else {
+		// return preProcess(word.substring(1, word.length() - 1));
+		// }
 	}
-	
+
+	// private static boolean checkLetter(char c) {
+	// return Character.isLetter(c) || Character.isDigit(c);
+	// }
+
 	/**
 	 * word processor, get rid of stopwords, stemmer word
 	 * 
@@ -45,5 +74,9 @@ public class WordProcessor {
 		} else {
 			return null;
 		}
+	}
+
+	public static void main(String[] args) {
+		System.out.println(preProcess("whyhello'sdsd"));
 	}
 }
