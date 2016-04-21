@@ -543,6 +543,9 @@ public class StopWords {
 		stopwords.add("yourselves");
 		stopwords.add("z");
 		stopwords.add("zero");
+		stopwords.add("-");
+		stopwords.add("'");
+		stopwords.add("_");
 	}
 
 	/**
