@@ -13,7 +13,7 @@ public class WordProcessor {
 	 */
 	private static StopWords STOPWORDS = new StopWords();
 	private static Stemmer STEMMER = new Stemmer();
-	private static String pattern = "^[a-zA-Z0-9_']*$";
+	private static String pattern = "^[a-zA-Z0-9_-']*$";
 
 	/**
 	 * Pre-process word, get rid of non-english word, and just get the word
