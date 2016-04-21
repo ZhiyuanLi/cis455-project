@@ -255,6 +255,7 @@ public class StopWords {
 		stopwords.add("less");
 		stopwords.add("lest");
 		stopwords.add("let");
+		stopwords.add("ll"); 	// get rid of something like I'll
 		stopwords.add("like");
 		stopwords.add("liked");
 		stopwords.add("likely");
@@ -487,6 +488,7 @@ public class StopWords {
 		stopwords.add("v");
 		stopwords.add("value");
 		stopwords.add("various");
+		stopwords.add("ve");  	// get rid of something like I've 
 		stopwords.add("very");
 		stopwords.add("via");
 		stopwords.add("viz");
@@ -543,9 +545,6 @@ public class StopWords {
 		stopwords.add("yourselves");
 		stopwords.add("z");
 		stopwords.add("zero");
-		stopwords.add("-");
-		stopwords.add("'");
-		stopwords.add("_");
 	}
 
 	/**

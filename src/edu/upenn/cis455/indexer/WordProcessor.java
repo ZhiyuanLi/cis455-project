@@ -1,7 +1,7 @@
 package edu.upenn.cis455.indexer;
 
 /**
- * This class is used to pre-process each word
+ * This class offers method to process with words
  * 
  * @author woody
  *
@@ -11,51 +11,22 @@ public class WordProcessor {
 	/**
 	 * Instance of WordProcessor
 	 */
+	private static String pattern = "^[a-zA-Z0-9_]*$";
 	private static StopWords STOPWORDS = new StopWords();
 	private static Stemmer STEMMER = new Stemmer();
-	private static String pattern = "^[a-zA-Z0-9_'-]*$";
 
 	/**
-	 * Pre-process word, get rid of non-english word, and just get the word
-	 * befor "'"
+	 * Pre-process word, get rid of non-english word, get rid of word that
+	 * appears in stop list
 	 * 
 	 * @param word
 	 * @return a string
 	 */
 	public static String preProcess(String word) {
-		if (!word.matches(pattern)) {
+		if (!word.matches(pattern) || STOPWORDS.isStopWord(word)) {
 			return "";
 		}
-		if (word.contains("'")) {
-			word = word.substring(0, word.indexOf("'"));
-		}
-		if (word.isEmpty()) {
-			return word;
-		}
-		if (word.length() == 1) {
-			if (checkLetter(word.charAt(0))) {
-				return word;
-			} else {
-				return "";
-			}
-		}
-		char first = word.charAt(0);
-		char last = word.charAt(word.length() - 1);
-		boolean isFirstValid = checkLetter(first);
-		boolean isLastValid = checkLetter(last);
-		if (isFirstValid && isLastValid) {
-			return word;
-		} else if (isFirstValid && !isLastValid) {
-			return preProcess(word.substring(0, word.length() - 1));
-		} else if (!isFirstValid && isLastValid) {
-			return preProcess(word.substring(1));
-		} else {
-			return preProcess(word.substring(1, word.length() - 1));
-		}
-	}
-
-	private static boolean checkLetter(char c) {
-		return Character.isLetter(c) || Character.isDigit(c);
+		return word;
 	}
 
 	/**
@@ -75,7 +46,21 @@ public class WordProcessor {
 		}
 	}
 
+	/**
+	 * concat two words with special connectors
+	 * 
+	 * @param word1
+	 *            to be connect
+	 * @param word2
+	 *            to be connect
+	 * @return a connected word
+	 */
+	public static String concat(String word1, String word2) {
+		return word1.concat("=&=" + word2);
+	}
+
 	public static void main(String[] args) {
-		System.out.println(preProcess("whyhello'sdsd"));
+		System.out.println(preProcess("可不是呢"));
+		System.out.println(concat("ny", "times"));
 	}
 }
