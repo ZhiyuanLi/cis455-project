@@ -13,7 +13,7 @@ public class WordProcessor {
 	 */
 	private static StopWords STOPWORDS = new StopWords();
 	private static Stemmer STEMMER = new Stemmer();
-	private static String pattern = "^[a-zA-Z0-9_-']*$";
+	private static String pattern = "^[a-zA-Z0-9_'-]*$";
 
 	/**
 	 * Pre-process word, get rid of non-english word, and just get the word
@@ -29,35 +29,34 @@ public class WordProcessor {
 		if (word.contains("'")) {
 			word = word.substring(0, word.indexOf("'"));
 		}
-		return word;
-		// if (word.isEmpty()) {
-		// return word;
-		// }
-		// if (word.length() == 1) {
-		// if (checkLetter(word.charAt(0))) {
-		// return word;
-		// } else {
-		// return "";
-		// }
-		// }
-		// char first = word.charAt(0);
-		// char last = word.charAt(word.length() - 1);
-		// boolean isFirstValid = checkLetter(first);
-		// boolean isLastValid = checkLetter(last);
-		// if (isFirstValid && isLastValid) {
-		// return word;
-		// } else if (isFirstValid && !isLastValid) {
-		// return preProcess(word.substring(0, word.length() - 1));
-		// } else if (!isFirstValid && isLastValid) {
-		// return preProcess(word.substring(1));
-		// } else {
-		// return preProcess(word.substring(1, word.length() - 1));
-		// }
+		if (word.isEmpty()) {
+			return word;
+		}
+		if (word.length() == 1) {
+			if (checkLetter(word.charAt(0))) {
+				return word;
+			} else {
+				return "";
+			}
+		}
+		char first = word.charAt(0);
+		char last = word.charAt(word.length() - 1);
+		boolean isFirstValid = checkLetter(first);
+		boolean isLastValid = checkLetter(last);
+		if (isFirstValid && isLastValid) {
+			return word;
+		} else if (isFirstValid && !isLastValid) {
+			return preProcess(word.substring(0, word.length() - 1));
+		} else if (!isFirstValid && isLastValid) {
+			return preProcess(word.substring(1));
+		} else {
+			return preProcess(word.substring(1, word.length() - 1));
+		}
 	}
 
-	// private static boolean checkLetter(char c) {
-	// return Character.isLetter(c) || Character.isDigit(c);
-	// }
+	private static boolean checkLetter(char c) {
+		return Character.isLetter(c) || Character.isDigit(c);
+	}
 
 	/**
 	 * word processor, get rid of stopwords, stemmer word
