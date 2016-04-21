@@ -34,7 +34,7 @@ public class IndexerMapper extends Mapper<LongWritable, Text, InterKey, InterVal
 				// System.out.println("token: " + k);
 				String word = WordProcessor.preProcess(k);
 				// System.out.println("preprocess: "+ word);
-				if (!word.equals("") && !word.matches("\\W+")) {
+				if (!word.equals("")) {
 					position++;
 					// System.out.println("hello: " + word.toLowerCase());
 					String pWord = WordProcessor.process(word.toLowerCase());

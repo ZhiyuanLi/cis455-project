@@ -259,7 +259,6 @@ public class StopWords {
 		stopwords.add("liked");
 		stopwords.add("likely");
 		stopwords.add("little");
-		stopwords.add("ll"); // added to avoid words like you'll,I'll etc.
 		stopwords.add("look");
 		stopwords.add("looking");
 		stopwords.add("looks");
@@ -488,7 +487,6 @@ public class StopWords {
 		stopwords.add("v");
 		stopwords.add("value");
 		stopwords.add("various");
-		stopwords.add("ve"); // added to avoid words like I've,you've etc.
 		stopwords.add("very");
 		stopwords.add("via");
 		stopwords.add("viz");
