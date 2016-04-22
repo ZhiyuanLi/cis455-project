@@ -24,9 +24,9 @@ public class IndexerDriver {
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 		
 		if (args[2].equals("singleword")) {
-			job.setMapperClass(SinglewordIndexerMapper.class);
+			job.setMapperClass(SingleWordIndexerMapper.class);
 		} else if (args[2].equals("biword")) {
-			job.setMapperClass(BiwordIndexerMapper.class);
+			job.setMapperClass(BiWordIndexerMapper.class);
 		}
 		
 		job.setReducerClass(IndexerReducer.class);

@@ -7,7 +7,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class SinglewordIndexerMapper extends Mapper<LongWritable, Text, Text, InterValue> {
+public class SingleWordIndexerMapper extends Mapper<LongWritable, Text, Text, InterValue> {
 	
 	@Override
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
