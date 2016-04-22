@@ -1,3 +1,5 @@
+// User entity for a BerkeleyDB
+// Author: Wei Song
 package edu.upenn.cis455.storage;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +16,6 @@ public class User
 	private List<String> channelNames = new ArrayList<String>();
 	@PrimaryKey
 	private String userName;
-
 	/**
 	 * Create a new user
 	 */

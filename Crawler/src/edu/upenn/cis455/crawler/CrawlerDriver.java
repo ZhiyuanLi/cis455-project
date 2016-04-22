@@ -20,6 +20,7 @@ public class CrawlerDriver
 	private static String indexDBDir = "";
 	private static int maxSize = 0;
 	private static String linksPath = "";
+	private static String imagesDBDir = "";
 	/**
 	 * Launch the shuffle job
 	 * @param args - <URL dir> <output dir>
@@ -28,7 +29,6 @@ public class CrawlerDriver
 	 */
 	public static boolean runShuffle(String[] args) throws Exception
 	{
-		System.out.println("Frontier dir = " + args[0] + " Output dir = " + args[1]);
 		deleteDirectory(args[1]);
 		Job job = new Job();
 		job.setJarByClass(CrawlerDriver.class);
@@ -41,7 +41,7 @@ public class CrawlerDriver
 		job.setMapperClass(ShuffleMapper.class);
 		job.setReducerClass(ShuffleReducer.class);
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
-		return job.waitForCompletion(true);
+		return job.waitForCompletion(false);
 	}
 
 	/**
@@ -52,11 +52,11 @@ public class CrawlerDriver
 	 */
 	public static boolean runCrawler(String[] args) throws Exception
 	{
-		System.out.println("Input URL dir = " + args[0] + " Output URL dir = " + args[1]);
 		deleteDirectory(args[1]);
 		Configuration conf = new Configuration();
 		conf.set("dbDir", dbDir);
 		conf.set("indexDBDir", indexDBDir);
+		conf.set("imagesDBDir", imagesDBDir);
 		conf.set("frontierPath", args[1]);
 		conf.set("URLPath", args[0]);
 		conf.set("maxSize", "" + maxSize);
@@ -72,7 +72,7 @@ public class CrawlerDriver
 		job.setMapperClass(CrawlerMapper.class);
 		job.setReducerClass(CrawlerReducer.class);
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
-		return job.waitForCompletion(true);
+		return job.waitForCompletion(false);
 	}
 
 	/**
@@ -82,9 +82,9 @@ public class CrawlerDriver
 	 */
 	public static void main(String[] args) throws Exception
 	{
-		if ((args.length < 7) || (args.length > 8))
+		if ((args.length < 8) || (args.length > 9))
 		{
-			System.out.println("Usage: CrawlerDriver <seed urls path> <db root> <index db root> <shuffle out path> <crawler out path> <max file size> <out links log path> [num of files]");
+			System.out.println("Usage: CrawlerDriver <seed urls path> <db root> <index db root> <image db root> <shuffle out path> <crawler out path> <max file size> <out links log path> [num of files]");
 			return;
 		}
 		String seedPath = args[0];
@@ -94,18 +94,23 @@ public class CrawlerDriver
 		{
 			reader.readLine();
 			workers++;
+			if (workers == 20)
+			{
+				break;
+			}
 		}
 		reader.close();
 		dbDir = args[1];
 		indexDBDir = args[2];
-		String frontierPath = args[4];
-		String URLPath = args[3];
+		imagesDBDir = args[3];
+		String URLPath = args[4];
+		String frontierPath = args[5];
 		deleteDirectory(frontierPath);
 		deleteDirectory(URLPath);
-		maxSize = Integer.parseInt(args[5]);
-		linksPath = args[6];
-		int maxFiles = (args.length == 8) ? Integer.parseInt(args[7]) : Integer.MAX_VALUE;
-		runCrawler(new String[] {seedPath, frontierPath, "" + workers});
+		maxSize = Integer.parseInt(args[6]);
+		linksPath = args[7];
+		int maxFiles = (args.length == 9) ? Integer.parseInt(args[8]) : Integer.MAX_VALUE;
+		runCrawler(new String[] {seedPath, frontierPath});
 		int iterations = 1;
 		// we process workers URLs at a time
 		while (iterations < (maxFiles / workers))

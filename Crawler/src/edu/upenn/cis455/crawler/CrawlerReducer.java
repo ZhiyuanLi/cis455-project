@@ -16,6 +16,7 @@ public class CrawlerReducer extends Reducer<Text, Text, Text, Text>
 	 * @throws IOException if a write error occurs
 	 * @throws InterrupedException if the job is interrupted
 	 */
+	@Override
 	public void reduce(Text key, Iterable<Text> vals, Context context) throws IOException, InterruptedException
 	{
 		String dbDir = context.getConfiguration().get("dbDir");
@@ -24,7 +25,9 @@ public class CrawlerReducer extends Reducer<Text, Text, Text, Text>
 		String URLPath = context.getConfiguration().get("URLPath");
 		int maxSize = Integer.parseInt(context.getConfiguration().get("maxSize"));
 		String linksPath = context.getConfiguration().get("linksPath");
-		Crawler crawler = new Crawler(dbDir, indexDBDir, URLPath, linksPath, maxSize, 1);
+		String imgsDBDir = context.getConfiguration().get("imgsDBDir");
+		System.out.println("URLPath = " + URLPath);
+		Crawler crawler = new Crawler(dbDir, indexDBDir, imgsDBDir, URLPath, linksPath, maxSize, 1);
 		crawler.startCrawling();
 		Queue<String> frontier = crawler.getFrontier();
 		for (String s: frontier)

@@ -1,3 +1,5 @@
+// Crawler for CIS 555 Final Project
+// Authors: Wei Song and Chrisopher Besser
 package edu.upenn.cis455.crawler;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,10 +24,6 @@ import java.io.FileReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-/**
- * Crawler for CIS 555 Final Project
- * @author weisong, cbesser
- */
 public class Crawler
 {
 	private String dbDirectory = "";
@@ -36,11 +34,13 @@ public class Crawler
 	private PrintWriter writer;
 	// header response
 	private String contentType;
+	private String imgsDBDir = "";
 	private int contentLen;
 	private long lastModified;
 	public int count;
 	private DatabaseWrapper db;
 	private IndexWrapper indexdb;
+	private ImagesWrapper imagesdb;
 	private WebDocument webDocument;
 	// a small sample of common English words for language detection.
 	private String[] english = {"that", "have", "with", "this", "from", "they", "would", "the", "build", "target", "hi", "that", "me", "my", "him", "her", "we", "us"};
@@ -56,24 +56,27 @@ public class Crawler
 	private URLFrontier frontier;
 	private HashSet<String> uniqueContents = new HashSet<String>();
 	public boolean isStop = false;
-
+	private HashSet<String> urlsWritten = new HashSet<String>();
 	/**
 	 * constructor.
 	 * @param dbDirectory - the path to the PageRank directory
 	 * @param indexerDBDir - the directory of the indexer database directory
+	 * @param imgsDBDir - the directory of the indexer's images BerkeleyDB
 	 * @param URLFile - the path to the disk backed URL frontier (or seed file)
 	 * @param linksPath - the path to the links.txt file
 	 * @param maxSize  - the maximum file size
 	 * @param maxNum - the maximum number of files to crawl
 	 */
-	public Crawler(String dbDirectory, String indexerDBDir, String URLFile, String linksPath, int maxSize, int maxNum)
+	public Crawler(String dbDirectory, String indexerDBDir, String imgsDBDir, String URLFile, String linksPath, int maxSize, int maxNum)
 	{
 		this.dbDirectory = dbDirectory;
 		this.maxSize = maxSize;
 		this.maxNum = maxNum;
 		this.indexerDBDir = indexerDBDir;
+		this.imgsDBDir = imgsDBDir;
 		db = new DatabaseWrapper(this.dbDirectory);
 		indexdb = new IndexWrapper(this.indexerDBDir);
+		imagesdb = new ImagesWrapper(this.imgsDBDir);
 		this.URLFile = URLFile;
 		frontier = new URLFrontier();
 		try
@@ -141,13 +144,13 @@ public class Crawler
 			{
 				contentType = contentType.substring(0, contentType.indexOf(";")).trim();
 			}
+			// Partly guard against spider traps not flagged in robots.txt by limiting URL length to 200 characters
 			if ((currentURL.length() > 200) || !isValidFile(client, maxSize))
 			{
-//				System.out.println(currentURL + " : Invalid File");
 				continue;
 			}
 			String host = client.getHost();
-			// this functionality only affects standalone mode
+			// Only affects standalone mode, prevents the same host from dominating the crawled pages
 			if (lastHost.equals(host) && (pagesSkipped < 10))
 			{
 				frontier.add(currentURL);
@@ -210,6 +213,19 @@ public class Crawler
 			}
 		}
 		System.out.println("Final count: " + count + " pages crawled.");
+		/*for (WebDocument d: imagesdb.getDocumentList())
+		{
+			System.out.println("ImageURL: " + d.getDocumentContent());
+		}
+		for (WebDocument d: db.getDocumentList())
+		{
+			System.out.println("Body: " + d.getDocumentContent());
+		}*/
+		for (WebDocument d: indexdb.getDocumentList())
+		{
+			System.out.println("Title: " + d.getDocumentTitle());
+			System.out.println("Content: " + d.getDocumentContent());
+		}
 		close();
 		// done
 	}
@@ -348,7 +364,7 @@ public class Crawler
 	 * @return Returns true if the crawler is even allowed access to the page
 	 */
 	private boolean checkEquals(String currentURL, String allowedURL)
-		{
+	{
 		if (currentURL.startsWith("http"))
 		{
 			currentURL = currentURL.split("//")[1].trim();
@@ -394,7 +410,7 @@ public class Crawler
 				return;
 			}
 			String host = client.getHost();
-			// xml may not contain much english, so we assume it always is
+			// I assume XML is always English. I crudely check that HTML is English
 			if (!detectEnglish(body))
 			{
 				return;
@@ -411,12 +427,19 @@ public class Crawler
 		if (doc != null)
 		{
 			System.out.println(currentURL + ": Downloading");
-			String title = Jsoup.parse(body).select("title").first().text();
-			System.out.println("Title: " + title);
+			String title = client.getHost();
+			try
+			{
+				title = Jsoup.parse(body).select("title").first().text();
+			}
+			catch (NullPointerException e)
+			{
+			}
 			webDocument = new WebDocument(currentURL);
 			long crawlTime = System.currentTimeMillis();
 			webDocument.setLastCrawlTime(crawlTime);
 			webDocument.setDocumentContent(body);
+			webDocument.setDocumentTitle(title);
 			String noHTML = Jsoup.parse(body).text().toLowerCase().trim();
 			WebDocument contents = new WebDocument(currentURL);
 			contents.setDocumentContent(noHTML);
@@ -424,6 +447,7 @@ public class Crawler
 			contents.setDocumentTitle(title);
 			indexdb.addDocument(contents);
 			db.addDocument(webDocument);
+			extractImageURLs(currentURL, doc, client.getHost(), crawlTime, title);
 			count++;
 		}
 		else
@@ -453,7 +477,7 @@ public class Crawler
 	 * check if response status, content type, and content length is valid
 	 * @param client - the Crawler client
 	 * @param maxSize - the maximum size of file to crawl
-	 * @return Returns true if the file is OK to download (barring robot specifications)
+	 * @return Returns true if the file is OK to download (provided the robot does not block the crawler)
 	 */
 	private boolean isValidFile(HttpCrawlerClient client, int maxSize)
 	{
@@ -522,7 +546,49 @@ public class Crawler
 				}
 			}
 		}
-		writeLinks(line);
+		if (!urlsWritten.contains(url) && (line.indexOf(' ') > 0))
+		{
+			writeLinks(line.trim());
+			urlsWritten.add(url);
+		}
+	}
+
+	/**
+	 * Extract image URLs
+	 * @param url - the URL of the HTML/XML file
+	 * @param doc - the document tree of the file
+	 * @param host - the hostname
+	 * @param crawlTime - the time the page was crawled
+	 * @param title - the title of the page
+	 */
+	private void extractImageURLs(String url, Document doc, String host, long crawlTime, String title)
+	{
+		NodeList nl = doc.getElementsByTagName("img");
+		String images = url + "\t";
+		boolean write = false;
+		for (int i = 0; i < nl.getLength(); i++)
+		{
+			Element element = (Element) nl.item(i);
+			Node linkNode = element.getAttributeNode("src");
+			if (linkNode != null)
+			{
+				// Only output to DB if there is at least 1 image linked
+				write = true;
+				String extractedLink = linkNode.getNodeValue().trim();
+				if (extractedLink.length() > 0)
+				{
+					images = images + " " + host + extractedLink;
+				}
+			}
+		}
+		if (write)
+		{
+			WebDocument document = new WebDocument(url);
+			document.setDocumentContent(images.trim());
+			document.setDocumentTitle(title);
+			document.setLastCrawlTime(crawlTime);
+			imagesdb.addDocument(document);
+		}
 	}
 
 	/**
@@ -614,27 +680,29 @@ public class Crawler
 	{
 		db.close();
 		indexdb.close();
+		imagesdb.close();
 	}
 
 	/**
 	 * main method to start
-	 * @param args
+	 * @param args - the command line arguments
 	 */
 	public static void main(String args[])
 	{
-		if ((args.length < 5) || (args.length > 6))
+		if ((args.length < 6) || (args.length > 7))
 		{
-			System.out.println("Should have at least five arguments: <db root> <index db root> <url frontier path>" +
+			System.out.println("Should have at least five arguments: <db root> <index db root> <images DB root> <url frontier path>" +
 					   " <file max size> <out links log path> [num of files]");
 			return;
 		}
 		String dbDirectory = args[0];
 		String indexDBDir = args[1];
-		String URLPath = args[2];
-		String linksPath = args[4];
-		int maxSize = Integer.parseInt(args[3]);
-		int maxNum = (args.length == 6) ? maxNum = Integer.parseInt(args[5]) : Integer.MAX_VALUE;
-		Crawler crawler = new Crawler(dbDirectory, indexDBDir, URLPath, linksPath, maxSize, maxNum);
+		String URLPath = args[3];
+		String linksPath = args[5];
+		String imgsDBDir = args[2];
+		int maxSize = Integer.parseInt(args[4]);
+		int maxNum = (args.length == 7) ? maxNum = Integer.parseInt(args[6]) : Integer.MAX_VALUE;
+		Crawler crawler = new Crawler(dbDirectory, indexDBDir, imgsDBDir, URLPath, linksPath, maxSize, maxNum);
 		crawler.startCrawling();
 	}
 }

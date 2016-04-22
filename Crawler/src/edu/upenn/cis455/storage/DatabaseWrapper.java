@@ -1,3 +1,5 @@
+// BerkeleyDB wrapper for the PageRank HTML body DB
+// Author: Wei Song
 package edu.upenn.cis455.storage;
 import java.io.File;
 import java.util.ArrayList;
@@ -19,7 +21,6 @@ public class DatabaseWrapper
 	private static PrimaryIndex<String, WebDocument> webDocIndex;
 	private static PrimaryIndex<String, Channel> channelIndex;
 	private static File datebaseDir;
-
 	/**
 	 * Construct a new Database wrapper
 	 */

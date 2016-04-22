@@ -1,3 +1,5 @@
+// Channel Entity for BerkeleyDB
+// Author: Wei Song
 package edu.upenn.cis455.storage;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,6 @@ public class Channel
 	// store XML file urls that match one of the XPath expressions
 	private List<String> matchedURLs = new ArrayList<String>();
 	private String userName;
-
 	/**
 	 * Create a new channel
 	 */

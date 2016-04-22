@@ -1,3 +1,5 @@
+// BerkeleyDB wrapper for the indexer HTML body DB
+// Author: Christopher Besser
 package edu.upenn.cis455.storage;
 import java.io.File;
 import java.util.ArrayList;
@@ -17,7 +19,6 @@ public class IndexWrapper
 	private static EntityStore store;
 	private static PrimaryIndex<String, WebDocument> webDocIndex;
 	private static File datebaseDir;
-
 	/**
 	 * Construct a new Database wrapper
 	 */

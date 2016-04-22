@@ -14,6 +14,7 @@ public class ShuffleReducer extends Reducer<Text, Text, Text, Text>
 	 * @throws IOException if a read/write error occurs
 	 * @throws InterruptedException if a write is interrupted
 	 */
+	@Override
 	public void reduce(Text url, Iterable<Text> count, Context context) throws IOException, InterruptedException
 	{
 		context.write(new Text(url), new Text(""));

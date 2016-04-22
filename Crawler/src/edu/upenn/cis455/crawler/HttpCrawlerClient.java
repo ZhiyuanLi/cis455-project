@@ -53,7 +53,7 @@ public class HttpCrawlerClient
 		}
 		catch (MalformedURLException e)
 		{
-			e.printStackTrace();
+			return;
 		}
 		host = urlObject.getHost();
 		path = urlObject.getPath();
