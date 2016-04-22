@@ -9,7 +9,7 @@ import java.util.Hashtable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class BiwordIndexerMapper extends Mapper<LongWritable, Text, Text, InterValue> {
+public class BiWordIndexerMapper extends Mapper<LongWritable, Text, Text, InterValue> {
 
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		String[] temp = value.toString().split("\t", 2);

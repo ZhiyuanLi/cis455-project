@@ -2,11 +2,12 @@ package edu.upenn.cis455.storage;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.PropertiesCredentials;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodb.datamodeling.DynamoDBMapper;
 
+@SuppressWarnings("deprecation")
 public class DynamoDBWrapper {
+
 	static AmazonDynamoDBClient dynamoDB;
 
 	private static void init() throws Exception {
@@ -17,7 +18,6 @@ public class DynamoDBWrapper {
 		dynamoDB.setEndpoint("dynamodb.us-west-2.amazonaws.com");
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void main(String[] args) throws Exception {
 		init();
 
