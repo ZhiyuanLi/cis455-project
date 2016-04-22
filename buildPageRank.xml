@@ -1,0 +1,81 @@
+<project name="555SearchEngine" basedir="." default="main">
+
+    <property name="src.dir"     value="src"/>
+    <property name="build.dir"   value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir"     value="${build.dir}/jar"/>
+	 <property name="lib.dir"     value="lib"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+    
+    <property name="main-class-step1"  value="pageRank.ParseDriver"/>
+    <property name="main-class-step2"  value="pageRank.ReverseDriver"/>
+    <property name="main-class-step3"  value="pageRank.SumDriver"/>
+    <property name="main-class-all"  value="pageRank.PageRankDriver"/>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+    </target>
+
+
+    <target name="jar-step1" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/step1.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class-step1}"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="jar-step2" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/step2.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class-step2}"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="jar-step3" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/step3.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class-step3}"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="jar-all" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/all.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class-all}"/>
+            </manifest>
+        </jar>
+    </target>
+<!--  
+	run shell script
+    <target name="run" depends="jar">
+        <exec executable="sh">
+	    <arg value="runner-wordcount.sh"/>
+  		</exec>
+    </target>
+-->
+	
+	<target name="run" depends="jar-step1,jar-step2,jar-step3,jar-all">
+        <exec executable="echo">
+	    <arg value="All Set. Ready to run."/>
+	    </exec>
+    </target>
+    
+    <target name="clean-build" depends="clean,jar-step1,jar-step2,jar-step3,jar-all"/>
+    <target name="main" depends="clean,run"/>
+
+</project>
