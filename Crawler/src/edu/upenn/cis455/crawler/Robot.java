@@ -1,12 +1,10 @@
+// robot wrapper that contains robots.txt information
+// @author Wei Song
 package edu.upenn.cis455.crawler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-/**
- * robot wrapper that contains robots.txt information
- * @author weisong
- */
 public class Robot
 {
 	private List<String> agents;

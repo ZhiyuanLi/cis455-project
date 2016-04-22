@@ -1,3 +1,5 @@
+// HTTP Crawler Client for user to fetch document using socket and parse content as Document using jtidy parser
+// @author Wei Song and Christopher Besser
 package edu.upenn.cis455.crawler;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -18,10 +20,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.tidy.Tidy;
-/**
- * HTTP Crawler Client for user to fetch document using socket and parse content as Document using tidy parser
- * @author weisong
- */
+import javax.net.ssl.SSLSocketFactory;
 public class HttpCrawlerClient
 {
 	// socket argument
@@ -36,13 +35,14 @@ public class HttpCrawlerClient
 	private int code = -1;
 	private String body = "";
 	private Robot robot = null;
-
+	private boolean secure;
 	/**
 	 * parse url and seperate host, path and portNum, create urlObject
 	 * @param url - the URL to parse
 	 */
 	public void parseURL(String url)
 	{
+		secure = url.startsWith("https");
 		if (!url.startsWith("http"))
 		{
 			url = "http://" + url;
@@ -60,7 +60,6 @@ public class HttpCrawlerClient
 		portNum = (urlObject.getPort() == -1) ? 80 : urlObject.getPort();
 	}
 
-	// ***** send GET and HEAD ********
 	/**
 	 * send HEAD request and parse HEAD response to check if file is valid
 	 */
@@ -68,7 +67,16 @@ public class HttpCrawlerClient
 	{
 		try
 		{
-			Socket socket = new Socket(host, portNum);
+			Socket socket;
+			if (secure)
+			{
+				SSLSocketFactory fact = (SSLSocketFactory) SSLSocketFactory.getDefault();
+				socket = fact.createSocket(host, portNum);
+			}
+			else
+			{
+				socket = new Socket(host, portNum);
+			}
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			out.write("HEAD " + path + " HTTP/1.1\r\n");
 			out.write("Host: " + host + ":" + portNum + "\r\n");
@@ -79,7 +87,6 @@ public class HttpCrawlerClient
 			InputStreamReader inputReader = new InputStreamReader(socket.getInputStream());
 			BufferedReader bufferReader = new BufferedReader(inputReader);
 			String nextLine = bufferReader.readLine();
-			// System.out.println("Head first line is "+ nextLine);
 			// check code
 			code = Integer.parseInt(nextLine.split(" ")[1]);
 			// if connection not success, return
@@ -107,11 +114,7 @@ public class HttpCrawlerClient
 			}
 			socket.close();
 		}
-		catch (IOException e)
-		{
-			code = 404;
-		}
-		catch (NumberFormatException e1)
+		catch (IOException | NumberFormatException e)
 		{
 			code = 404;
 		}
@@ -124,7 +127,16 @@ public class HttpCrawlerClient
 	{
 		try
 		{
-			Socket socket = new Socket(host, portNum);
+			Socket socket;
+			if (secure)
+			{
+				SSLSocketFactory fact = (SSLSocketFactory) SSLSocketFactory.getDefault();
+				socket = fact.createSocket(host, portNum);
+			}
+			else
+			{
+				socket = new Socket(host, portNum);
+			}
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			out.write("GET " + path + " HTTP/1.1\r\n");
 			out.write("Host: " + host + ":" + portNum + "\r\n");
@@ -185,11 +197,11 @@ public class HttpCrawlerClient
 	 * @param content
 	 * @return
 	 */
-	public Document generateHTMLDom(String content) {
-		// System.out.println("HTML Dom");
-		//TODO
+	public Document generateHTMLDom(String content)
+	{
 		Document d = null;
-		try {
+		try
+		{
 			Tidy tidy = new Tidy();
 			// HTML true
 			tidy.setMakeClean(true);
@@ -200,73 +212,84 @@ public class HttpCrawlerClient
 			tidy.setEncloseText(true);
 			tidy.setShowWarnings(false);
 			tidy.setQuiet(true);
-//			ByteArrayInputStream in = new ByteArrayInputStream(content.getBytes("UTF-8"));
 			ByteArrayInputStream in = new ByteArrayInputStream(content.getBytes());
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-//			tidy.parseDOM(in, out);
-			d = tidy.parseDOM(in,null);
+			d = tidy.parseDOM(in, null);
 			return d;
-
-
-//			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-//			DocumentBuilder db = dbf.newDocumentBuilder();
-//			d = db.parse(new ByteArrayInputStream(out.toString("UTF-8").getBytes()));
-		} catch (Exception e) {
-			System.out.println("Parse HTML Fail");
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
 		}
 		return d;
 	}
 
 	/**
-	 * From MS1: Generate document from url xml file
-	 * 
-	 * @param urlString
-	 * @return
+	 * Generate document from url xml file
+	 * @param urlString - The XML URL
+	 * @return Returns the document
 	 */
-	public Document generateXMLDom(String content) {
+	public Document generateXMLDom(String content)
+	{
 		Document d = null;
-		try {
+		try
+		{
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			d = dBuilder.parse(new ByteArrayInputStream(content.getBytes()));
 			return d;
-		} catch (Exception e) {
-			System.out.println("Parse XML Fail");
+		}
+		catch (Exception e)
+		{
 			return null;
 		}
 	}
 
 	/**
 	 * parse last modified time, given a string, return a long value
-	 * 
-	 * @param timeString
-	 * @return
+	 * @param timeString - the time
+	 * @return - returns the long equivalent of the string
 	 */
-	private long getLastModified(String timeString) {
+	private long getLastModified(String timeString)
+	{
 		SimpleDateFormat simpleDateFormat = null;
 		Date d = null;
-		if (timeString.charAt(6) == ',') {
+		if (timeString.charAt(6) == ',')
+		{
 			simpleDateFormat = new SimpleDateFormat("EEEEEE, dd-MMM-yy HH:mm:ss z");
-		} else if (timeString.charAt(3) == ' ') {
+		}
+		else if (timeString.charAt(3) == ' ')
+		{
 			simpleDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy");
-		} else {
+		}
+		else
+		{
 			simpleDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 		}
-		try {
+		try
+		{
 			d = simpleDateFormat.parse(timeString);
 			return d.getTime();
-		} catch (ParseException e) {
+		}
+		catch (ParseException e)
+		{
 			return 0;
 		}
 	}
 
-	// ********** robot ***************
-	public Robot downloadRobotRules() {
+	/**
+	 * Get the page robot
+	 * @return Returns the robot
+	 */
+	public Robot downloadRobotRules()
+	{
 		headRequest();
-		if (code != 200) {
+		if (code != 200)
+		{
 			return null;
-		} else {
+		}
+		else
+		{
 			sendGETRobotRequest();
 			return robot;
 		}
@@ -275,9 +298,20 @@ public class HttpCrawlerClient
 	/**
 	 * Send robot GET request
 	 */
-	public void sendGETRobotRequest() {
-		try {
-			Socket socket = new Socket(host, portNum);
+	public void sendGETRobotRequest()
+	{
+		try
+		{
+			Socket socket;
+			if (secure)
+			{
+				SSLSocketFactory fact = (SSLSocketFactory) SSLSocketFactory.getDefault();
+				socket = fact.createSocket(host, portNum);
+			}
+			else
+			{
+				socket = new Socket(host, portNum);
+			}
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			out.write("GET " + path + " HTTP/1.1\r\n");
 			out.write("Host: " + host + ":" + portNum + "\r\n");
@@ -287,103 +321,118 @@ public class HttpCrawlerClient
 			// get response body
 			parseGetRobotResponse(socket.getInputStream());
 			socket.close();
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * parse GET robot response and store content in field body
-	 * 
-	 * @param inputStream
-	 * @return
+	 * @param inputStream - the input response
 	 */
-	private void parseGetRobotResponse(InputStream inputStream) {
-		try {
+	private void parseGetRobotResponse(InputStream inputStream)
+	{
+		try
+		{
 			InputStreamReader inputReader = new InputStreamReader(inputStream);
 			BufferedReader bufferReader = new BufferedReader(inputReader);
 			// initial robot here
 			robot = new Robot();
-			String agent = "*";// default
+			// default
+			String agent = "*";
 			String nextLine = bufferReader.readLine();
-			while (nextLine != null) {
-				// System.out.println("@ " +nextLine);
-				if (nextLine.trim().startsWith("User-agent")) {
+			while (nextLine != null)
+			{
+				if (nextLine.trim().startsWith("User-agent"))
+				{
 					agent = nextLine.trim().split(":")[1].trim();
 					robot.addAgent(agent);
-				} else if (nextLine.trim().startsWith("Disallow")) {
+				}
+				else if (nextLine.trim().startsWith("Disallow"))
+				{
 					String banned = nextLine.trim().split(":")[1].trim();
 					robot.addBanned(agent, banned);
-				} else if (nextLine.trim().startsWith("Allow")) {
+				}
+				else if (nextLine.trim().startsWith("Allow"))
+				{
 					String allow = nextLine.trim().split(":")[1].trim();
 					robot.addAllow(agent, allow);
-				} else if (nextLine.trim().startsWith("Crawl-delay")) {
+				}
+				else if (nextLine.trim().startsWith("Crawl-delay"))
+				{
 					int delay = Integer.valueOf(nextLine.trim().split(":")[1].trim());
 					robot.addDelay(agent, delay);
 				}
 				nextLine = bufferReader.readLine();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-		catch (ArrayIndexOutOfBoundsException e2)
+		catch (IOException | ArrayIndexOutOfBoundsException e)
 		{
 		}
 	}
 
-	// ********** getters *************
 	/**
 	 * get host
-	 * 
-	 * @return
+	 * @return Returns the host name
 	 */
-	public String getHost() {
+	public String getHost()
+	{
 		return this.host;
 	}
 
 	/**
 	 * get code status
-	 * 
-	 * @return
+	 * @return - Returns the error code
 	 */
-	public int getCode() {
+	public int getCode()
+	{
 		return this.code;
 	}
 
 	/**
 	 * get content type
-	 * 
-	 * @return
+	 * @return - Returns the content type
 	 */
-	public String getContentType() {
+	public String getContentType()
+	{
 		return this.contentType;
 	}
 
 	/**
 	 * get content length
-	 * 
-	 * @return
+	 * @return - Returns the content length
 	 */
-	public int getContentLength() {
+	public int getContentLength()
+	{
 		return this.contentLen;
 	}
 
 	/**
 	 * get last modified as long type
-	 * 
-	 * @return
+	 * @return - Returns the last modified time
 	 */
-	public long getLastModified() {
+	public long getLastModified()
+	{
 		return this.lastModified;
 	}
 
 	/**
 	 * get content body of HTML of XML file
-	 * 
-	 * @return
+	 * @return - Returns the file contents
 	 */
-	public String getBody() {
+	public String getBody()
+	{
 		return this.body;
 	}
 
+	/**
+	 * Returns if the connection is secure
+	 * @return Returns true if the connection is secure
+	 */
+	public boolean isSecure()
+	{
+		return secure;
+	}
 }

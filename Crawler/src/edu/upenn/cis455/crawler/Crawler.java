@@ -57,6 +57,7 @@ public class Crawler
 	private HashSet<String> uniqueContents = new HashSet<String>();
 	public boolean isStop = false;
 	private HashSet<String> urlsWritten = new HashSet<String>();
+	private boolean secure = false;
 	/**
 	 * constructor.
 	 * @param dbDirectory - the path to the PageRank directory
@@ -134,6 +135,7 @@ public class Crawler
 			// Step 2. send head and get response to check if document is valid
 			HttpCrawlerClient client = new HttpCrawlerClient();
 			client.parseURL(currentURL);
+			secure = client.isSecure();
 			urlHostPair.put(currentURL, client.getHost());
 			client.headRequest();
 			// get header response
@@ -212,7 +214,14 @@ public class Crawler
 				break;
 			}
 		}
-		System.out.println("Final count: " + count + " pages crawled.");
+		if (count == 1)
+		{
+			System.out.println("Final count: 1 page crawled.");
+		}
+		else
+		{
+			System.out.println("Final count: " + count + " pages crawled.");
+		}
 		/*for (WebDocument d: imagesdb.getDocumentList())
 		{
 			System.out.println("ImageURL: " + d.getDocumentContent());
@@ -435,13 +444,13 @@ public class Crawler
 			catch (NullPointerException e)
 			{
 			}
-			webDocument = new WebDocument(currentURL);
+			webDocument = new WebDocument(prependURL(currentURL));
 			long crawlTime = System.currentTimeMillis();
 			webDocument.setLastCrawlTime(crawlTime);
 			webDocument.setDocumentContent(body);
 			webDocument.setDocumentTitle(title);
 			String noHTML = Jsoup.parse(body).text().toLowerCase().trim();
-			WebDocument contents = new WebDocument(currentURL);
+			WebDocument contents = new WebDocument(prependURL(currentURL));
 			contents.setDocumentContent(noHTML);
 			contents.setLastCrawlTime(crawlTime);
 			contents.setDocumentTitle(title);
@@ -566,6 +575,7 @@ public class Crawler
 		NodeList nl = doc.getElementsByTagName("img");
 		String images = url + "\t";
 		boolean write = false;
+		HashSet<String> seen = new HashSet<String>();
 		for (int i = 0; i < nl.getLength(); i++)
 		{
 			Element element = (Element) nl.item(i);
@@ -575,20 +585,42 @@ public class Crawler
 				// Only output to DB if there is at least 1 image linked
 				write = true;
 				String extractedLink = linkNode.getNodeValue().trim();
-				if (extractedLink.length() > 0)
+				if ((extractedLink.length() > 0) && (extractedLink.endsWith(".png") || extractedLink.endsWith(".gif") || extractedLink.endsWith(".jpg") || extractedLink.endsWith(".jpeg")))
 				{
-					images = images + " " + host + extractedLink;
+					if (!seen.contains(extractedLink))
+					{
+						images = images + " " + extractedLink;
+					}
+					seen.add(extractedLink);
 				}
 			}
 		}
 		if (write)
 		{
-			WebDocument document = new WebDocument(url);
+			WebDocument document = new WebDocument(prependURL(url));
 			document.setDocumentContent(images.trim());
 			document.setDocumentTitle(title);
 			document.setLastCrawlTime(crawlTime);
 			imagesdb.addDocument(document);
 		}
+	}
+
+	/**
+	 * Add http:// or https:// to URL if not already present
+	 * @param url - the URL to fix
+	 * @return Returns the fixed URL
+	 */
+	private String prependURL(String url)
+	{
+		if (url.startsWith("https://") || url.startsWith("http://"))
+		{
+			return url;
+		}
+		else if (secure)
+		{
+			return "https://" + url;
+		}
+		return "http://" + url;
 	}
 
 	/**

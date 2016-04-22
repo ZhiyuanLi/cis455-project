@@ -1,10 +1,8 @@
+// URL Frontier API similat to the one in Mercator Architecture
+// @author Wei Song
 package edu.upenn.cis455.crawler;
 import java.util.LinkedList;
 import java.util.Queue;
-/**
- * URL Frontier API similar to the one in Mercator Architecture
- * @author weisong
- */
 public class URLFrontier
 {
 	// url queue to store urls that will be evaluated later
