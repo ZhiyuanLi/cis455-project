@@ -22,7 +22,10 @@ public class URLFrontier
 	 */
 	public void add(String url)
 	{
-		urlQueue.offer(url);
+		if (urlQueue.size() < 200)
+		{
+			urlQueue.offer(url);
+		}
 	}
 
 	/**

@@ -220,12 +220,12 @@ public class Crawler
 		for (WebDocument d: db.getDocumentList())
 		{
 			System.out.println("Body: " + d.getDocumentContent());
-		}*/
+		}
 		for (WebDocument d: indexdb.getDocumentList())
 		{
 			System.out.println("Title: " + d.getDocumentTitle());
 			System.out.println("Content: " + d.getDocumentContent());
-		}
+		}*/
 		close();
 		// done
 	}
