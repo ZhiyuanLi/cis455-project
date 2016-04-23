@@ -11,7 +11,7 @@ public class WordProcessor {
 	/**
 	 * Instance of WordProcessor
 	 */
-	private static String pattern = "^[a-zA-Z0-9_]*$";
+	private static String pattern = "^[a-zA-Z_]*$";
 	private static StopWords STOPWORDS = new StopWords();
 	private static Stemmer STEMMER = new Stemmer();
 
