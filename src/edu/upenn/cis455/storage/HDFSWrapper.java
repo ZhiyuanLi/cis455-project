@@ -4,7 +4,6 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 import org.apache.hadoop.fs.*;
-import org.json.simple.JSONObject;
 import org.apache.hadoop.conf.*;
 
 /**
