@@ -97,6 +97,40 @@ public class Crawler
 	}
 
 	/**
+	 * Constructor
+	 * @param dbDirectory - the page rank db directory
+	 * @param indexerDBDir - the directory of the indexer DB
+	 * @param imgsDBDir - the directory of the image DB
+	 * @param urls - the frontier contents
+	 * @param linksPath - the path to the outlinks .txt file
+	 * @param maxSize - the maximum size page, in MB, to crawl
+	 * @param maxNum - the maximum number of pages
+	 */
+	public Crawler(String dbDirectory, String indexerDBDir, String imgsDBDir, LinkedList<String> urls, String linksPath, int maxSize, int maxNum)
+	{
+		this.dbDirectory = dbDirectory;
+		this.indexerDBDir = indexerDBDir;
+		this.imgsDBDir = imgsDBDir;
+		this.maxSize = maxSize;
+		this.maxNum = maxNum;
+		db = new DatabaseWrapper(this.dbDirectory);
+		indexdb = new IndexWrapper(this.indexerDBDir);
+		imagesdb = new ImagesWrapper(this.imgsDBDir);
+		frontier = new URLFrontier();
+		for (String s: urls)
+		{
+			frontier.add(fixURL(s));
+		}
+		try
+		{
+			writer = new PrintWriter(new BufferedWriter(new FileWriter(linksPath, true)));
+		}
+		catch (IOException e)
+		{
+		}
+	}
+
+	/**
 	 * Flush contents of URLFrontier to disk
 	 * @return Returns the contents of the URLFrontier
 	 */
@@ -149,6 +183,7 @@ public class Crawler
 			// Partly guard against spider traps not flagged in robots.txt by limiting URL length to 200 characters
 			if ((currentURL.length() > 200) || !isValidFile(client, maxSize))
 			{
+				//System.out.println("Failure at Current URL: " + currentURL);
 				continue;
 			}
 			String host = client.getHost();
@@ -491,6 +526,11 @@ public class Crawler
 	private boolean isValidFile(HttpCrawlerClient client, int maxSize)
 	{
 		// check code
+		if ((client.getCode() == 301) || (client.getCode() == 302))
+		{
+			frontier.add(uniformURL(client.getHost(), client.getRedirectURL(), client.getRedirectURL()));
+			return false;
+		}
 		if (client.getCode() != 200)
 		{
 			return false;
@@ -713,6 +753,7 @@ public class Crawler
 		db.close();
 		indexdb.close();
 		imagesdb.close();
+		writer.close();
 	}
 
 	/**

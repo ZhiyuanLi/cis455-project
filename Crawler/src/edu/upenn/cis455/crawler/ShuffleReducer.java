@@ -4,6 +4,7 @@ package edu.upenn.cis455.crawler;
 import java.io.IOException;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+import java.util.Iterator;
 public class ShuffleReducer extends Reducer<Text, Text, Text, Text>
 {
 	/**

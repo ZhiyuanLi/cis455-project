@@ -15,10 +15,8 @@ public class CrawlerMapper extends Mapper<LongWritable, Text, Text, Text>
 	 * @throws IOException if a read error occurs
 	 * @throws InterruptedException if the job is interrupted
 	 */
-	@Override
 	public void map(LongWritable num, Text line, Context context) throws IOException, InterruptedException
 	{
-		System.out.println("Line = " + line);
-		context.write(new Text(line), new Text(""));
+		context.write(new Text(line), new Text("foo"));
 	}
 }

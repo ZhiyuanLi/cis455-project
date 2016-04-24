@@ -6,6 +6,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Iterator;
 public class CrawlerReducer extends Reducer<Text, Text, Text, Text>
 {
 	/**
@@ -19,15 +20,19 @@ public class CrawlerReducer extends Reducer<Text, Text, Text, Text>
 	@Override
 	public void reduce(Text key, Iterable<Text> vals, Context context) throws IOException, InterruptedException
 	{
+		System.out.println("KJHSKJDHS");
 		String dbDir = context.getConfiguration().get("dbDir");
 		String indexDBDir = context.getConfiguration().get("indexDBDir");
 		String frontierPath = context.getConfiguration().get("frontierPath");
-		String URLPath = context.getConfiguration().get("URLPath");
 		int maxSize = Integer.parseInt(context.getConfiguration().get("maxSize"));
 		String linksPath = context.getConfiguration().get("linksPath");
 		String imgsDBDir = context.getConfiguration().get("imgsDBDir");
-		System.out.println("URLPath = " + URLPath);
-		Crawler crawler = new Crawler(dbDir, indexDBDir, imgsDBDir, URLPath, linksPath, maxSize, 1);
+		LinkedList<String> list = new LinkedList<String>();
+		for (Text t: vals)
+		{
+			list.addLast("" + vals);
+		}
+		Crawler crawler = new Crawler(dbDir, indexDBDir, imgsDBDir, list, linksPath, maxSize, 10);
 		crawler.startCrawling();
 		Queue<String> frontier = crawler.getFrontier();
 		for (String s: frontier)

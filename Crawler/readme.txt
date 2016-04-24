@@ -27,7 +27,7 @@ To run test cases through command line, please
 You can locally run the MapReduce job in pseudo-distributed mode through the following:
 1. Run "ant build" within this directory to produce the project jar file.
 2. Ensure that the jar hadoop-core-1.0.3.jar appears within the ./lib/ directory.
-3. In this directory, type "hadoop jar crawler.jar edu.upenn.cis455.crawler.CrawlerDriver" <seedsPath> <PageRankDB Path> <IndexerDB Path> <ImagesDB path> <Temp1 Dir> <Temp2 Dir> <MaxSize> <URLs log Path> [MaxPages]
+3. In this directory, type "hadoop jar crawler.jar edu.upenn.cis455.crawler.CrawlerDriver" <seedsPath> <PageRankDB Path> <IndexerDB Path> <ImagesDB path> <Temp1 Dir> <Temp2 Dir> <MaxSize> <URLs log Path> <numWorkers> [MaxPages]
 	seedPath is the path to an existing .txt file containing seeds, 1 per line.
 	PageRankDB path need not exist. If it does, it will be appended to. Delete this directory if you wish to restart the crawl.
 	IndexerDB path need not exist. If it does, it will be appended to. Delete this directory if you wish to restart the crawl.
@@ -36,6 +36,7 @@ You can locally run the MapReduce job in pseudo-distributed mode through the fol
 	Temp2 dir is the output path for the crawler step. This directory should not exist prior to starting. It will be deleted if it does. Deleted when done.
 	MaxSize specifies the maximum file size, in MB, of a page to crawl.
 	URL Log path specifies the path where a log .txt file is created. If it exists, it is appended to. Delete it before starting if you wish to crawl from the beginning.
+	numWorkers sets how many workers process the job.
 	MaxPages is optional. If not specified, the job runs indefinitely. Specifies roughly how many pages to crawl.
 4. If in step 3 you deleted PageRankDB, IndexerDB, ImagesDB, or the log file, please delete all four. Otherwise the output files will not agree.
 

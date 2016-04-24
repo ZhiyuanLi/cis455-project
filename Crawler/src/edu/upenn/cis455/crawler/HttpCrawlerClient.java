@@ -36,6 +36,7 @@ public class HttpCrawlerClient
 	private String body = "";
 	private Robot robot = null;
 	private boolean secure;
+	private String location = "";
 	/**
 	 * parse url and seperate host, path and portNum, create urlObject
 	 * @param url - the URL to parse
@@ -90,13 +91,17 @@ public class HttpCrawlerClient
 			// check code
 			code = Integer.parseInt(nextLine.split(" ")[1]);
 			// if connection not success, return
-			if (code != 200)
+			if ((code != 200) && (code != 301) && (code != 302))
 			{
 				socket.close();
 				return;
 			}
 			while (nextLine != null)
 			{
+				if (nextLine.toLowerCase().contains("location"))
+				{
+					location = nextLine.substring(nextLine.indexOf(":") + 1);
+				}
 				if (nextLine.toLowerCase().contains("content-length"))
 				{
 					contentLen = Integer.parseInt(nextLine.split(":")[1].trim());
@@ -434,5 +439,14 @@ public class HttpCrawlerClient
 	public boolean isSecure()
 	{
 		return secure;
+	}
+
+	/**
+	 * Get redirect URL
+	 * @return Returns the redirect URL
+	 */
+	public String getRedirectURL()
+	{
+		return location;
 	}
 }
