@@ -115,7 +115,7 @@ public class DatabaseWrapper
 	 * add user to user index
 	 * @param user - the user to add
 	 */
-	public void addUser(User user)
+	public synchronized void addUser(User user)
 	{
 		userIndex.put(user);
 	}
@@ -167,7 +167,7 @@ public class DatabaseWrapper
 	 * delete user in user index and also channels under this user
 	 * @param userName - the username to remove
 	 */
-	public void deleteUser(String userName)
+	public synchronized void deleteUser(String userName)
 	{
 		// 1. delete user from user index
 		userIndex.delete(userName);
@@ -238,7 +238,7 @@ public class DatabaseWrapper
 	 * add a channel to database
 	 * @param channel - the channel to add
 	 */
-	public void addChannel(Channel channel)
+	public synchronized void addChannel(Channel channel)
 	{
 		if (channel == null)
 		{
@@ -252,7 +252,7 @@ public class DatabaseWrapper
 	 * @param channel - the channel to add
 	 * @param userName - the username to associate the channel to
 	 */
-	public void addChannel(Channel channel, String userName)
+	public synchronized void addChannel(Channel channel, String userName)
 	{
 		channelIndex.put(channel);
 		User user = userIndex.get(userName);
@@ -265,7 +265,7 @@ public class DatabaseWrapper
 	 * @param username - the user whose channel should be removed
 	 * @param cname - the name of the channel
 	 */
-	public void deleteChannel(String userName, String cName)
+	public synchronized void deleteChannel(String userName, String cName)
 	{
 		// 1. delete channel from channel index
 		channelIndex.delete(cName);
@@ -312,7 +312,7 @@ public class DatabaseWrapper
 	 * add web document to webDocIndex
 	 * @param webDoc - the document to add
 	 */
-	public void addDocument(WebDocument webDoc)
+	public synchronized void addDocument(WebDocument webDoc)
 	{
 		webDocIndex.put(webDoc);
 	}
@@ -331,7 +331,7 @@ public class DatabaseWrapper
 	 * delete web document given url
 	 * @param url - the URL of the document to remove
 	 */
-	public void deleteDocument(String url)
+	public synchronized void deleteDocument(String url)
 	{
 		webDocIndex.delete(url);
 	}

@@ -134,7 +134,7 @@ public class IndexWrapper
 	 * add web document to webDocIndex
 	 * @param webDoc - the document to add
 	 */
-	public void addDocument(WebDocument webDoc)
+	public synchronized void addDocument(WebDocument webDoc)
 	{
 		webDocIndex.put(webDoc);
 	}
@@ -153,7 +153,7 @@ public class IndexWrapper
 	 * delete web document given url
 	 * @param url - the URL of the document to remove
 	 */
-	public void deleteDocument(String url)
+	public synchronized void deleteDocument(String url)
 	{
 		webDocIndex.delete(url);
 	}

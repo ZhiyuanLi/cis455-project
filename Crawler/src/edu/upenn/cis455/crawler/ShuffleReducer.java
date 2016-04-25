@@ -19,5 +19,6 @@ public class ShuffleReducer extends Reducer<Text, Text, Text, Text>
 	public void reduce(Text url, Iterable<Text> count, Context context) throws IOException, InterruptedException
 	{
 		context.write(new Text(url), new Text(""));
+		System.out.println("Writing URL: " + url);
 	}
 }

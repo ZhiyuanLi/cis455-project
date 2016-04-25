@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import java.net.URL;
+import java.net.MalformedURLException;
 public class CrawlerMapper extends Mapper<LongWritable, Text, Text, Text>
 {
 	/**
@@ -17,6 +19,27 @@ public class CrawlerMapper extends Mapper<LongWritable, Text, Text, Text>
 	 */
 	public void map(LongWritable num, Text line, Context context) throws IOException, InterruptedException
 	{
-		context.write(new Text(line), new Text("foo"));
+		String host = getHost("" + line);
+		if (host != null)
+		{
+			context.write(new Text(host), new Text(line));
+		}
+	}
+
+	/**
+	 * Get the host of the URL
+	 * @param url - the requested URL
+	 * @return host - Returns the host
+	 */
+	private String getHost(String url)
+	{
+		try
+		{
+			return new URL(url).getHost();
+		}
+		catch (MalformedURLException e)
+		{
+			return null;
+		}
 	}
 }

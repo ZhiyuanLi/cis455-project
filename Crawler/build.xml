@@ -76,7 +76,8 @@
             <fileset dir="${classes.dir}">
                 <include name="**/*.class"/>
             </fileset>
-        </jar>
+        <zipgroupfileset dir="./lib/"/>
+	</jar>
     </target>
 
     <target name="build" depends="crawler-jar">

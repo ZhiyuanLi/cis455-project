@@ -35,7 +35,7 @@ You can locally run the MapReduce job in pseudo-distributed mode through the fol
 	Temp1 dir is the output path for the shuffle step. This directory should not exist prior to starting. It will be deleted if it does. Deleted after termination.
 	Temp2 dir is the output path for the crawler step. This directory should not exist prior to starting. It will be deleted if it does. Deleted when done.
 	MaxSize specifies the maximum file size, in MB, of a page to crawl.
-	URL Log path specifies the path where a log .txt file is created. If it exists, it is appended to. Delete it before starting if you wish to crawl from the beginning.
+	URL Log path specifies the path where a log .txt file is created. If it exists, it is appended to. Delete it before starting if you wish to crawl from the beginning. Do not place in same directory as seedPath.
 	numWorkers sets how many workers process the job.
 	MaxPages is optional. If not specified, the job runs indefinitely. Specifies roughly how many pages to crawl.
 4. If in step 3 you deleted PageRankDB, IndexerDB, ImagesDB, or the log file, please delete all four. Otherwise the output files will not agree.

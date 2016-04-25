@@ -20,5 +20,6 @@ public class ShuffleMapper extends Mapper<LongWritable, Text, Text, Text>
 	{
 		// We want to distribute lines roughly evenly, so we let shuffle step cover this
 		context.write(new Text(line), new Text("foo"));
+		System.out.println("Shuffling URL: " + line);
 	}
 }
