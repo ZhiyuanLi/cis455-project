@@ -11,6 +11,7 @@ import com.sleepycat.persist.EntityCursor;
 import com.sleepycat.persist.EntityStore;
 import com.sleepycat.persist.PrimaryIndex;
 import com.sleepycat.persist.StoreConfig;
+import java.util.concurrent.locks.ReentrantLock;
 public class DatabaseWrapper
 {
 	// added for singleton
@@ -21,6 +22,7 @@ public class DatabaseWrapper
 	private static PrimaryIndex<String, WebDocument> webDocIndex;
 	private static PrimaryIndex<String, Channel> channelIndex;
 	private static File datebaseDir;
+	private final ReentrantLock lock = new ReentrantLock();
 	/**
 	 * Construct a new Database wrapper
 	 */
@@ -108,16 +110,32 @@ public class DatabaseWrapper
 	 */
 	public PrimaryIndex<String, User> getUsers()
 	{
-		return userIndex;
+		try
+		{
+			lock.lock();
+		}
+		finally
+		{
+			lock.unlock();
+			return userIndex;
+		}
 	}
 
 	/**
 	 * add user to user index
 	 * @param user - the user to add
 	 */
-	public synchronized void addUser(User user)
+	public void addUser(User user)
 	{
-		userIndex.put(user);
+		try
+		{
+			lock.lock();
+			userIndex.put(user);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -127,7 +145,15 @@ public class DatabaseWrapper
 	 */
 	public boolean containsUser(String userName)
 	{
-		return userIndex.contains(userName);
+		try
+		{
+			lock.lock();
+		}
+		finally
+		{
+			lock.unlock();
+			return userIndex.contains(userName);
+		}
 	}
 
 	/**
@@ -137,7 +163,15 @@ public class DatabaseWrapper
 	 */
 	public User getUser(String userName)
 	{
-		return userIndex.get(userName);
+		try
+		{
+			lock.lock();
+		}
+		finally
+		{
+			lock.unlock();
+			return userIndex.get(userName);
+		}
 	}
 
 	/**
@@ -146,49 +180,52 @@ public class DatabaseWrapper
 	 */
 	public List<User> getUserList()
 	{
-		List<User> userList = new ArrayList<User>();
-		EntityCursor<User> cursor = userIndex.entities();
+		List<User> userList = null;
 		try
 		{
+			lock.lock();
+			userList = new ArrayList<User>();
+			EntityCursor<User> cursor = userIndex.entities();
 			Iterator<User> i = cursor.iterator();
 			while (i.hasNext())
 			{
 				userList.add(i.next());
 			}
+			cursor.close();
 		}
 		finally
 		{
-			cursor.close();
+			lock.unlock();
+			return userList;
 		}
-		return userList;
 	}
 
 	/**
 	 * delete user in user index and also channels under this user
 	 * @param userName - the username to remove
 	 */
-	public synchronized void deleteUser(String userName)
+	public void deleteUser(String userName)
 	{
-		// 1. delete user from user index
-		userIndex.delete(userName);
-		// 2. delete all channels under this user
-		EntityCursor<Channel> cursor = channelIndex.entities();
 		try
 		{
+			lock.lock();
+			userIndex.delete(userName);
+			EntityCursor<Channel> cursor = channelIndex.entities();
 			Iterator<Channel> i = cursor.iterator();
 			while (i.hasNext())
 			{
 				// only delete all channels if channel's user name match with current user name
 				Channel channel = i.next();
-				if (channel.getUserName() != null && channel.getUserName().equals(userName))
+				if ((channel.getUserName() != null) && channel.getUserName().equals(userName))
 				{
 					channelIndex.delete(channel.getCName());
 				}
 			}
+			cursor.close();
 		}
 		finally
 		{
-			cursor.close();
+			lock.unlock();
 		}
 	}
 
@@ -198,7 +235,15 @@ public class DatabaseWrapper
 	 */
 	public PrimaryIndex<String, Channel> getChannels()
 	{
-		return channelIndex;
+		try
+		{
+			lock.lock();
+		}
+		finally
+		{
+			lock.unlock();
+			return channelIndex;
+		}
 	}
 
 	/**
@@ -207,19 +252,22 @@ public class DatabaseWrapper
 	 */
 	public List<Channel> getChannelList()
 	{
-		List<Channel> channelList = new ArrayList<Channel>();
-		EntityCursor<Channel> cursor = channelIndex.entities();
+		List<Channel> channelList;
 		try
 		{
+			lock.lock();
+			channelList = new ArrayList<Channel>();
+			EntityCursor<Channel> cursor = channelIndex.entities();
 			Iterator<Channel> i = cursor.iterator();
 			while (i.hasNext())
 			{
 				channelList.add(i.next());
 			}
+			cursor.close();
 		}
 		finally
 		{
-			cursor.close();
+			lock.unlock();
 		}
 		return channelList;
 	}
@@ -231,20 +279,36 @@ public class DatabaseWrapper
 	 */
 	public Channel getChannel(String cName)
 	{
-		return channelIndex.get(cName);
+		try
+		{
+			lock.lock();
+		}
+		finally
+		{
+			lock.unlock();
+			return channelIndex.get(cName);
+		}
 	}
 
 	/**
 	 * add a channel to database
 	 * @param channel - the channel to add
 	 */
-	public synchronized void addChannel(Channel channel)
+	public void addChannel(Channel channel)
 	{
-		if (channel == null)
+		try
 		{
-			return;
+			lock.lock();
+			if (channel == null)
+			{
+				return;
+			}
+			channelIndex.put(channel);
 		}
-		channelIndex.put(channel);
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -252,12 +316,20 @@ public class DatabaseWrapper
 	 * @param channel - the channel to add
 	 * @param userName - the username to associate the channel to
 	 */
-	public synchronized void addChannel(Channel channel, String userName)
+	public void addChannel(Channel channel, String userName)
 	{
-		channelIndex.put(channel);
-		User user = userIndex.get(userName);
-		user.addChannelName(channel.getCName());
-		userIndex.put(user);
+		try
+		{
+			lock.lock();
+			channelIndex.put(channel);
+			User user = userIndex.get(userName);
+			user.addChannelName(channel.getCName());
+			userIndex.put(user);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -265,15 +337,23 @@ public class DatabaseWrapper
 	 * @param username - the user whose channel should be removed
 	 * @param cname - the name of the channel
 	 */
-	public synchronized void deleteChannel(String userName, String cName)
+	public void deleteChannel(String userName, String cName)
 	{
-		// 1. delete channel from channel index
-		channelIndex.delete(cName);
-		// 2. delete channel under corresponding user
-		User channelUser = userIndex.get(userName);
-		channelUser.removeChannel(cName);
-		userIndex.delete(userName);
-		userIndex.put(channelUser);
+		try
+		{
+			lock.lock();
+			// 1. delete channel from channel index
+			channelIndex.delete(cName);
+			// 2. delete channel under corresponding user
+			User channelUser = userIndex.get(userName);
+			channelUser.removeChannel(cName);
+			userIndex.delete(userName);
+			userIndex.put(channelUser);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -282,7 +362,15 @@ public class DatabaseWrapper
 	 */
 	public PrimaryIndex<String, WebDocument> getWebDocuments()
 	{
-		return webDocIndex;
+		try
+		{
+			lock.lock();
+		}
+		finally
+		{
+			lock.unlock();
+			return webDocIndex;
+		}
 	}
 
 	/**
@@ -291,19 +379,22 @@ public class DatabaseWrapper
 	 */
 	public List<WebDocument> getDocumentList()
 	{
-		List<WebDocument> documentList = new ArrayList<WebDocument>();
-		EntityCursor<WebDocument> cursor = webDocIndex.entities();
+		List<WebDocument> documentList;
 		try
 		{
+			lock.lock();
+			documentList = new ArrayList<WebDocument>();
+			EntityCursor<WebDocument> cursor = webDocIndex.entities();
 			Iterator<WebDocument> i = cursor.iterator();
 			while (i.hasNext())
 			{
 				documentList.add(i.next());
 			}
+			cursor.close();
 		}
 		finally
 		{
-			cursor.close();
+			lock.unlock();
 		}
 		return documentList;
 	}
@@ -312,9 +403,17 @@ public class DatabaseWrapper
 	 * add web document to webDocIndex
 	 * @param webDoc - the document to add
 	 */
-	public synchronized void addDocument(WebDocument webDoc)
+	public void addDocument(WebDocument webDoc)
 	{
-		webDocIndex.put(webDoc);
+		try
+		{
+			lock.lock();
+			webDocIndex.put(webDoc);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -324,15 +423,31 @@ public class DatabaseWrapper
 	 */
 	public WebDocument getDocument(String url)
 	{
-		return webDocIndex.get(url);
+		try
+		{
+			lock.lock();
+		}
+		finally
+		{
+			lock.unlock();
+			return webDocIndex.get(url);
+		}
 	}
 
 	/**
 	 * delete web document given url
 	 * @param url - the URL of the document to remove
 	 */
-	public synchronized void deleteDocument(String url)
+	public void deleteDocument(String url)
 	{
-		webDocIndex.delete(url);
+		try
+		{
+			lock.lock();
+			webDocIndex.delete(url);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 }

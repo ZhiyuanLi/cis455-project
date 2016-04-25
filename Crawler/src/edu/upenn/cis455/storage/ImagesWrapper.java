@@ -11,6 +11,7 @@ import com.sleepycat.persist.EntityCursor;
 import com.sleepycat.persist.EntityStore;
 import com.sleepycat.persist.PrimaryIndex;
 import com.sleepycat.persist.StoreConfig;
+import java.util.concurrent.locks.ReentrantLock;
 public class ImagesWrapper
 {
 	// added for singleton
@@ -19,6 +20,7 @@ public class ImagesWrapper
 	private static EntityStore store;
 	private static PrimaryIndex<String, WebDocument> webDocIndex;
 	private static File datebaseDir;
+	private final ReentrantLock lock = new ReentrantLock();
 	/**
 	 * Construct a new Database wrapper
 	 */
@@ -104,7 +106,15 @@ public class ImagesWrapper
 	 */
 	public PrimaryIndex<String, WebDocument> getWebDocuments()
 	{
-		return webDocIndex;
+		try
+		{
+			lock.lock();
+		}
+		finally
+		{
+			lock.unlock();
+			return webDocIndex;
+		}
 	}
 
 	/**
@@ -113,19 +123,22 @@ public class ImagesWrapper
 	 */
 	public List<WebDocument> getDocumentList()
 	{
-		List<WebDocument> documentList = new ArrayList<WebDocument>();
-		EntityCursor<WebDocument> cursor = webDocIndex.entities();
+		List<WebDocument> documentList;
 		try
 		{
+			lock.lock();
+			documentList = new ArrayList<WebDocument>();
+			EntityCursor<WebDocument> cursor = webDocIndex.entities();
 			Iterator<WebDocument> i = cursor.iterator();
 			while (i.hasNext())
 			{
 				documentList.add(i.next());
 			}
+			cursor.close();
 		}
 		finally
 		{
-			cursor.close();
+			lock.unlock();
 		}
 		return documentList;
 	}
@@ -134,9 +147,17 @@ public class ImagesWrapper
 	 * add web document to webDocIndex
 	 * @param webDoc - the document to add
 	 */
-	public synchronized void addDocument(WebDocument webDoc)
+	public void addDocument(WebDocument webDoc)
 	{
-		webDocIndex.put(webDoc);
+		try
+		{
+			lock.lock();
+			webDocIndex.put(webDoc);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -146,15 +167,31 @@ public class ImagesWrapper
 	 */
 	public WebDocument getDocument(String url)
 	{
-		return webDocIndex.get(url);
+		try
+		{
+			lock.lock();
+		}
+		finally
+		{
+			lock.unlock();
+			return webDocIndex.get(url);
+		}
 	}
 
 	/**
 	 * delete web document given url
 	 * @param url - the URL of the document to remove
 	 */
-	public synchronized void deleteDocument(String url)
+	public void deleteDocument(String url)
 	{
-		webDocIndex.delete(url);
+		try
+		{
+			lock.lock();
+			webDocIndex.delete(url);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 }

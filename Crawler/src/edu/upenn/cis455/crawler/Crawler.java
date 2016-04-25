@@ -24,6 +24,7 @@ import java.io.FileReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.util.concurrent.locks.ReentrantLock;
 public class Crawler
 {
 	private String dbDirectory = "";
@@ -58,6 +59,7 @@ public class Crawler
 	public boolean isStop = false;
 	private HashSet<String> urlsWritten = new HashSet<String>();
 	private boolean secure = false;
+	private final ReentrantLock lock = new ReentrantLock();
 	/**
 	 * constructor.
 	 * @param dbDirectory - the path to the PageRank directory
@@ -143,15 +145,20 @@ public class Crawler
 	 * Write a line to the linksfile
 	 * @param line - the line to write
 	 */
-	private synchronized void writeLinks(String line)
+	private void writeLinks(String line)
 	{
 		try
 		{
+			lock.lock();
 			writer.println(line);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			lock.unlock();
 		}
 	}
 
