@@ -13,15 +13,20 @@ public class PrintDBs
 	{
 		for (WebDocument doc: db1.getDocumentList())
 		{
+			System.out.println("URL = " + doc.getURL());
 			System.out.println("Body: " + doc.getDocumentContent());
 		}
+		System.out.println();
 		for (WebDocument doc: db2.getDocumentList())
 		{
+			System.out.println("URL = " + doc.getURL());
 			System.out.println("Title: " + doc.getDocumentTitle());
 			System.out.println("Content: " + doc.getDocumentContent());
 		}
+		System.out.println();
 		for (WebDocument doc: db3.getDocumentList())
 		{
+			System.out.println("URL = " + doc.getURL());
 			System.out.println("ImageURLs: " + doc.getDocumentContent());
 		}
 	}

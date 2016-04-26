@@ -10,6 +10,8 @@ import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.persist.EntityCursor;
 import com.sleepycat.persist.EntityStore;
 import com.sleepycat.persist.PrimaryIndex;
+import com.sleepycat.persist.SecondaryIndex;
+import com.sleepycat.persist.model.Relationship;
 import com.sleepycat.persist.StoreConfig;
 import java.util.concurrent.locks.ReentrantLock;
 public class DatabaseWrapper
@@ -18,9 +20,8 @@ public class DatabaseWrapper
 	private static String dbPath;
 	private static Environment environment;
 	private static EntityStore store;
-	private static PrimaryIndex<String, User> userIndex;
 	private static PrimaryIndex<String, WebDocument> webDocIndex;
-	private static PrimaryIndex<String, Channel> channelIndex;
+	private static SecondaryIndex<String, String, WebDocument> contentIndex;
 	private static File datebaseDir;
 	private final ReentrantLock lock = new ReentrantLock();
 	/**
@@ -84,9 +85,8 @@ public class DatabaseWrapper
 		// initial fields
 		environment = new Environment(datebaseDir, envConfig);
 		store = new EntityStore(environment, "EntityStore", storeConfig);
-		userIndex = store.getPrimaryIndex(String.class, User.class);
 		webDocIndex = store.getPrimaryIndex(String.class, WebDocument.class);
-		channelIndex = store.getPrimaryIndex(String.class, Channel.class);
+		contentIndex = store.getSecondaryIndex(webDocIndex, String.class, "content");
 	}
 
 	/**
@@ -105,10 +105,11 @@ public class DatabaseWrapper
 	}
 
 	/**
-	 * get user index
-	 * @return Returns the index of users
+	 * Determine if the content is seen already
+	 * @param contents - the HTML contents
+	 * @return Returns true if the content was seen already
 	 */
-	public PrimaryIndex<String, User> getUsers()
+	public boolean getContentsSeen(String contents)
 	{
 		try
 		{
@@ -117,242 +118,12 @@ public class DatabaseWrapper
 		finally
 		{
 			lock.unlock();
-			return userIndex;
-		}
-	}
-
-	/**
-	 * add user to user index
-	 * @param user - the user to add
-	 */
-	public void addUser(User user)
-	{
-		try
-		{
-			lock.lock();
-			userIndex.put(user);
-		}
-		finally
-		{
-			lock.unlock();
-		}
-	}
-
-	/**
-	 * check if user already exist
-	 * @param userName - the name to search for
-	 * @return Returns true if the user exists in the index
-	 */
-	public boolean containsUser(String userName)
-	{
-		try
-		{
-			lock.lock();
-		}
-		finally
-		{
-			lock.unlock();
-			return userIndex.contains(userName);
-		}
-	}
-
-	/**
-	 * get user given user name
-	 * @param userName - the username to search for
-	 * @return Returns the associated user
-	 */
-	public User getUser(String userName)
-	{
-		try
-		{
-			lock.lock();
-		}
-		finally
-		{
-			lock.unlock();
-			return userIndex.get(userName);
-		}
-	}
-
-	/**
-	 * get users as a list using entity cursor
-	 * @return - returns all users
-	 */
-	public List<User> getUserList()
-	{
-		List<User> userList = null;
-		try
-		{
-			lock.lock();
-			userList = new ArrayList<User>();
-			EntityCursor<User> cursor = userIndex.entities();
-			Iterator<User> i = cursor.iterator();
-			while (i.hasNext())
+			EntityCursor<WebDocument> docs = contentIndex.subIndex(contents).entities();
+			for (WebDocument doc: docs)
 			{
-				userList.add(i.next());
+				return true;
 			}
-			cursor.close();
-		}
-		finally
-		{
-			lock.unlock();
-			return userList;
-		}
-	}
-
-	/**
-	 * delete user in user index and also channels under this user
-	 * @param userName - the username to remove
-	 */
-	public void deleteUser(String userName)
-	{
-		try
-		{
-			lock.lock();
-			userIndex.delete(userName);
-			EntityCursor<Channel> cursor = channelIndex.entities();
-			Iterator<Channel> i = cursor.iterator();
-			while (i.hasNext())
-			{
-				// only delete all channels if channel's user name match with current user name
-				Channel channel = i.next();
-				if ((channel.getUserName() != null) && channel.getUserName().equals(userName))
-				{
-					channelIndex.delete(channel.getCName());
-				}
-			}
-			cursor.close();
-		}
-		finally
-		{
-			lock.unlock();
-		}
-	}
-
-	/**
-	 * get channel index
-	 * @return - Returns the list of channels
-	 */
-	public PrimaryIndex<String, Channel> getChannels()
-	{
-		try
-		{
-			lock.lock();
-		}
-		finally
-		{
-			lock.unlock();
-			return channelIndex;
-		}
-	}
-
-	/**
-	 * get channels as a list using entity cursor
-	 * @return Returns the list of channels
-	 */
-	public List<Channel> getChannelList()
-	{
-		List<Channel> channelList;
-		try
-		{
-			lock.lock();
-			channelList = new ArrayList<Channel>();
-			EntityCursor<Channel> cursor = channelIndex.entities();
-			Iterator<Channel> i = cursor.iterator();
-			while (i.hasNext())
-			{
-				channelList.add(i.next());
-			}
-			cursor.close();
-		}
-		finally
-		{
-			lock.unlock();
-		}
-		return channelList;
-	}
-
-	/**
-	 * get channel object given channel name
-	 * @param cName - the name of the channel
-	 * @return Returns the channel
-	 */
-	public Channel getChannel(String cName)
-	{
-		try
-		{
-			lock.lock();
-		}
-		finally
-		{
-			lock.unlock();
-			return channelIndex.get(cName);
-		}
-	}
-
-	/**
-	 * add a channel to database
-	 * @param channel - the channel to add
-	 */
-	public void addChannel(Channel channel)
-	{
-		try
-		{
-			lock.lock();
-			if (channel == null)
-			{
-				return;
-			}
-			channelIndex.put(channel);
-		}
-		finally
-		{
-			lock.unlock();
-		}
-	}
-
-	/**
-	 * add a channel to database
-	 * @param channel - the channel to add
-	 * @param userName - the username to associate the channel to
-	 */
-	public void addChannel(Channel channel, String userName)
-	{
-		try
-		{
-			lock.lock();
-			channelIndex.put(channel);
-			User user = userIndex.get(userName);
-			user.addChannelName(channel.getCName());
-			userIndex.put(user);
-		}
-		finally
-		{
-			lock.unlock();
-		}
-	}
-
-	/**
-	 * remove a channel from user who own this channel
-	 * @param username - the user whose channel should be removed
-	 * @param cname - the name of the channel
-	 */
-	public void deleteChannel(String userName, String cName)
-	{
-		try
-		{
-			lock.lock();
-			// 1. delete channel from channel index
-			channelIndex.delete(cName);
-			// 2. delete channel under corresponding user
-			User channelUser = userIndex.get(userName);
-			channelUser.removeChannel(cName);
-			userIndex.delete(userName);
-			userIndex.put(channelUser);
-		}
-		finally
-		{
-			lock.unlock();
+			return false;
 		}
 	}
 

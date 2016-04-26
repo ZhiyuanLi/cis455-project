@@ -27,6 +27,7 @@ public class HttpCrawlerClient
 	private String host = "";
 	private String path = "";
 	private int portNum = 80;
+	private String url = "";
 	// header response
 	private String contentType = "";
 	private int contentLen = -1;
@@ -56,9 +57,26 @@ public class HttpCrawlerClient
 		{
 			return;
 		}
+		this.url = url;
 		host = urlObject.getHost();
 		path = urlObject.getPath();
-		portNum = (urlObject.getPort() == -1) ? 80 : urlObject.getPort();
+		if (!secure)
+		{
+			portNum = (urlObject.getPort() == -1) ? 80 : urlObject.getPort();
+		}
+		else
+		{
+			portNum = (urlObject.getPort() == -1) ? 443 : urlObject.getPort();
+		}
+	}
+
+	/**
+	 * Get the request URL
+	 * @return Returns the request URL
+	 */
+	public String getURL()
+	{
+		return url;
 	}
 
 	/**

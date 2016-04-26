@@ -20,7 +20,7 @@ public class URLFrontier
 	 */
 	public void add(String url)
 	{
-		if (urlQueue.size() < 5000)
+		if (urlQueue.size() < 1000)
 		{
 			urlQueue.offer(url);
 		}

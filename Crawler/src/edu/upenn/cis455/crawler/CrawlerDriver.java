@@ -25,7 +25,8 @@ public class CrawlerDriver extends Configured implements Tool
 	private static int maxSize = 0;
 	private static String linksPath = "";
 	private static String imagesDBDir = "";
-	private static int maxFiles = Integer.MAX_VALUE;
+	private static int numFiles = Integer.MAX_VALUE;
+	private static int pagesPerCrawl = 10;
 	/**
 	 * Launch the shuffle job
 	 * @param args - <URL dir> <output dir>
@@ -46,7 +47,7 @@ public class CrawlerDriver extends Configured implements Tool
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(Text.class);
 		job.setNumReduceTasks(workers);
-		return job.waitForCompletion(true);
+		return job.waitForCompletion(false);
 	}
 
 	/**
@@ -64,7 +65,7 @@ public class CrawlerDriver extends Configured implements Tool
 		conf.set("frontierPath", args[1]);
 		conf.set("maxSize", "" + maxSize);
 		conf.set("linksPath", linksPath);
-		conf.set("files", "" + (maxFiles / workers));
+		conf.set("files", "" + pagesPerCrawl);
 		Job job = new Job(conf);
 		job.setJobName("Crawler Step");
 		FileInputFormat.setInputPaths(job, new Path(args[0]));
@@ -76,7 +77,7 @@ public class CrawlerDriver extends Configured implements Tool
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(Text.class);
 		job.setNumReduceTasks(workers);
-		return job.waitForCompletion(true);
+		return job.waitForCompletion(false);
 	}
 
 	/**
@@ -101,18 +102,18 @@ public class CrawlerDriver extends Configured implements Tool
 		String frontierPath = args[5];
 		maxSize = Integer.parseInt(args[6]);
 		linksPath = args[7];
-		maxFiles = (args.length == 10) ? Integer.parseInt(args[9]) : Integer.MAX_VALUE;
+		numFiles = (args.length == 10) ? Integer.parseInt(args[9]) : Integer.MAX_VALUE;
 		boolean success = runCrawler(new String[] {seedPath, frontierPath});
 		int iterations = 1;
 		// we process workers URLs at a time
-		/*while (iterations < (maxFiles / workers))
+		while (iterations < (numFiles / (workers * pagesPerCrawl)))
 		{
 			success &= runShuffle(new String[] {frontierPath, URLPath});
 			success &= runCrawler(new String[] {URLPath, frontierPath});
 			iterations++;
-		}*/
+		}
+		deleteDirectory(URLPath);
 		return success ? 0 : -1;
-		//deleteDirectory(URLPath);
 	}
 
 	/**

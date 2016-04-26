@@ -29,7 +29,7 @@ public class CrawlerReducer extends Reducer<Text, Text, Text, Text>
 		LinkedList<String> list = new LinkedList<String>();
 		for (Text t: vals)
 		{
-			list.addLast("" + t);
+			list.addLast(t.toString().trim());
 		}
 		Crawler crawler = new Crawler(dbDir, indexDBDir, imgsDBDir, list, linksPath, maxSize, files);
 		crawler.startCrawling();

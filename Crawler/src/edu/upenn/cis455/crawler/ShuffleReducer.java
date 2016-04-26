@@ -16,9 +16,11 @@ public class ShuffleReducer extends Reducer<Text, Text, Text, Text>
 	 * @throws InterruptedException if a write is interrupted
 	 */
 	@Override
-	public void reduce(Text url, Iterable<Text> count, Context context) throws IOException, InterruptedException
+	public void reduce(Text num, Iterable<Text> urls, Context context) throws IOException, InterruptedException
 	{
-		context.write(new Text(url), new Text(""));
-		System.out.println("Writing URL: " + url);
+		for (Text t: urls)
+		{
+			context.write(new Text(t), new Text(""));
+		}
 	}
 }

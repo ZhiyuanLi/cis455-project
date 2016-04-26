@@ -3,6 +3,8 @@
 package edu.upenn.cis455.storage;
 import com.sleepycat.persist.model.Entity;
 import com.sleepycat.persist.model.PrimaryKey;
+import com.sleepycat.persist.model.SecondaryKey;
+import com.sleepycat.persist.model.Relationship;
 /**
  * WebDocument entity in database
  * @author weisong
@@ -10,6 +12,7 @@ import com.sleepycat.persist.model.PrimaryKey;
 @Entity
 public class WebDocument
 {
+	@SecondaryKey(relate=Relationship.MANY_TO_ONE)
 	private String content;
 	private String title = "";
 	private long lastCrawlTime;

@@ -53,11 +53,7 @@ public class Crawler
 	private Map<String, Robot> hostRobotMap = new HashMap<String, Robot>();
 	private String lastHost = "";
 	private int pagesSkipped = 0;
-	// extra credits to test content seen
 	private URLFrontier frontier;
-	private HashSet<String> uniqueContents = new HashSet<String>();
-	public boolean isStop = false;
-	private HashSet<String> urlsWritten = new HashSet<String>();
 	private boolean secure = false;
 	private final ReentrantLock lock = new ReentrantLock();
 	/**
@@ -129,6 +125,8 @@ public class Crawler
 		}
 		catch (IOException e)
 		{
+			e.printStackTrace();
+			return;
 		}
 	}
 
@@ -151,6 +149,7 @@ public class Crawler
 		{
 			lock.lock();
 			writer.println(line);
+			writer.flush();
 		}
 		catch (Exception e)
 		{
@@ -190,7 +189,6 @@ public class Crawler
 			// Partly guard against spider traps not flagged in robots.txt by limiting URL length to 200 characters
 			if ((currentURL.length() > 200) || !isValidFile(client, maxSize))
 			{
-				//System.out.println("Failure at Current URL: " + currentURL);
 				continue;
 			}
 			String host = client.getHost();
@@ -221,17 +219,11 @@ public class Crawler
 				{
 					continue;
 				}
-				if (contentType.trim().equalsIgnoreCase("text/html"))
+				else if (contentType.trim().equalsIgnoreCase("text/html"))
 				{
 					// html: extract and add to queue
 					host = urlHostPair.get(currentURL);
 					extractAndEnqueue(currentURL, doc, host);
-				}
-				else if (contentType.trim().equalsIgnoreCase("text/xml") || contentType.trim().equalsIgnoreCase("application/xml")
-					 || contentType.trim().endsWith("+xml"))
-				{
-					// xml: add to database and update channel
-					updateChannel(currentURL, doc);
 				}
 				continue;
 			}
@@ -256,29 +248,9 @@ public class Crawler
 				break;
 			}
 		}
-		if (count == 1)
-		{
-			System.out.println("Final count: 1 page crawled.");
-		}
-		else
-		{
-			System.out.println("Final count: " + count + " pages crawled.");
-		}
-		/*for (WebDocument d: imagesdb.getDocumentList())
-		{
-			System.out.println("ImageURL: " + d.getDocumentContent());
-		}
-		for (WebDocument d: db.getDocumentList())
-		{
-			System.out.println("Body: " + d.getDocumentContent());
-		}
-		for (WebDocument d: indexdb.getDocumentList())
-		{
-			System.out.println("Title: " + d.getDocumentTitle());
-			System.out.println("Content: " + d.getDocumentContent());
-		}*/
-		close();
-		// done
+		System.out.println("Final count: " + count + " page(s) crawled.");
+		// PrintDBs.print(databaseDir, indexDBDir, imagesDBDir);
+//		close();
 	}
 
 	/**
@@ -371,7 +343,7 @@ public class Crawler
 					}
 				}
 			}
-			// 3.check delay time
+			// 3. check delay time
 			if (!checkDelayTime(robot, agent, lastCrawlTime))
 			{
 				// added to frontier and crawl next time
@@ -440,15 +412,9 @@ public class Crawler
 		timeMap.put(client.getHost(), System.currentTimeMillis());
 		// response content body
 		String body = client.getBody();
-		// ! extra credits: check if different URL has same content
 		if (contentSeenTest(body))
 		{
 			return;
-		}
-		else
-		{
-			// if not, add content to uniqueContents
-			uniqueContents.add(body);
 		}
 		Document doc = null;
 		if (contentType.trim().contains("text/html"))
@@ -473,7 +439,6 @@ public class Crawler
 		{
 			// xml: add to database and update channel
 			doc = client.generateXMLDom(body);
-			updateChannel(currentURL, doc);
 		}
 		if (doc != null)
 		{
@@ -535,7 +500,11 @@ public class Crawler
 		// check code
 		if ((client.getCode() == 301) || (client.getCode() == 302))
 		{
-			frontier.add(uniformURL(client.getHost(), client.getRedirectURL(), client.getRedirectURL()));
+			String location = client.getRedirectURL();
+			if ((location != null) && !location.equals(client.getURL()))
+			{
+				frontier.add(location);
+			}
 			return false;
 		}
 		if (client.getCode() != 200)
@@ -557,24 +526,6 @@ public class Crawler
 	}
 
 	/**
-	 * Update channel, used by XML file only
-	 * @param currentURL - the URL of the XML file
-	 * @param doc - the document from the URL
-	 */
-	private void updateChannel(String currentURL, Document doc)
-	{
-		List<Channel> channelList = db.getChannelList();
-		for (int i = 0; i < channelList.size(); i++)
-		{
-			Channel eachChannel = channelList.get(i);
-			if (eachChannel.getMatchedURLs().contains(currentURL))
-			{
-				continue;
-			}
-		}
-	}
-
-	/**
 	 * Extract all links from HTML and add to frontier, only apply on HTML file, XML file do not extract, directly download
 	 * @param url - the URL of the HTML/XML file
 	 * @param doc - the document tree of the file
@@ -584,6 +535,7 @@ public class Crawler
 	{
 		NodeList nl = doc.getElementsByTagName("a");
 		String line = url + "\t";
+		boolean found = false;
 		for (int i = 0; i < nl.getLength(); i++)
 		{
 			Element element = (Element) nl.item(i);
@@ -597,15 +549,15 @@ public class Crawler
 					{
 						extractedLink = extractedLink + "/";
 					}
+					found = true;
 					line = line + extractedLink + " ";
 					frontier.add(extractedLink);
 				}
 			}
 		}
-		if (!urlsWritten.contains(url) && (line.indexOf(' ') > 0))
+		if ((db.getDocument(url) == null) && found)
 		{
 			writeLinks(line.trim());
-			urlsWritten.add(url);
 		}
 	}
 
@@ -630,13 +582,13 @@ public class Crawler
 			if (linkNode != null)
 			{
 				// Only output to DB if there is at least 1 image linked
-				write = true;
-				String extractedLink = linkNode.getNodeValue().trim();
+				String extractedLink = prependURL(linkNode.getNodeValue().trim());
 				if ((extractedLink.length() > 0) && (extractedLink.endsWith(".png") || extractedLink.endsWith(".gif") || extractedLink.endsWith(".jpg") || extractedLink.endsWith(".jpeg")))
 				{
 					if (!seen.contains(extractedLink))
 					{
 						images = images + " " + extractedLink;
+						write = true;
 					}
 					seen.add(extractedLink);
 				}
@@ -665,9 +617,9 @@ public class Crawler
 		}
 		else if (secure)
 		{
-			return "https://" + url;
+			return url.startsWith("//") ? "https:" + url : "https://" + url;
 		}
-		return "http://" + url;
+		return url.startsWith("//") ? "http:" + url : "http://" + url;
 	}
 
 	/**
@@ -687,7 +639,8 @@ public class Crawler
 		// Tolerate links missing the http: prefix
 		else if (relativePath.startsWith("//"))
 		{
-			return relativePath.endsWith("/") ? "http:" + relativePath : "http:" + relativePath + "/";
+			String protocol = secure ? "https" : "http";
+			return relativePath.endsWith("/") ? protocol + relativePath : protocol + relativePath + "/";
 		}
 		// remove first slash in relative path
 		else if (relativePath.startsWith("/"))
@@ -711,9 +664,8 @@ public class Crawler
 			{
 				firstPartURL = "/" + firstPartURL;
 			}
-			String wholeURL = firstPartURL + relativePath;
-			// if not end with xml or html, append / if needed
-			return wholeURL;
+			// if URL does not end with xml of html, append /
+			return firstPartURL + relativePath;
 		}
 	}
 
@@ -724,7 +676,8 @@ public class Crawler
 	 */
 	public boolean contentSeenTest(String content)
 	{
-		if (uniqueContents.contains(content))
+		//if (uniqueContents.contains(content))
+		if (db.getContentsSeen(content))
 		{
 			count++;
 			return true;

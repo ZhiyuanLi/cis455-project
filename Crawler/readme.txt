@@ -7,7 +7,7 @@ You can run the crawler through command line by:
 	jsoup-1.9.1.jar
 	servlet-api.jar
 2. In this directory, run "ant build"
-3. Run "java -cp crawler.jar:" + jar1 + ":" + jar2 + ... + jar4 + "edu.upenn.cis455.crawler.Crawler" <DBPath> <IndexerDBPath> <imageDBPath> <SeedURLsPath> <MaxSize> <logPath> [MaxNumOfFiles]
+3. Run "java -cp crawler.jar edu.upenn.cis455.crawler.Crawler" <DBPath> <IndexerDBPath> <imageDBPath> <SeedURLsPath> <MaxSize> <logPath> [MaxNumOfFiles]
 	DBPath is the path to the PageRank BerkeleyDB location. Will be created if it does not exist. Delete between runs if you wish to start over, because it is appended to if it exists.
 	IndexerDBPath is the path to the Indexer BerkeleyDB location. Will be created if it does not exist. Delete between runs if you wish to start over, because it is appended to if it exists.
 	ImageDBPath is the path to the Indexer BerkeleyDB location. Will be created if it does not exist. Delete between runs if you wish to start over, because it is appended to if it exists.
@@ -37,15 +37,15 @@ You can locally run the MapReduce job in pseudo-distributed mode through the fol
 	MaxSize specifies the maximum file size, in MB, of a page to crawl.
 	URL Log path specifies the path where a log .txt file is created. If it exists, it is appended to. Delete it before starting if you wish to crawl from the beginning. Do not place in same directory as seedPath.
 	numWorkers sets how many workers process the job.
-	MaxPages is optional. If not specified, the job runs indefinitely. Specifies roughly how many pages to crawl.
+	iterations is optional. If not specified, the job runs indefinitely. Specifies how many times to launch the crawl job.
 4. If in step 3 you deleted PageRankDB, IndexerDB, ImagesDB, or the log file, please delete all four. Otherwise the output files will not agree.
 
 ========How to run crawler Hadoop MapReduce version through AWS Elastic Map Reduce==
 1. Create an AmazonAWS instance through the AmazonEC2 console. Take note of the IP address.
 2. Run "ant build" in this directory to compile the project into a jar file.
-3. When the instance is live, scp the jar file to your instance. Place it in a directory named lib in root.
-4. scp all aformentioned jar files except hadoop-core-1.0.3.jar to the instance.
+3. When the instance is live, scp the jar file to your instance. Place it in a directory named lib in root. Provided you used the included build.xml, you do not need to transfer the other jars.
+4. scp the seed file to the instance.
 5. ssh to your instance.
 6. Follow steps 3+4 in the Hadoop MapReduce crawler standalone mode instructions above.
 7. If desired, scp the output files back to the local system.
-8. Terminate the instance through the AmazonEC2 console.
+8. Terminate the instance through the AmazonEC2 console to avoid extraneous charges.
