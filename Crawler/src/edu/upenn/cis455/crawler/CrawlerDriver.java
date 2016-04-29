@@ -91,6 +91,7 @@ public class CrawlerDriver extends Configured implements Tool
 					   " <crawler out path> <max file size> <out links log path> <numWorkers> [num of files]");
 			return -2;
 		}
+		long startTime = System.currentTimeMillis();
 		String seedPath = args[0];
 		workers = Integer.parseInt(args[7]);
 		indexDBDir = args[1];
@@ -107,9 +108,11 @@ public class CrawlerDriver extends Configured implements Tool
 		{
 			success &= runShuffle(new String[] {frontierPath, URLPath});
 			success &= runCrawler(new String[] {URLPath, frontierPath});
+			System.out.println("********************************************** URLs Processed = " + iterations * workers * pagesPerCrawl + "**********************************");
 			iterations++;
 		}
 		deleteDirectory(URLPath);
+		System.out.println("Time elapsed: " + (System.currentTimeMillis() - startTime));
 		return success ? 0 : -1;
 	}
 

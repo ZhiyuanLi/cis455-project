@@ -158,7 +158,11 @@ public class WebDocument
 	public void addHit(String hit)
 	{
 		hits.add(hit);
-		System.out.println("Hits inside addHit = " + hits);
+	}
+
+	public void setHits(HashSet<String> hits)
+	{
+		this.hits = hits;
 	}
 
 	public HashSet<String> getHits()

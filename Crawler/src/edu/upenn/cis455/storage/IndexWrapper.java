@@ -8,10 +8,12 @@ import java.util.List;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.persist.EntityCursor;
+//import com.sleepycat.persist.Cursor;
 import com.sleepycat.persist.EntityStore;
 import com.sleepycat.persist.PrimaryIndex;
 import com.sleepycat.persist.SecondaryIndex;
 import com.sleepycat.persist.StoreConfig;
+import java.util.HashSet;
 public class IndexWrapper
 {
 	// added for singleton
@@ -20,7 +22,7 @@ public class IndexWrapper
 	private static EntityStore store;
 	private static PrimaryIndex<String, WebDocument> webDocIndex;
 	private static SecondaryIndex<String, String, WebDocument> hashIndex;
-	private static File datebaseDir;
+	private static File databaseDir;
 	/**
 	 * Construct a new Database wrapper
 	 */
@@ -56,12 +58,12 @@ public class IndexWrapper
 		File f = new File(dbPath);
 		if (f.exists())
 		{
-			datebaseDir = f;
+			databaseDir = f;
 		}
 		else
 		{
 			f.mkdir();
-			datebaseDir = f;
+			databaseDir = f;
 		}
 	}
 
@@ -79,7 +81,7 @@ public class IndexWrapper
 		storeConfig.setAllowCreate(true);
 		storeConfig.setTransactional(true);
 		// initial fields
-		environment = new Environment(datebaseDir, envConfig);
+		environment = new Environment(databaseDir, envConfig);
 		store = new EntityStore(environment, "EntityStore", storeConfig);
 		webDocIndex = store.getPrimaryIndex(String.class, WebDocument.class);
 		hashIndex = store.getSecondaryIndex(webDocIndex, String.class, "hashValue");
@@ -100,14 +102,21 @@ public class IndexWrapper
 		}
 	}
 
-	/*public void addHit(String firstURL, String otherURL)
+	/**
+	 * Add a document as a hit to another document
+	 * @param firstURL - the document to gain a hit
+	 * @param otherURL - the duplicate content URL
+	 */
+	public void addHit(String firstURL, String otherURL)
 	{
+		//WebDocument theKey = new WebDocument(firstURL.getBytes("UTF-8"));
+		//WebDocument theData = new WebDocument();
 		WebDocument doc = getDocument(firstURL);
-		deleteDocument(firstURL);
-		doc.addHit(otherURL);
+		HashSet<String> hits = doc.getHits();
+		hits.add(otherURL);
+		doc.setHits(hits);
 		webDocIndex.put(doc);
-		System.out.println("Hits inside addHit: " + doc.getHits());
-	}*/
+	}
 
 	/**
 	 * get web document index

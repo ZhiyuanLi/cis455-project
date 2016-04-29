@@ -166,6 +166,7 @@ public class Crawler
 		{
 			// Step 1. get a URL
 			String currentURL = frontier.poll();
+			System.out.println("CurrentURL = " + currentURL);
 			// Step 2. send head and get response to check if document is valid
 			HttpCrawlerClient client = new HttpCrawlerClient();
 			client.parseURL(currentURL);
@@ -190,7 +191,6 @@ public class Crawler
 			// case 1: already crawled and last modified earlier than last crawl, should use local copy of the file
 			if ((webDocument != null) && (lastModified < webDocument.getLastCrawlTime()))
 			{
-				//System.out.println(currentURL + ": Not Modified");
 				continue;
 			}
 			host = client.getHost();
@@ -198,7 +198,6 @@ public class Crawler
 			boolean isValidByRobot = isPolite(client, host, client.getPort(), currentURL);
 			if (!isValidByRobot)
 			{
-				//System.out.println(currentURL + ": Blocked by robots.txt");
 				continue;
 			}
 			if (!timeMap.containsKey(currentURL))
@@ -213,9 +212,6 @@ public class Crawler
 				break;
 			}
 		}
-		//System.out.println("Final count: " + count + " page(s) crawled.");
-		// PrintDBs.setVerbose(false);
-		// PrintDBs.print(indexDBDir, imagesDBDir);
 	}
 
 	/**
@@ -382,11 +378,22 @@ public class Crawler
 		timeMap.put(client.getHost(), System.currentTimeMillis());
 		// response content body
 		String body = client.getBody();
-		String hashValue = String.valueOf(hash.hash(body));
+		if ((body == null) || body.equals(""))
+		{
+			return;
+		}
+		String hashValue;
+		try
+		{
+			hashValue = String.valueOf(hash.hash(body));
+		}
+		catch (Exception e)
+		{
+			return;
+		}
 		if (indexdb.containsHash(hashValue))
 		{
 			String firstURL = indexdb.getHash(hashValue);
-			System.out.println(currentURL + " Content seen at URL " + firstURL);
 			HttpURL normURL;
 			try
 			{
@@ -396,15 +403,13 @@ public class Crawler
 			{
 				return;
 			}
-			WebDocument first = indexdb.getDocument(firstURL);
+			indexdb.addHit(firstURL, normURL.getNormalizeURL(secure));
+			/*WebDocument first = indexdb.getDocument(firstURL);
 			first.addHit(normURL.getNormalizeURL(secure));
+			// release our lock on the DB
 			indexdb.close();
 			indexdb = new IndexWrapper(indexerDBDir);
-			indexdb.addDocument(first);
-			return;
-		}
-		else if ((body == null) || body.equals(""))
-		{
+			indexdb.addDocument(first);*/
 			return;
 		}
 		Document doc = null;
@@ -432,7 +437,6 @@ public class Crawler
 		}
 		if (doc != null)
 		{
-			//System.out.println(currentURL + ": Downloading");
 			String title = client.getHost();
 			HttpURL normURL = null;
 			try
