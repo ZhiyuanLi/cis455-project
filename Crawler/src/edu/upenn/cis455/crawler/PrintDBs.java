@@ -16,9 +16,10 @@ public class PrintDBs
 			System.out.println();
 			for (WebDocument doc: db1.getDocumentList())
 			{
-				System.out.println("URL = " + doc.getURL());
+				System.out.println("URL " + doc.getURL() + " -> Hits " + doc.getHits());
 				System.out.println("Title: " + doc.getDocumentTitle());
-				System.out.println("Content: " + doc.getDocumentContent());
+//				System.out.println("Content: " + doc.getDocumentContent());
+				System.out.println("Hash Value = " + doc.getHash());
 			}
 			System.out.println();
 			for (WebDocument doc: db2.getDocumentList())
@@ -29,6 +30,15 @@ public class PrintDBs
 		}
 		System.out.println("Indexer DB Length: " + db1.getDocumentList().size());
 		System.out.println("Image DB Length: " + db2.getDocumentList().size());
+	}
+
+	/**
+	 * Sets the verbosity of the print
+	 * @param verbose - true if printing verbosely
+	 */
+	public static void setVerbose(boolean verbose)
+	{
+		inc = verbose ? 1 : 0;
 	}
 
 	/**

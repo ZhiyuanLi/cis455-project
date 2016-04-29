@@ -5,6 +5,7 @@ import com.sleepycat.persist.model.Entity;
 import com.sleepycat.persist.model.PrimaryKey;
 import com.sleepycat.persist.model.SecondaryKey;
 import com.sleepycat.persist.model.Relationship;
+import java.util.HashSet;
 /**
  * WebDocument entity in database
  * @author weisong
@@ -13,8 +14,12 @@ import com.sleepycat.persist.model.Relationship;
 public class WebDocument
 {
 	@SecondaryKey(relate=Relationship.MANY_TO_ONE)
+	private String hashValue;
 	private String content;
 	private String title = "";
+	private HashSet<String> hits;
+	private String state = "";
+	private String city = "";
 	private long lastCrawlTime;
 	@PrimaryKey
 	private String url;
@@ -23,6 +28,7 @@ public class WebDocument
 	 */
 	public WebDocument()
 	{
+		hits = new HashSet<String>();
 	}
 
 	/**
@@ -31,7 +37,28 @@ public class WebDocument
 	 */
 	public WebDocument(String url)
 	{
+		hits = new HashSet<String>();
 		this.url = url;
+	}
+
+	public String getCity()
+	{
+		return city;
+	}
+
+	public void setCity(String city)
+	{
+		this.city = city;
+	}
+
+	public void setState(String state)
+	{
+		this.state = state;
+	}
+
+	public String getState()
+	{
+		return state;
 	}
 
 	/**
@@ -50,6 +77,24 @@ public class WebDocument
 	public String getURL()
 	{
 		return this.url;
+	}
+
+	/**
+	 * Set the hash code
+	 * @param hash - the document's hash value
+	 */
+	public void setHash(String hash)
+	{
+		this.hashValue = hash;
+	}
+
+	/**
+	 * Get the document's hash value
+	 * @return Returns the document's hash value
+	 */
+	public String getHash()
+	{
+		return hashValue;
 	}
 
 	/**
@@ -104,5 +149,20 @@ public class WebDocument
 	public String getDocumentTitle()
 	{
 		return title;
+	}
+
+	/**
+	 * Add a hit
+	 * @param hit - the URL to add to this document
+	 */
+	public void addHit(String hit)
+	{
+		hits.add(hit);
+		System.out.println("Hits inside addHit = " + hits);
+	}
+
+	public HashSet<String> getHits()
+	{
+		return hits;
 	}
 }

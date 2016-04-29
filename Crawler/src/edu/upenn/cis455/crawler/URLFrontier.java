@@ -20,7 +20,7 @@ public class URLFrontier
 	 */
 	public void add(String url)
 	{
-		if ((urlQueue.size()) < 1000 && !urlQueue.contains(url))
+		if ((urlQueue.size() < 1000) && !urlQueue.contains(url))
 		{
 			urlQueue.offer(url);
 		}

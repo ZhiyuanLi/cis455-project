@@ -56,7 +56,6 @@ public class HttpCrawlerClient
 		}
 		catch (MalformedURLException e)
 		{
-			return;
 		}
 		this.url = url;
 		host = urlObject.getHost();
@@ -163,6 +162,7 @@ public class HttpCrawlerClient
 			{
 				socket = new Socket(host, portNum);
 			}
+			// Timeout socket after 5 seconds
 			socket.setSoTimeout(5000);
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			out.write("GET " + path + " HTTP/1.1\r\n");
@@ -211,17 +211,14 @@ public class HttpCrawlerClient
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
 		}
 		return null;
 	}
 
 	/**
-	 * From MS1: Given string content, generate document using db factory and
-	 * tidy
-	 * 
-	 * @param content
-	 * @return
+	 * From MS1: Given string content, generate document using db factory and tidy
+	 * @param content - the content to parse
+	 * @return Returns the XML Document's DOM tree
 	 */
 	public Document generateHTMLDom(String content)
 	{
@@ -245,7 +242,6 @@ public class HttpCrawlerClient
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
 		}
 		return d;
 	}
@@ -350,7 +346,6 @@ public class HttpCrawlerClient
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
 		}
 	}
 
@@ -469,5 +464,14 @@ public class HttpCrawlerClient
 	public String getRedirectURL()
 	{
 		return location;
+	}
+
+	/**
+	 * Get the port number
+	 * @return Returns the port number
+	 */
+	public int getPort()
+	{
+		return portNum;
 	}
 }

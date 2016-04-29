@@ -10,8 +10,8 @@ import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.persist.EntityCursor;
 import com.sleepycat.persist.EntityStore;
 import com.sleepycat.persist.PrimaryIndex;
+import com.sleepycat.persist.SecondaryIndex;
 import com.sleepycat.persist.StoreConfig;
-import java.util.concurrent.locks.ReentrantLock;
 public class IndexWrapper
 {
 	// added for singleton
@@ -19,8 +19,8 @@ public class IndexWrapper
 	private static Environment environment;
 	private static EntityStore store;
 	private static PrimaryIndex<String, WebDocument> webDocIndex;
+	private static SecondaryIndex<String, String, WebDocument> hashIndex;
 	private static File datebaseDir;
-	private final ReentrantLock lock = new ReentrantLock();
 	/**
 	 * Construct a new Database wrapper
 	 */
@@ -60,7 +60,6 @@ public class IndexWrapper
 		}
 		else
 		{
-			System.out.println("Database created");
 			f.mkdir();
 			datebaseDir = f;
 		}
@@ -83,6 +82,7 @@ public class IndexWrapper
 		environment = new Environment(datebaseDir, envConfig);
 		store = new EntityStore(environment, "EntityStore", storeConfig);
 		webDocIndex = store.getPrimaryIndex(String.class, WebDocument.class);
+		hashIndex = store.getSecondaryIndex(webDocIndex, String.class, "hashValue");
 	}
 
 	/**
@@ -100,21 +100,56 @@ public class IndexWrapper
 		}
 	}
 
+	/*public void addHit(String firstURL, String otherURL)
+	{
+		WebDocument doc = getDocument(firstURL);
+		deleteDocument(firstURL);
+		doc.addHit(otherURL);
+		webDocIndex.put(doc);
+		System.out.println("Hits inside addHit: " + doc.getHits());
+	}*/
+
 	/**
 	 * get web document index
 	 * @return Returns the list of documents
 	 */
 	public PrimaryIndex<String, WebDocument> getWebDocuments()
 	{
-		try
+		return webDocIndex;
+	}
+
+	/**
+	 * Determine if the frontier has a hash value
+	 * @param hash - the hashcode
+	 * @return Returns true if the hashcode corresponds to a content
+	 */
+	public boolean containsHash(String hash)
+	{
+		EntityCursor<WebDocument> cursor = hashIndex.subIndex(hash).entities();
+		for (WebDocument doc: cursor)
 		{
-			lock.lock();
+			cursor.close();
+			return true;
 		}
-		finally
+		cursor.close();
+		return false;
+	}
+
+	/**
+	 * Return the URL corresponding to the hash value
+	 * @param hash - the hashcode
+	 * @return Returns the URL corresponding to the hash value
+	 */
+	public String getHash(String hash)
+	{
+		EntityCursor<WebDocument> cursor = hashIndex.subIndex(hash).entities();
+		for (WebDocument doc: cursor)
 		{
-			lock.unlock();
-			return webDocIndex;
+			cursor.close();
+			return doc.getURL();
 		}
+		cursor.close();
+		return null;
 	}
 
 	/**
@@ -124,22 +159,14 @@ public class IndexWrapper
 	public List<WebDocument> getDocumentList()
 	{
 		List<WebDocument> documentList;
-		try
+		documentList = new ArrayList<WebDocument>();
+		EntityCursor<WebDocument> cursor = webDocIndex.entities();
+		Iterator<WebDocument> i = cursor.iterator();
+		while (i.hasNext())
 		{
-			lock.lock();
-			documentList = new ArrayList<WebDocument>();
-			EntityCursor<WebDocument> cursor = webDocIndex.entities();
-			Iterator<WebDocument> i = cursor.iterator();
-			while (i.hasNext())
-			{
-				documentList.add(i.next());
-			}
-			cursor.close();
+			documentList.add(i.next());
 		}
-		finally
-		{
-			lock.unlock();
-		}
+		cursor.close();
 		return documentList;
 	}
 
@@ -149,15 +176,7 @@ public class IndexWrapper
 	 */
 	public void addDocument(WebDocument webDoc)
 	{
-		try
-		{
-			lock.lock();
-			webDocIndex.put(webDoc);
-		}
-		finally
-		{
-			lock.unlock();
-		}
+		webDocIndex.put(webDoc);
 	}
 
 	/**
@@ -167,15 +186,7 @@ public class IndexWrapper
 	 */
 	public WebDocument getDocument(String url)
 	{
-		try
-		{
-			lock.lock();
-		}
-		finally
-		{
-			lock.unlock();
-			return webDocIndex.get(url);
-		}
+		return webDocIndex.get(url);
 	}
 
 	/**
@@ -184,14 +195,6 @@ public class IndexWrapper
 	 */
 	public void deleteDocument(String url)
 	{
-		try
-		{
-			lock.lock();
-			webDocIndex.delete(url);
-		}
-		finally
-		{
-			lock.unlock();
-		}
+		webDocIndex.delete(url);
 	}
 }

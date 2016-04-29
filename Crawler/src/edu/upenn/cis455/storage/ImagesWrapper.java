@@ -11,7 +11,6 @@ import com.sleepycat.persist.EntityCursor;
 import com.sleepycat.persist.EntityStore;
 import com.sleepycat.persist.PrimaryIndex;
 import com.sleepycat.persist.StoreConfig;
-import java.util.concurrent.locks.ReentrantLock;
 public class ImagesWrapper
 {
 	// added for singleton
@@ -20,7 +19,6 @@ public class ImagesWrapper
 	private static EntityStore store;
 	private static PrimaryIndex<String, WebDocument> webDocIndex;
 	private static File datebaseDir;
-	private final ReentrantLock lock = new ReentrantLock();
 	/**
 	 * Construct a new Database wrapper
 	 */
@@ -60,7 +58,6 @@ public class ImagesWrapper
 		}
 		else
 		{
-			System.out.println("Database created");
 			f.mkdir();
 			datebaseDir = f;
 		}
@@ -106,15 +103,7 @@ public class ImagesWrapper
 	 */
 	public PrimaryIndex<String, WebDocument> getWebDocuments()
 	{
-		try
-		{
-			lock.lock();
-		}
-		finally
-		{
-			lock.unlock();
-			return webDocIndex;
-		}
+		return webDocIndex;
 	}
 
 	/**
@@ -123,23 +112,14 @@ public class ImagesWrapper
 	 */
 	public List<WebDocument> getDocumentList()
 	{
-		List<WebDocument> documentList;
-		try
+		List<WebDocument> documentList = new ArrayList<WebDocument>();
+		EntityCursor<WebDocument> cursor = webDocIndex.entities();
+		Iterator<WebDocument> i = cursor.iterator();
+		while (i.hasNext())
 		{
-			lock.lock();
-			documentList = new ArrayList<WebDocument>();
-			EntityCursor<WebDocument> cursor = webDocIndex.entities();
-			Iterator<WebDocument> i = cursor.iterator();
-			while (i.hasNext())
-			{
-				documentList.add(i.next());
-			}
-			cursor.close();
+			documentList.add(i.next());
 		}
-		finally
-		{
-			lock.unlock();
-		}
+		cursor.close();
 		return documentList;
 	}
 
@@ -149,15 +129,7 @@ public class ImagesWrapper
 	 */
 	public void addDocument(WebDocument webDoc)
 	{
-		try
-		{
-			lock.lock();
-			webDocIndex.put(webDoc);
-		}
-		finally
-		{
-			lock.unlock();
-		}
+		webDocIndex.put(webDoc);
 	}
 
 	/**
@@ -167,15 +139,7 @@ public class ImagesWrapper
 	 */
 	public WebDocument getDocument(String url)
 	{
-		try
-		{
-			lock.lock();
-		}
-		finally
-		{
-			lock.unlock();
-			return webDocIndex.get(url);
-		}
+		return webDocIndex.get(url);
 	}
 
 	/**
@@ -184,14 +148,6 @@ public class ImagesWrapper
 	 */
 	public void deleteDocument(String url)
 	{
-		try
-		{
-			lock.lock();
-			webDocIndex.delete(url);
-		}
-		finally
-		{
-			lock.unlock();
-		}
+		webDocIndex.delete(url);
 	}
 }

@@ -29,7 +29,7 @@ import com.planetj.math.rabinhash.RabinHashFunction32;
 public class Crawler
 {
 	// 2051 corresponds to an irreducible polynomial
-	private RabinHashFunction32 hash = new RabinHashFunction32(2051);
+	private RabinHashFunction32 hash = RabinHashFunction32.DEFAULT_HASH_FUNCTION;
 	private int maxSize = Integer.MAX_VALUE;
 	private int maxNum = Integer.MAX_VALUE;
 	private String indexerDBDir = "";
@@ -51,10 +51,8 @@ public class Crawler
 	// time host last crawled
 	private Map<String, Long> timeMap = new HashMap<String, Long>();
 	// hash host to robot
-	private Map<String, Robot> hostRobotMap = new HashMap<String, Robot>();
-	private HashSet<Integer> rabinHashes = new HashSet<Integer>();
+	private Map<String, Robot> hostRobotMap = new HashMap<String, Robot>();;
 	private String lastHost = "";
-	private int pagesSkipped = 0;
 	private URLFrontier frontier;
 	private boolean secure = false;
 	private final ReentrantLock lock = new ReentrantLock();
@@ -188,26 +186,19 @@ public class Crawler
 				continue;
 			}
 			String host = client.getHost();
-			// Only affects standalone mode, prevents the same host from dominating the crawled pages
-			if (lastHost.equals(host) && (pagesSkipped < 10))
-			{
-				frontier.add(currentURL);
-				pagesSkipped++;
-				continue;
-			}
 			webDocument = indexdb.getDocument(currentURL);
 			// case 1: already crawled and last modified earlier than last crawl, should use local copy of the file
 			if ((webDocument != null) && (lastModified < webDocument.getLastCrawlTime()))
 			{
-				System.out.println(currentURL + " : Not Modified");
+				//System.out.println(currentURL + ": Not Modified");
 				continue;
 			}
 			host = client.getHost();
 			// case 2: not crawled yet. check if robot allowed!
-			boolean isValidByRobot = isPolite(client, host, currentURL);
+			boolean isValidByRobot = isPolite(client, host, client.getPort(), currentURL);
 			if (!isValidByRobot)
 			{
-				System.out.println(currentURL + " : Blocked by robots.txt");
+				//System.out.println(currentURL + ": Blocked by robots.txt");
 				continue;
 			}
 			if (!timeMap.containsKey(currentURL))
@@ -215,7 +206,6 @@ public class Crawler
 				timeMap.put(currentURL, 0l);
 			}
 			lastHost = host;
-			pagesSkipped = 0;
 			// Step 3. download and store in database
 			downloadAndStore(client, currentURL);
 			if (count >= maxNum)
@@ -223,9 +213,9 @@ public class Crawler
 				break;
 			}
 		}
-		System.out.println("Final count: " + count + " page(s) crawled.");
+		//System.out.println("Final count: " + count + " page(s) crawled.");
+		// PrintDBs.setVerbose(false);
 		// PrintDBs.print(indexDBDir, imagesDBDir);
-//		close();
 	}
 
 	/**
@@ -235,7 +225,7 @@ public class Crawler
 	 * @param currentURL - The currently requested URL
 	 * @return Returns true if the host allows robots to access the URL
 	 */
-	private boolean isPolite(HttpCrawlerClient client, String host, String currentURL)
+	private boolean isPolite(HttpCrawlerClient client, String host, int port, String currentURL)
 	{
 		Robot robot = hostRobotMap.get(host);
 		if (robot == null)
@@ -250,7 +240,7 @@ public class Crawler
 			}
 		}
 		// already get robot, check if cis455crawler is banned
-		return parseRobot(host, currentURL, robot, "cis455crawler");
+		return parseRobot(host, port, currentURL, robot, "cis455crawler");
 	}
 
 	/**
@@ -288,7 +278,7 @@ public class Crawler
 	 * @param agent - the agent described in robots.txt
 	 * @return Returns true if the robots.txt allows this crawler
 	 */
-	private boolean parseRobot(String host, String currentURL, Robot robot, String agent)
+	private boolean parseRobot(String host, int port, String currentURL, Robot robot, String agent)
 	{
 		// only check if robot contains agent which should be "cis455crawler" or "*"
 		if (robot.containsAgent(agent))
@@ -301,7 +291,7 @@ public class Crawler
 			{
 				for (int i = 0; i < allowed.size(); i++)
 				{
-					if (checkEquals(currentURL, host + allowed.get(i)))
+					if (checkEquals(currentURL, host + ":" + port + allowed.get(i)))
 					{
 						return true;
 					}
@@ -312,7 +302,7 @@ public class Crawler
 			{
 				for (int i = 0; i < banned.size(); i++)
 				{
-					if (checkEquals(currentURL, host + banned.get(i)))
+					if (checkEquals(currentURL, host + ":" + port + banned.get(i)))
 					{
 						return false;
 					}
@@ -322,16 +312,21 @@ public class Crawler
 			if (!checkDelayTime(robot, agent, lastCrawlTime))
 			{
 				// added to frontier and crawl next time
-				frontier.add(currentURL);
+				HttpURL normURL;
+				try
+				{
+					normURL = new HttpURL(currentURL, secure);
+				}
+				catch (Exception e)
+				{
+					return false;
+				}
+				frontier.add(normURL.getNormalizeURL(secure));
 				return false;
 			}
-			// not banned and satisfy delay interval requirement
-			return true;
 		}
-		else
-		{
-			return true;
-		}
+		// not banned and satisfies delay interval requirement
+		return true;
 	}
 
 	/**
@@ -387,7 +382,28 @@ public class Crawler
 		timeMap.put(client.getHost(), System.currentTimeMillis());
 		// response content body
 		String body = client.getBody();
-		if ((body == null) || body.equals(""))
+		String hashValue = String.valueOf(hash.hash(body));
+		if (indexdb.containsHash(hashValue))
+		{
+			String firstURL = indexdb.getHash(hashValue);
+			System.out.println(currentURL + " Content seen at URL " + firstURL);
+			HttpURL normURL;
+			try
+			{
+				normURL = new HttpURL(currentURL, secure);
+			}
+			catch (Exception e)
+			{
+				return;
+			}
+			WebDocument first = indexdb.getDocument(firstURL);
+			first.addHit(normURL.getNormalizeURL(secure));
+			indexdb.close();
+			indexdb = new IndexWrapper(indexerDBDir);
+			indexdb.addDocument(first);
+			return;
+		}
+		else if ((body == null) || body.equals(""))
 		{
 			return;
 		}
@@ -397,16 +413,11 @@ public class Crawler
 			// html: extract and add to queue
 			doc = client.generateHTMLDom(body);
 			// for bug fixing
-			if (doc == null)
+			if ((doc == null) || !detectEnglish(body))
 			{
 				return;
 			}
 			String host = client.getHost();
-			// I assume XML is always English. I crudely check that HTML is English
-			if (!detectEnglish(body))
-			{
-				return;
-			}
 			extractAndEnqueue(currentURL, doc, host);
 		}
 		else if (contentType.trim().equalsIgnoreCase("text/xml") || contentType.trim().equalsIgnoreCase("application/xml")
@@ -414,31 +425,32 @@ public class Crawler
 		{
 			// xml: add to database and update channel
 			doc = client.generateXMLDom(body);
+			if (doc == null)
+			{
+				return;
+			}
 		}
 		if (doc != null)
 		{
-			System.out.println(currentURL + ": Downloading");
+			//System.out.println(currentURL + ": Downloading");
 			String title = client.getHost();
+			HttpURL normURL = null;
 			try
 			{
+				normURL = new HttpURL(currentURL, secure);
 				title = Jsoup.parse(body).select("title").first().text();
 			}
 			catch (NullPointerException e)
 			{
 			}
-			webDocument = new WebDocument(prependURL(currentURL));
-			long crawlTime = System.currentTimeMillis();
-			webDocument.setLastCrawlTime(crawlTime);
-			webDocument.setDocumentContent(body);
-			webDocument.setDocumentTitle(title);
-			String noHTML = Jsoup.parse(body).text().toLowerCase().trim();
-			if (contentSeenTest(noHTML))
+			catch (Exception e)
 			{
-				count++;
 				return;
 			}
-			rabinHashes.add(hash.hash(noHTML));
-			WebDocument contents = new WebDocument(prependURL(currentURL));
+			long crawlTime = System.currentTimeMillis();
+			String noHTML = Jsoup.parse(body).text().toLowerCase().trim();
+			WebDocument contents = new WebDocument(normURL.getNormalizeURL(secure));
+			contents.setHash(hashValue);
 			contents.setDocumentContent(noHTML);
 			contents.setLastCrawlTime(crawlTime);
 			contents.setDocumentTitle(title);
@@ -450,16 +462,6 @@ public class Crawler
 		{
 			return;
 		}
-	}
-
-	/**
-	 * Determines if the content has already been seen
-	 * @param content - the content to test for
-	 * @return Returns true if the content was seed (and subsequently the hash value is not unique
-	 */
-	private boolean contentSeenTest(String content)
-	{
-		return rabinHashes.contains(hash.hash(content));
 	}
 
 	/**
@@ -493,7 +495,16 @@ public class Crawler
 			String location = client.getRedirectURL();
 			if ((location != null) && !location.equals(client.getURL()))
 			{
-				frontier.add(location);
+				HttpURL normURL;
+				try
+				{
+					normURL = new HttpURL(location, location.startsWith("https"));
+				}
+				catch (Exception e)
+				{
+					return false;
+				}
+				frontier.add(normURL.getNormalizeURL(location.startsWith("https")));
 			}
 			return false;
 		}
@@ -535,13 +546,22 @@ public class Crawler
 				String extractedLink = uniformURL(host, linkNode.getNodeValue().trim() + "", url);
 				if ((extractedLink != null) && (extractedLink.length() > 0))
 				{
-					if (extractedLink.charAt(extractedLink.length() - 1) != '/')
+					if (!extractedLink.endsWith("xml") && (extractedLink.charAt(extractedLink.length() - 1) != '/'))
 					{
 						extractedLink = extractedLink + "/";
 					}
 					found = true;
 					line = line + extractedLink + " ";
-					frontier.add(extractedLink);
+					HttpURL normURL;
+					try
+					{
+						normURL = new HttpURL(extractedLink, extractedLink.startsWith("https"));
+					}
+					catch (Exception e)
+					{
+						return;
+					}
+					frontier.add(normURL.getNormalizeURL(extractedLink.startsWith("https")));
 				}
 			}
 		}
@@ -571,8 +591,17 @@ public class Crawler
 			Node linkNode = element.getAttributeNode("src");
 			if (linkNode != null)
 			{
+				HttpURL normURL;
 				// Only output to DB if there is at least 1 image linked
-				String extractedLink = prependURL(linkNode.getNodeValue().trim());
+				try
+				{
+					normURL = new HttpURL(linkNode.getNodeValue().trim(), linkNode.getNodeValue().trim().startsWith("https"));
+				}
+				catch (Exception e)
+				{
+					continue;
+				}
+				String extractedLink = normURL.getNormalizeURL(linkNode.getNodeValue().trim().startsWith("https"));
 				if ((extractedLink.length() > 0) && (extractedLink.endsWith(".png") || extractedLink.endsWith(".gif") || extractedLink.endsWith(".jpg") || extractedLink.endsWith(".jpeg")))
 				{
 					if (!seen.contains(extractedLink))
@@ -586,30 +615,21 @@ public class Crawler
 		}
 		if (write)
 		{
-			WebDocument document = new WebDocument(prependURL(url));
+			HttpURL normURL;
+			try
+			{
+				normURL = new HttpURL(url, secure);
+			}
+			catch (Exception e)
+			{
+				return;
+			}
+			WebDocument document = new WebDocument(normURL.getNormalizeURL(secure));
 			document.setDocumentContent(images.trim());
 			document.setDocumentTitle(title);
 			document.setLastCrawlTime(crawlTime);
 			imagesdb.addDocument(document);
 		}
-	}
-
-	/**
-	 * Add http:// or https:// to URL if not already present
-	 * @param url - the URL to fix
-	 * @return Returns the fixed URL
-	 */
-	private String prependURL(String url)
-	{
-		if (url.startsWith("https://") || url.startsWith("http://"))
-		{
-			return url;
-		}
-		else if (secure)
-		{
-			return url.startsWith("//") ? "https:" + url : "https://" + url;
-		}
-		return url.startsWith("//") ? "http:" + url : "http://" + url;
 	}
 
 	/**
@@ -660,7 +680,7 @@ public class Crawler
 	}
 
 	/**
-	 * Check type first, if not xml or html file, append / at the end if needed
+	 * Check type first, if not an xml or html file, append / at the end if needed
 	 * @param url - the URL to add '/' to the end of
 	 * @return Returns the correctly formatted URL
 	 */
