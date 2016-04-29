@@ -22,7 +22,7 @@ public class SingleWordIndexerMapper extends Mapper<LongWritable, Text, Text, In
 			// pre-deal with content
 			Tokenizer tokenizer = new Tokenizer(docContent);
 			// Get word frequency map
-			Hashtable<String, Integer> wordFrequencyMap = new Hashtable<String, Integer>();
+			Hashtable<String, Double> wordFrequencyMap = new Hashtable<String, Double>();
 //			Hashtable<String, ArrayList<Integer>> wordHitsMap = new Hashtable<String, ArrayList<Integer>>();
 			//			int position = 0;
 			while (tokenizer.hasNext()) {
@@ -38,7 +38,7 @@ public class SingleWordIndexerMapper extends Mapper<LongWritable, Text, Text, In
 					String pWord = WordProcessor.process(word.toLowerCase());
 					// System.out.println("process: " + pWord);
 					if (pWord != null) {
-						Integer frequecy = 1;
+						Double frequecy = 1.0;
 //						ArrayList<Integer> hits = new ArrayList<Integer>();
 						if (wordFrequencyMap.containsKey(pWord)) {
 							frequecy = wordFrequencyMap.get(pWord) + 1;
@@ -54,8 +54,10 @@ public class SingleWordIndexerMapper extends Mapper<LongWritable, Text, Text, In
 			// System.out.println("tokenizer finished");
 			// Do emit if word frequency is not empty
 			if (!wordFrequencyMap.isEmpty()) {
+				// Get module value update word frequency map
+				wordFrequencyMap = getModule(wordFrequencyMap);
 				// Get max frequency
-				Integer maxFrequency = Collections.max(wordFrequencyMap.values());
+				Double maxFrequency = Collections.max(wordFrequencyMap.values());
 				// Compute the TF score and emit
 				for (String word : wordFrequencyMap.keySet()) {
 					// get tf score of that word
@@ -78,5 +80,18 @@ public class SingleWordIndexerMapper extends Mapper<LongWritable, Text, Text, In
 				}
 			}
 		}
+	}
+	
+	
+	private Hashtable<String, Double> getModule(Hashtable<String, Double> wordFrequencyMap) {
+		double module = 0;
+		for (String word : wordFrequencyMap.keySet()) {
+			module += Math.pow(wordFrequencyMap.get(word), 2);
+		}
+		module = Math.sqrt(module);
+		for (String word : wordFrequencyMap.keySet()) {
+			wordFrequencyMap.put(word, wordFrequencyMap.get(word)/module);
+		}
+		return wordFrequencyMap;
 	}
 }

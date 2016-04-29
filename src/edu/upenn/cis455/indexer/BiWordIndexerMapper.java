@@ -18,7 +18,7 @@ public class BiWordIndexerMapper extends Mapper<LongWritable, Text, Text, InterV
 			String docContent = temp[1];
 			Tokenizer tokenizer = new Tokenizer(docContent);
 
-			Hashtable<String, Integer> wordFrequencyMap = new Hashtable<String, Integer>();
+			Hashtable<String, Double> wordFrequencyMap = new Hashtable<String, Double>();
 			String preWord = "";
 			String concatWord = "";
 			while (tokenizer.hasNext()) {			
@@ -35,7 +35,7 @@ public class BiWordIndexerMapper extends Mapper<LongWritable, Text, Text, InterV
 					//					System.out.println(concatWord);
 					String pWord = WordProcessor.process(concatWord.toLowerCase());
 					if (pWord != null) {
-						Integer frequecy = 1;
+						Double frequecy = 1.0;
 						if (wordFrequencyMap.containsKey(pWord)) {
 							frequecy = wordFrequencyMap.get(pWord) + 1;
 						}
@@ -45,8 +45,11 @@ public class BiWordIndexerMapper extends Mapper<LongWritable, Text, Text, InterV
 			}
 			// Do emit if word frequency is not empty
 			if (!wordFrequencyMap.isEmpty()) {
+				// Get the normalize
+				wordFrequencyMap = getModule(wordFrequencyMap);
+				
 				// Get max frequency
-				Integer maxFrequency = Collections.max(wordFrequencyMap.values());
+				Double maxFrequency = Collections.max(wordFrequencyMap.values());
 				// Compute the TF score and emit
 				for (String word : wordFrequencyMap.keySet()) {
 					// get tf score of that word
@@ -55,5 +58,18 @@ public class BiWordIndexerMapper extends Mapper<LongWritable, Text, Text, InterV
 				}
 			}
 		}
+	}
+	
+	
+	private Hashtable<String, Double> getModule(Hashtable<String, Double> wordFrequencyMap) {
+		double module = 0;
+		for (String word : wordFrequencyMap.keySet()) {
+			module += Math.pow(wordFrequencyMap.get(word), 2);
+		}
+		module = Math.sqrt(module);
+		for (String word : wordFrequencyMap.keySet()) {
+			wordFrequencyMap.put(word, wordFrequencyMap.get(word)/module);
+		}
+		return wordFrequencyMap;
 	}
 }
