@@ -25,9 +25,11 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.concurrent.locks.ReentrantLock;
+import com.planetj.math.rabinhash.RabinHashFunction32;
 public class Crawler
 {
-	private String dbDirectory = "";
+	// 2051 corresponds to an irreducible polynomial
+	private RabinHashFunction32 hash = new RabinHashFunction32(2051);
 	private int maxSize = Integer.MAX_VALUE;
 	private int maxNum = Integer.MAX_VALUE;
 	private String indexerDBDir = "";
@@ -39,7 +41,6 @@ public class Crawler
 	private int contentLen;
 	private long lastModified;
 	public int count;
-	private DatabaseWrapper db;
 	private IndexWrapper indexdb;
 	private ImagesWrapper imagesdb;
 	private WebDocument webDocument;
@@ -51,6 +52,7 @@ public class Crawler
 	private Map<String, Long> timeMap = new HashMap<String, Long>();
 	// hash host to robot
 	private Map<String, Robot> hostRobotMap = new HashMap<String, Robot>();
+	private HashSet<Integer> rabinHashes = new HashSet<Integer>();
 	private String lastHost = "";
 	private int pagesSkipped = 0;
 	private URLFrontier frontier;
@@ -58,22 +60,19 @@ public class Crawler
 	private final ReentrantLock lock = new ReentrantLock();
 	/**
 	 * constructor.
-	 * @param dbDirectory - the path to the PageRank directory
 	 * @param indexerDBDir - the directory of the indexer database directory
 	 * @param imgsDBDir - the directory of the indexer's images BerkeleyDB
 	 * @param URLFile - the path to the disk backed URL frontier (or seed file)
 	 * @param linksPath - the path to the links.txt file
-	 * @param maxSize  - the maximum file size
+	 * @param maxSize  - the maximum file size in KB
 	 * @param maxNum - the maximum number of files to crawl
 	 */
-	public Crawler(String dbDirectory, String indexerDBDir, String imgsDBDir, String URLFile, String linksPath, int maxSize, int maxNum)
+	public Crawler(String indexerDBDir, String imgsDBDir, String URLFile, String linksPath, int maxSize, int maxNum)
 	{
-		this.dbDirectory = dbDirectory;
 		this.maxSize = maxSize;
 		this.maxNum = maxNum;
 		this.indexerDBDir = indexerDBDir;
 		this.imgsDBDir = imgsDBDir;
-		db = new DatabaseWrapper(this.dbDirectory);
 		indexdb = new IndexWrapper(this.indexerDBDir);
 		imagesdb = new ImagesWrapper(this.imgsDBDir);
 		this.URLFile = URLFile;
@@ -96,22 +95,19 @@ public class Crawler
 
 	/**
 	 * Constructor
-	 * @param dbDirectory - the page rank db directory
 	 * @param indexerDBDir - the directory of the indexer DB
 	 * @param imgsDBDir - the directory of the image DB
 	 * @param urls - the frontier contents
 	 * @param linksPath - the path to the outlinks .txt file
-	 * @param maxSize - the maximum size page, in MB, to crawl
+	 * @param maxSize - the maximum size page, in KB, to crawl
 	 * @param maxNum - the maximum number of pages
 	 */
-	public Crawler(String dbDirectory, String indexerDBDir, String imgsDBDir, LinkedList<String> urls, String linksPath, int maxSize, int maxNum)
+	public Crawler(String indexerDBDir, String imgsDBDir, LinkedList<String> urls, String linksPath, int maxSize, int maxNum)
 	{
-		this.dbDirectory = dbDirectory;
 		this.indexerDBDir = indexerDBDir;
 		this.imgsDBDir = imgsDBDir;
 		this.maxSize = maxSize;
 		this.maxNum = maxNum;
-		db = new DatabaseWrapper(this.dbDirectory);
 		indexdb = new IndexWrapper(this.indexerDBDir);
 		imagesdb = new ImagesWrapper(this.imgsDBDir);
 		frontier = new URLFrontier();
@@ -199,32 +195,11 @@ public class Crawler
 				pagesSkipped++;
 				continue;
 			}
-			webDocument = db.getDocument(currentURL);
+			webDocument = indexdb.getDocument(currentURL);
 			// case 1: already crawled and last modified earlier than last crawl, should use local copy of the file
 			if ((webDocument != null) && (lastModified < webDocument.getLastCrawlTime()))
 			{
 				System.out.println(currentURL + " : Not Modified");
-				String docContent = webDocument.getDocumentContent();
-				Document doc = null;
-				if (contentType.equals("text/html"))
-				{
-					doc = client.generateHTMLDom(docContent);
-				}
-				else
-				{
-					doc = client.generateXMLDom(docContent);
-				}
-				// for fixing bug
-				if (doc == null)
-				{
-					continue;
-				}
-				else if (contentType.trim().equalsIgnoreCase("text/html"))
-				{
-					// html: extract and add to queue
-					host = urlHostPair.get(currentURL);
-					extractAndEnqueue(currentURL, doc, host);
-				}
 				continue;
 			}
 			host = client.getHost();
@@ -249,7 +224,7 @@ public class Crawler
 			}
 		}
 		System.out.println("Final count: " + count + " page(s) crawled.");
-		// PrintDBs.print(databaseDir, indexDBDir, imagesDBDir);
+		// PrintDBs.print(indexDBDir, imagesDBDir);
 //		close();
 	}
 
@@ -412,7 +387,7 @@ public class Crawler
 		timeMap.put(client.getHost(), System.currentTimeMillis());
 		// response content body
 		String body = client.getBody();
-		if (contentSeenTest(body))
+		if ((body == null) || body.equals(""))
 		{
 			return;
 		}
@@ -457,12 +432,17 @@ public class Crawler
 			webDocument.setDocumentContent(body);
 			webDocument.setDocumentTitle(title);
 			String noHTML = Jsoup.parse(body).text().toLowerCase().trim();
+			if (contentSeenTest(noHTML))
+			{
+				count++;
+				return;
+			}
+			rabinHashes.add(hash.hash(noHTML));
 			WebDocument contents = new WebDocument(prependURL(currentURL));
 			contents.setDocumentContent(noHTML);
 			contents.setLastCrawlTime(crawlTime);
 			contents.setDocumentTitle(title);
 			indexdb.addDocument(contents);
-			db.addDocument(webDocument);
 			extractImageURLs(currentURL, doc, client.getHost(), crawlTime, title);
 			count++;
 		}
@@ -470,6 +450,16 @@ public class Crawler
 		{
 			return;
 		}
+	}
+
+	/**
+	 * Determines if the content has already been seen
+	 * @param content - the content to test for
+	 * @return Returns true if the content was seed (and subsequently the hash value is not unique
+	 */
+	private boolean contentSeenTest(String content)
+	{
+		return rabinHashes.contains(hash.hash(content));
 	}
 
 	/**
@@ -518,7 +508,7 @@ public class Crawler
 			return false;
 		}
 		// check length
-		if (contentLen > (maxSize * 1000000))
+		if (contentLen > (maxSize * 1000))
 		{
 			return false;
 		}
@@ -555,7 +545,7 @@ public class Crawler
 				}
 			}
 		}
-		if ((db.getDocument(url) == null) && found)
+		if ((indexdb.getDocument(url) == null) && found)
 		{
 			writeLinks(line.trim());
 		}
@@ -670,26 +660,7 @@ public class Crawler
 	}
 
 	/**
-	 * Extra credits, check if a different URL has same content, if yes, don't download again
-	 * @param content - the String file contents
-	 * @return Returns true if we have already seen this content
-	 */
-	public boolean contentSeenTest(String content)
-	{
-		//if (uniqueContents.contains(content))
-		if (db.getContentsSeen(content))
-		{
-			count++;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	/**
-	 * check type first, if not xml or html file, append / at the end if needed
+	 * Check type first, if not xml or html file, append / at the end if needed
 	 * @param url - the URL to add '/' to the end of
 	 * @return Returns the correctly formatted URL
 	 */
@@ -710,7 +681,6 @@ public class Crawler
 	 */
 	public void close()
 	{
-		db.close();
 		indexdb.close();
 		imagesdb.close();
 		writer.close();
@@ -722,20 +692,19 @@ public class Crawler
 	 */
 	public static void main(String args[])
 	{
-		if ((args.length < 6) || (args.length > 7))
+		if ((args.length < 5) || (args.length > 6))
 		{
-			System.out.println("Should have at least five arguments: <db root> <index db root> <images DB root> <url frontier path>" +
+			System.out.println("Should have at least five arguments: <index db root> <images DB root> <url frontier path>" +
 					   " <file max size> <out links log path> [num of files]");
 			return;
 		}
-		String dbDirectory = args[0];
-		String indexDBDir = args[1];
-		String URLPath = args[3];
-		String linksPath = args[5];
-		String imgsDBDir = args[2];
-		int maxSize = Integer.parseInt(args[4]);
-		int maxNum = (args.length == 7) ? maxNum = Integer.parseInt(args[6]) : Integer.MAX_VALUE;
-		Crawler crawler = new Crawler(dbDirectory, indexDBDir, imgsDBDir, URLPath, linksPath, maxSize, maxNum);
+		String indexDBDir = args[0];
+		String URLPath = args[2];
+		String linksPath = args[4];
+		String imgsDBDir = args[1];
+		int maxSize = Integer.parseInt(args[3]);
+		int maxNum = (args.length == 6) ? maxNum = Integer.parseInt(args[5]) : Integer.MAX_VALUE;
+		Crawler crawler = new Crawler(indexDBDir, imgsDBDir, URLPath, linksPath, maxSize, maxNum);
 		crawler.startCrawling();
 	}
 }

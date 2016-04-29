@@ -21,6 +21,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.tidy.Tidy;
 import javax.net.ssl.SSLSocketFactory;
+import java.net.SocketTimeoutException;
 public class HttpCrawlerClient
 {
 	// socket argument
@@ -96,6 +97,8 @@ public class HttpCrawlerClient
 			{
 				socket = new Socket(host, portNum);
 			}
+			// timeout socket after 5 seconds
+			socket.setSoTimeout(5000);
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			out.write("HEAD " + path + " HTTP/1.1\r\n");
 			out.write("Host: " + host + ":" + portNum + "\r\n");
@@ -160,6 +163,7 @@ public class HttpCrawlerClient
 			{
 				socket = new Socket(host, portNum);
 			}
+			socket.setSoTimeout(5000);
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			out.write("GET " + path + " HTTP/1.1\r\n");
 			out.write("Host: " + host + ":" + portNum + "\r\n");
@@ -172,7 +176,6 @@ public class HttpCrawlerClient
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
 		}
 	}
 

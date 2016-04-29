@@ -19,7 +19,6 @@ public class CrawlerReducer extends Reducer<Text, Text, Text, Text>
 	@Override
 	public void reduce(Text key, Iterable<Text> vals, Context context) throws IOException, InterruptedException
 	{
-		String dbDir = context.getConfiguration().get("dbDir");
 		String indexDBDir = context.getConfiguration().get("indexDBDir");
 		String frontierPath = context.getConfiguration().get("frontierPath");
 		int maxSize = Integer.parseInt(context.getConfiguration().get("maxSize"));
@@ -31,7 +30,7 @@ public class CrawlerReducer extends Reducer<Text, Text, Text, Text>
 		{
 			list.addLast(t.toString().trim());
 		}
-		Crawler crawler = new Crawler(dbDir, indexDBDir, imgsDBDir, list, linksPath, maxSize, files);
+		Crawler crawler = new Crawler(indexDBDir, imgsDBDir, list, linksPath, maxSize, files);
 		crawler.startCrawling();
 		Queue<String> frontier = crawler.getFrontier();
 		for (String s: frontier)

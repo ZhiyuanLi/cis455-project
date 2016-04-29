@@ -8,7 +8,7 @@ import edu.upenn.cis455.storage.WebDocument;
 import junit.framework.TestCase;
 public class DatabaseWrapperTest extends TestCase
 {
-	DatabaseWrapper db;
+	IndexWrapper db;
 	String path;
 	/**
 	 * Setup the test suite

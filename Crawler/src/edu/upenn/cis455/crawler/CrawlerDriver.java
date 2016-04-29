@@ -20,13 +20,12 @@ import org.apache.hadoop.mapred.JobConf;
 public class CrawlerDriver extends Configured implements Tool
 {
 	private static int workers = 0;
-	private static String dbDir = "";
 	private static String indexDBDir = "";
 	private static int maxSize = 0;
 	private static String linksPath = "";
 	private static String imagesDBDir = "";
 	private static int numFiles = Integer.MAX_VALUE;
-	private static int pagesPerCrawl = 10;
+	private static int pagesPerCrawl = 100;
 	/**
 	 * Launch the shuffle job
 	 * @param args - <URL dir> <output dir>
@@ -59,7 +58,6 @@ public class CrawlerDriver extends Configured implements Tool
 	{
 		deleteDirectory(args[1]);
 		Configuration conf = new Configuration();
-		conf.set("dbDir", dbDir);
 		conf.set("indexDBDir", indexDBDir);
 		conf.set("imgsDBDir", imagesDBDir);
 		conf.set("frontierPath", args[1]);
@@ -87,22 +85,21 @@ public class CrawlerDriver extends Configured implements Tool
 	 */
 	public int run(String[] args) throws Exception
 	{
-		if ((args.length < 9) || (args.length > 10))
+		if ((args.length < 8) || (args.length > 9))
 		{
-			System.out.println("Usage: CrawlerDriver <seed urls path> <db root> <index db root> <image db root> <shuffle out path>" +
+			System.out.println("Usage: CrawlerDriver <seed urls path> <index db root> <image db root> <shuffle out path>" +
 					   " <crawler out path> <max file size> <out links log path> <numWorkers> [num of files]");
 			return -2;
 		}
 		String seedPath = args[0];
-		workers = Integer.parseInt(args[8]);
-		dbDir = args[1];
-		indexDBDir = args[2];
-		imagesDBDir = args[3];
-		String URLPath = args[4];
-		String frontierPath = args[5];
-		maxSize = Integer.parseInt(args[6]);
-		linksPath = args[7];
-		numFiles = (args.length == 10) ? Integer.parseInt(args[9]) : Integer.MAX_VALUE;
+		workers = Integer.parseInt(args[7]);
+		indexDBDir = args[1];
+		imagesDBDir = args[2];
+		String URLPath = args[3];
+		String frontierPath = args[4];
+		maxSize = Integer.parseInt(args[5]);
+		linksPath = args[6];
+		numFiles = (args.length == 9) ? Integer.parseInt(args[8]) : Integer.MAX_VALUE;
 		boolean success = runCrawler(new String[] {seedPath, frontierPath});
 		int iterations = 1;
 		// we process workers URLs at a time
