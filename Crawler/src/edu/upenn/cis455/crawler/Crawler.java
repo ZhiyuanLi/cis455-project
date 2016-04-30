@@ -51,7 +51,8 @@ public class Crawler
 	// time host last crawled
 	private Map<String, Long> timeMap = new HashMap<String, Long>();
 	// hash host to robot
-	private Map<String, Robot> hostRobotMap = new HashMap<String, Robot>();;
+	private Map<String, Robot> hostRobotMap = new HashMap<String, Robot>();
+	private HashSet<String> rabinHashes = new HashSet<String>();
 	private String lastHost = "";
 	private URLFrontier frontier;
 	private boolean secure = false;
@@ -166,7 +167,6 @@ public class Crawler
 		{
 			// Step 1. get a URL
 			String currentURL = frontier.poll();
-			System.out.println("CurrentURL = " + currentURL);
 			// Step 2. send head and get response to check if document is valid
 			HttpCrawlerClient client = new HttpCrawlerClient();
 			client.parseURL(currentURL);
@@ -391,7 +391,7 @@ public class Crawler
 		{
 			return;
 		}
-		if (indexdb.containsHash(hashValue))
+		if (rabinHashes.contains(hashValue))
 		{
 			String firstURL = indexdb.getHash(hashValue);
 			HttpURL normURL;
@@ -404,14 +404,9 @@ public class Crawler
 				return;
 			}
 			indexdb.addHit(firstURL, normURL.getNormalizeURL(secure));
-			/*WebDocument first = indexdb.getDocument(firstURL);
-			first.addHit(normURL.getNormalizeURL(secure));
-			// release our lock on the DB
-			indexdb.close();
-			indexdb = new IndexWrapper(indexerDBDir);
-			indexdb.addDocument(first);*/
 			return;
 		}
+		rabinHashes.add(hashValue);
 		Document doc = null;
 		if (contentType.trim().contains("text/html"))
 		{
@@ -451,7 +446,6 @@ public class Crawler
 			{
 				return;
 			}
-			System.out.println(normURL.getNormalizeURL(secure));
 			long crawlTime = System.currentTimeMillis();
 			String noHTML = Jsoup.parse(body).text().toLowerCase().trim();
 			WebDocument contents = new WebDocument(normURL.getNormalizeURL(secure));

@@ -366,6 +366,10 @@ public class HttpCrawlerClient
 			String nextLine = bufferReader.readLine();
 			while (nextLine != null)
 			{
+				if (nextLine.indexOf("#") > 0)
+				{
+					nextLine = nextLine.substring(0, nextLine.indexOf("#"));
+				}
 				if (nextLine.trim().startsWith("User-agent"))
 				{
 					agent = nextLine.trim().split(":")[1].trim();
@@ -383,13 +387,13 @@ public class HttpCrawlerClient
 				}
 				else if (nextLine.trim().startsWith("Crawl-delay"))
 				{
-					int delay = Integer.valueOf(nextLine.trim().split(":")[1].trim());
+					int delay = (int) Math.round(Double.valueOf(nextLine.trim().split(":")[1].trim()));
 					robot.addDelay(agent, delay);
 				}
 				nextLine = bufferReader.readLine();
 			}
 		}
-		catch (IOException | ArrayIndexOutOfBoundsException e)
+		catch (Exception e)
 		{
 		}
 	}
