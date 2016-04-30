@@ -451,6 +451,7 @@ public class Crawler
 			{
 				return;
 			}
+			System.out.println(normURL.getNormalizeURL(secure));
 			long crawlTime = System.currentTimeMillis();
 			String noHTML = Jsoup.parse(body).text().toLowerCase().trim();
 			WebDocument contents = new WebDocument(normURL.getNormalizeURL(secure));

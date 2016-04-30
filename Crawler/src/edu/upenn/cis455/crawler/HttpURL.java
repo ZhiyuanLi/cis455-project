@@ -47,11 +47,11 @@ public class HttpURL {
 			try {
 				port = Integer.parseInt(httpURL.substring(httpURL.indexOf(":") + 1));
 			} catch (Exception e) {
-				port = 80;
+				port = secure ? 443 : 80;
 			}
 			temp = temp.substring(0, temp.indexOf(":"));
 		} else {
-			port = 80;
+			port = secure ? 443 : 80;
 		}
 		/* get the host part */
 		host = temp;
