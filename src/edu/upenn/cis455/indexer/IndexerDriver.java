@@ -25,9 +25,10 @@ public class IndexerDriver {
 		
 		if (args[2].equals("singleword")) {
 			job.setMapperClass(SingleWordIndexerMapper.class);
-		} else if (args[2].equals("biword")) {
-			job.setMapperClass(BiWordIndexerMapper.class);
-		}
+		} 
+//		else if (args[2].equals("biword")) {
+//			job.setMapperClass(BiWordIndexerMapper.class);
+//		}
 		
 		job.setReducerClass(IndexerReducer.class);
 	

@@ -18,7 +18,7 @@ public class IndexerReducer extends Reducer<Text, InterValue, Text, Text> {
 		// get copy of interValues
 		for (InterValue interValue : interValues) {
 			count++;
-			vTemp.add(new InterValue(new Text(interValue.getDocId()),
+			vTemp.add(new InterValue(new Text(interValue.getDocId()), new Text(interValue.getHits()),
 					new DoubleWritable(Double.parseDouble(interValue.getTf().toString()))));
 		}
 		// compute idf
@@ -27,7 +27,7 @@ public class IndexerReducer extends Reducer<Text, InterValue, Text, Text> {
 		Collections.sort(vTemp);
 		for (int i = 0; i < IndexerDriver.OUPUTSIZE && i < count; i++) {
 			InterValue v = vTemp.get(i);
-			OutValue outValue = new OutValue(v.getDocId(), idf, v.getTf().get() * idf);
+			OutValue outValue = new OutValue(v.getDocId(), v.getHits(), idf, v.getTf().get() * idf);
 			context.write(interKey, new Text(outValue.toString()));
 		}
 	}
