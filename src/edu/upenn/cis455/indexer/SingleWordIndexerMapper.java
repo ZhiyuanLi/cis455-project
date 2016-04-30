@@ -64,7 +64,7 @@ public class SingleWordIndexerMapper extends Mapper<LongWritable, Text, Text, In
 					double tf = IndexerDriver.TF_FACTOR
 							+ (1 - IndexerDriver.TF_FACTOR) * ((double) wordFrequencyMap.get(word) / maxFrequency);
 					// get hits position of that word
-					StringBuffer hitsBuffer = new StringBuffer("[");
+					StringBuffer hitsBuffer = new StringBuffer("");
 					ArrayList<Integer> hits = wordHitsMap.get(word);
 					for (int i = 0; i < hits.size(); i++) {
 						if (i == hits.size() - 1) {
@@ -73,7 +73,6 @@ public class SingleWordIndexerMapper extends Mapper<LongWritable, Text, Text, In
 							hitsBuffer.append(hits.get(i)).append(",");
 						}
 					}
-					hitsBuffer.append("]");
 					context.write(new Text(word), new InterValue(docId, hitsBuffer.toString(), tf));
 				}
 			}

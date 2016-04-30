@@ -11,13 +11,14 @@ public class WordProcessor {
 	/**
 	 * Instance of WordProcessor
 	 */
-	private static String pattern = "^[a-zA-Z_]*$";
+	private static String pattern = "^[a-zA-Z]+|[0-9]{4}$";
 	private static StopWords STOPWORDS = new StopWords();
 	private static Stemmer STEMMER = new Stemmer();
 
 	/**
 	 * Pre-process word, get rid of non-english word, get rid of word that
-	 * appears in stop list
+	 * appears in stop list, get rid of numbers that only have less than 3
+	 * digits
 	 * 
 	 * @param word
 	 * @return a string
@@ -60,7 +61,7 @@ public class WordProcessor {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(preProcess("可不是呢"));
+		System.out.println(preProcess("000"));
 		System.out.println(concat("ny", "times"));
 	}
 }
