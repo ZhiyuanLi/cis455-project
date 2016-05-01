@@ -96,8 +96,8 @@ public class HttpCrawlerClient
 			{
 				socket = new Socket(host, portNum);
 			}
-			// timeout socket after 5 seconds
-			socket.setSoTimeout(5000);
+			// timeout socket after 2 seconds
+			socket.setSoTimeout(2000);
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			out.write("HEAD " + path + " HTTP/1.1\r\n");
 			out.write("Host: " + host + ":" + portNum + "\r\n");
@@ -162,8 +162,8 @@ public class HttpCrawlerClient
 			{
 				socket = new Socket(host, portNum);
 			}
-			// Timeout socket after 5 seconds
-			socket.setSoTimeout(5000);
+			// Timeout socket after 2 seconds
+			socket.setSoTimeout(2000);
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			out.write("GET " + path + " HTTP/1.1\r\n");
 			out.write("Host: " + host + ":" + portNum + "\r\n");

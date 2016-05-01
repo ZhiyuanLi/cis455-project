@@ -14,7 +14,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import edu.upenn.cis455.storage.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
@@ -28,53 +27,53 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.planetj.math.rabinhash.RabinHashFunction32;
 public class Crawler
 {
-	// 2051 corresponds to an irreducible polynomial
 	private RabinHashFunction32 hash = RabinHashFunction32.DEFAULT_HASH_FUNCTION;
 	private int maxSize = Integer.MAX_VALUE;
 	private int maxNum = Integer.MAX_VALUE;
-	private String indexerDBDir = "";
-	private String URLFile = "";
-	private PrintWriter writer;
-	// header response
+	private String indexFile = "";
+	private String imageFile = "";
+	private String linksFile = "";
+	private String titleFile = "";
+	private PrintWriter linksWriter;
+	private PrintWriter indexWriter;
+	private PrintWriter imageWriter;
+	private PrintWriter titleWriter;
 	private String contentType;
-	private String imgsDBDir = "";
 	private int contentLen;
 	private long lastModified;
 	public int count;
-	private IndexWrapper indexdb;
-	private ImagesWrapper imagesdb;
-	private WebDocument webDocument;
 	// a small sample of common English words for language detection.
 	private String[] english = {"that", "have", "with", "this", "from", "they", "would", "the", "build", "target", "hi", "that", "me", "my", "him", "her", "we", "us"};
-	// url and host map
-	private Map<String, String> urlHostPair = new HashMap<String, String>();
 	// time host last crawled
 	private Map<String, Long> timeMap = new HashMap<String, Long>();
 	// hash host to robot
 	private Map<String, Robot> hostRobotMap = new HashMap<String, Robot>();
-	private HashSet<String> rabinHashes = new HashSet<String>();
-	private String lastHost = "";
+	private HashSet<Integer> contentHashes = new HashSet<Integer>();
+	private HashSet<Integer> URLHashes = new HashSet<Integer>();
 	private URLFrontier frontier;
 	private boolean secure = false;
-	private final ReentrantLock lock = new ReentrantLock();
+	private final ReentrantLock linksLock = new ReentrantLock();
+	private final ReentrantLock indexLock = new ReentrantLock();
+	private final ReentrantLock imageLock = new ReentrantLock();
+	private final ReentrantLock titleLock = new ReentrantLock();
 	/**
 	 * constructor.
-	 * @param indexerDBDir - the directory of the indexer database directory
-	 * @param imgsDBDir - the directory of the indexer's images BerkeleyDB
+	 * @param indexFile - the path of the indexer doc
+	 * @param imageFile - the path of the indexer's images doc
 	 * @param URLFile - the path to the disk backed URL frontier (or seed file)
-	 * @param linksPath - the path to the links.txt file
-	 * @param maxSize  - the maximum file size in KB
+	 * @param linksFile - the path to the links.txt file
+	 * @param maxSize - the maximum file size in KB
+	 * @param titleFile - the name of the title .txt file
 	 * @param maxNum - the maximum number of files to crawl
 	 */
-	public Crawler(String indexerDBDir, String imgsDBDir, String URLFile, String linksPath, int maxSize, int maxNum)
+	public Crawler(String linksFile, String indexFile, String titleFile, String imageFile, String URLFile, int maxSize, int maxNum)
 	{
 		this.maxSize = maxSize;
 		this.maxNum = maxNum;
-		this.indexerDBDir = indexerDBDir;
-		this.imgsDBDir = imgsDBDir;
-		indexdb = new IndexWrapper(this.indexerDBDir);
-		imagesdb = new ImagesWrapper(this.imgsDBDir);
-		this.URLFile = URLFile;
+		this.indexFile = indexFile;
+		this.imageFile = imageFile;
+		this.titleFile = titleFile;
+		this.linksFile = linksFile;
 		frontier = new URLFrontier();
 		try
 		{
@@ -85,7 +84,10 @@ public class Crawler
 				frontier.add(fixURL(url));
 			}
 			reader.close();
-			writer = new PrintWriter(new BufferedWriter(new FileWriter(linksPath, true)));
+			linksWriter = new PrintWriter(new BufferedWriter(new FileWriter(linksFile, true)));
+			imageWriter = new PrintWriter(new BufferedWriter(new FileWriter(imageFile, true)));
+			indexWriter = new PrintWriter(new BufferedWriter(new FileWriter(indexFile, true)));
+			titleWriter = new PrintWriter(new BufferedWriter(new FileWriter(titleFile, true)));
 		}
 		catch (IOException e)
 		{
@@ -94,21 +96,27 @@ public class Crawler
 
 	/**
 	 * Constructor
-	 * @param indexerDBDir - the directory of the indexer DB
-	 * @param imgsDBDir - the directory of the image DB
+	 * @param indexFile - the path of the index file
+	 * @param imageFile - the path of the image file
 	 * @param urls - the frontier contents
-	 * @param linksPath - the path to the outlinks .txt file
+	 * @param titleFile - the path to the title .txt file
+	 * @param linksFile - the path to the outlinks .txt file
 	 * @param maxSize - the maximum size page, in KB, to crawl
 	 * @param maxNum - the maximum number of pages
 	 */
-	public Crawler(String indexerDBDir, String imgsDBDir, LinkedList<String> urls, String linksPath, int maxSize, int maxNum)
+	public Crawler(String linksFile, String indexFile, String titleFile, String imageFile, LinkedList<String> urls, int maxSize, int maxNum)
 	{
-		this.indexerDBDir = indexerDBDir;
-		this.imgsDBDir = imgsDBDir;
+		this.indexFile = indexFile;
+		System.out.println("Index file = " + indexFile);
+		this.imageFile = imageFile;
+		System.out.println("Image File = " + imageFile);
+		this.titleFile = titleFile;
+		System.out.println("Title file = " + titleFile);
+		this.linksFile = linksFile;
+		System.out.println("Links File = " + linksFile);
 		this.maxSize = maxSize;
+		System.out.println("Size = " + maxSize);
 		this.maxNum = maxNum;
-		indexdb = new IndexWrapper(this.indexerDBDir);
-		imagesdb = new ImagesWrapper(this.imgsDBDir);
 		frontier = new URLFrontier();
 		for (String s: urls)
 		{
@@ -116,7 +124,10 @@ public class Crawler
 		}
 		try
 		{
-			writer = new PrintWriter(new BufferedWriter(new FileWriter(linksPath, true)));
+			linksWriter = new PrintWriter(new BufferedWriter(new FileWriter(linksFile, true)));
+			indexWriter = new PrintWriter(new BufferedWriter(new FileWriter(indexFile, true)));
+			imageWriter = new PrintWriter(new BufferedWriter(new FileWriter(imageFile, true)));
+			titleWriter = new PrintWriter(new BufferedWriter(new FileWriter(titleFile, true)));
 		}
 		catch (IOException e)
 		{
@@ -142,9 +153,9 @@ public class Crawler
 	{
 		try
 		{
-			lock.lock();
-			writer.println(line);
-			writer.flush();
+			linksLock.lock();
+			linksWriter.println(line);
+			linksWriter.flush();
 		}
 		catch (Exception e)
 		{
@@ -152,7 +163,73 @@ public class Crawler
 		}
 		finally
 		{
-			lock.unlock();
+			linksLock.unlock();
+		}
+	}
+
+	/**
+	 * Write a line to the titleFile
+	 * @param line - the line to write
+	 */
+	private void writeTitle(String line)
+	{
+		try
+		{
+			titleLock.lock();
+			titleWriter.println(line);
+			titleWriter.flush();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			titleLock.unlock();
+		}
+	}
+
+	/**
+	 * Write a line to the index file
+	 * @param line - the line to write
+	 */
+	private void writeIndex(String line)
+	{
+		try
+		{
+			indexLock.lock();
+			indexWriter.println(line);
+			indexWriter.flush();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			indexLock.unlock();
+		}
+	}
+
+	/**
+	 * Write a line to the image file
+	 * @param line - the line to write
+	 */
+	private void writeImage(String line)
+	{
+		try
+		{
+			imageLock.lock();
+			imageWriter.println(line);
+			imageWriter.flush();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			imageLock.unlock();
 		}
 	}
 
@@ -171,7 +248,6 @@ public class Crawler
 			HttpCrawlerClient client = new HttpCrawlerClient();
 			client.parseURL(currentURL);
 			secure = client.isSecure();
-			urlHostPair.put(currentURL, client.getHost());
 			client.headRequest();
 			// get header response
 			lastModified = client.getLastModified();
@@ -182,17 +258,12 @@ public class Crawler
 				contentType = contentType.substring(0, contentType.indexOf(";")).trim();
 			}
 			// Partly guard against spider traps not flagged in robots.txt by limiting URL length to 200 characters
-			if ((currentURL.length() > 200) || !isValidFile(client, maxSize))
+			if (URLHashes.contains(hash.hash(currentURL)) || (currentURL.length() > 200) || !isValidFile(client, maxSize))
 			{
 				continue;
 			}
+			URLHashes.add(hash.hash(currentURL));
 			String host = client.getHost();
-			webDocument = indexdb.getDocument(currentURL);
-			// case 1: already crawled and last modified earlier than last crawl, should use local copy of the file
-			if ((webDocument != null) && (lastModified < webDocument.getLastCrawlTime()))
-			{
-				continue;
-			}
 			host = client.getHost();
 			// case 2: not crawled yet. check if robot allowed!
 			boolean isValidByRobot = isPolite(client, host, client.getPort(), currentURL);
@@ -204,7 +275,6 @@ public class Crawler
 			{
 				timeMap.put(currentURL, 0l);
 			}
-			lastHost = host;
 			// Step 3. download and store in database
 			downloadAndStore(client, currentURL);
 			if (count >= maxNum)
@@ -382,31 +452,13 @@ public class Crawler
 		{
 			return;
 		}
-		String hashValue;
-		try
-		{
-			hashValue = String.valueOf(hash.hash(body));
-		}
-		catch (Exception e)
+		int hashValue = hash.hash(body);
+		// simple content seen test
+		if (contentHashes.contains(hashValue))
 		{
 			return;
 		}
-		if (rabinHashes.contains(hashValue))
-		{
-			String firstURL = indexdb.getHash(hashValue);
-			HttpURL normURL;
-			try
-			{
-				normURL = new HttpURL(currentURL, secure);
-			}
-			catch (Exception e)
-			{
-				return;
-			}
-			indexdb.addHit(firstURL, normURL.getNormalizeURL(secure));
-			return;
-		}
-		rabinHashes.add(hashValue);
+		contentHashes.add(hashValue);
 		Document doc = null;
 		if (contentType.trim().contains("text/html"))
 		{
@@ -433,10 +485,8 @@ public class Crawler
 		if (doc != null)
 		{
 			String title = client.getHost();
-			HttpURL normURL = null;
 			try
 			{
-				normURL = new HttpURL(currentURL, secure);
 				title = Jsoup.parse(body).select("title").first().text();
 			}
 			catch (NullPointerException e)
@@ -446,14 +496,10 @@ public class Crawler
 			{
 				return;
 			}
+			writeTitle(currentURL + "\t" + title);
 			long crawlTime = System.currentTimeMillis();
 			String noHTML = Jsoup.parse(body).text().toLowerCase().trim();
-			WebDocument contents = new WebDocument(normURL.getNormalizeURL(secure));
-			contents.setHash(hashValue);
-			contents.setDocumentContent(noHTML);
-			contents.setLastCrawlTime(crawlTime);
-			contents.setDocumentTitle(title);
-			indexdb.addDocument(contents);
+			writeIndex(currentURL + "\t" + noHTML);
 			extractImageURLs(currentURL, doc, client.getHost(), crawlTime, title);
 			count++;
 		}
@@ -564,7 +610,7 @@ public class Crawler
 				}
 			}
 		}
-		if ((indexdb.getDocument(url) == null) && found)
+		if (found && !URLHashes.contains(hash.hash(url)))
 		{
 			writeLinks(line.trim());
 		}
@@ -614,20 +660,7 @@ public class Crawler
 		}
 		if (write)
 		{
-			HttpURL normURL;
-			try
-			{
-				normURL = new HttpURL(url, secure);
-			}
-			catch (Exception e)
-			{
-				return;
-			}
-			WebDocument document = new WebDocument(normURL.getNormalizeURL(secure));
-			document.setDocumentContent(images.trim());
-			document.setDocumentTitle(title);
-			document.setLastCrawlTime(crawlTime);
-			imagesdb.addDocument(document);
+			writeImage(images);
 		}
 	}
 
@@ -696,13 +729,14 @@ public class Crawler
 	}
 
 	/**
-	 * Close the databases
+	 * Close the writers
 	 */
 	public void close()
 	{
-		indexdb.close();
-		imagesdb.close();
-		writer.close();
+		titleWriter.close();
+		linksWriter.close();
+		imageWriter.close();
+		indexWriter.close();
 	}
 
 	/**
@@ -711,19 +745,20 @@ public class Crawler
 	 */
 	public static void main(String args[])
 	{
-		if ((args.length < 5) || (args.length > 6))
+		if ((args.length < 6) || (args.length > 7))
 		{
-			System.out.println("Should have at least five arguments: <index db root> <images DB root> <url frontier path>" +
-					   " <file max size> <out links log path> [num of files]");
+			System.out.println("Should have at least five arguments: <url frontier path> <html body path> <html title path> <images path>" +
+					   " <out links log path> <maxSize in kB> [num of files]");
 			return;
 		}
-		String indexDBDir = args[0];
-		String URLPath = args[2];
-		String linksPath = args[4];
-		String imgsDBDir = args[1];
-		int maxSize = Integer.parseInt(args[3]);
-		int maxNum = (args.length == 6) ? maxNum = Integer.parseInt(args[5]) : Integer.MAX_VALUE;
-		Crawler crawler = new Crawler(indexDBDir, imgsDBDir, URLPath, linksPath, maxSize, maxNum);
+		String indexFile = args[1];
+		String URLFile = args[0];
+		String titleFile = args[2];
+		String imageFile = args[3];
+		String linksFile = args[4];
+		int maxSize = Integer.parseInt(args[5]);
+		int maxNum = (args.length == 7) ? maxNum = Integer.parseInt(args[6]) : Integer.MAX_VALUE;
+		Crawler crawler = new Crawler(linksFile, indexFile, titleFile, imageFile, URLFile, maxSize, maxNum);
 		crawler.startCrawling();
 	}
 }

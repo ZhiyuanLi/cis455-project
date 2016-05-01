@@ -17,18 +17,7 @@
     <property name="resources.dir" location="${build.dir}${file.separator}resources"/>
     <property name="conf.dir"      location="${build.dir}${file.separator}conf"/>
     
-    <target name="compile-storage" description="Compiles the storage system">
-        <mkdir dir="${classes.dir}"/>
-        <javac srcdir="src/edu/upenn/cis455/storage" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
-            <classpath>
-                <fileset dir="${inputlib.dir}">
-                    <include name="*.jar"/>
-                </fileset>
-            </classpath>
-        </javac>
-    </target>
-    
-    <target name="compile-crawler" depends="compile-storage" description="Compiles the crawler">
+    <target name="compile-crawler" description="Compiles the crawler">
         <mkdir dir="${classes.dir}"/>
         <javac srcdir="src/edu/upenn/cis455/crawler" destdir="${classes.dir}" debug="on" deprecation="off" optimize="on" includeAntRuntime="no">
             <classpath>
@@ -82,11 +71,4 @@
 
     <target name="build" depends="crawler-jar">
     </target>
-
-    <target name="pack" description="Create an archive for submission">
-      <zip destfile="submit-hw2.zip">
-        <zipfileset dir="." excludes="target/**,examples/**,**/*.class,submit-hw2.zip,crawler.jar"/>
-      </zip>
-    </target>
-
 </project>

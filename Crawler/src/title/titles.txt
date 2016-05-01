@@ -1,0 +1,385 @@
+http://dartmouth.edu:80/	Dartmouth College
+http://dartmouth.edu:80/#main-content/	Dartmouth College
+http://dartmouth.edu:80/#/	Dartmouth College
+http://arts.dartmouth.edu:80/	Arts at Dartmouth
+http://www.dartmouthsports.com:80/	DartmouthSports.com�Official Web Site of Dartmouth Varsity Athletics
+http://admissions.dartmouth.edu:80//?utm_source=dhome&utm_medium=web&utm_campaign=dhome_promo1&utm_content=undergrad_admissions/	Admissions
+http://now.dartmouth.edu:80/category/news/	In the News | Dartmouth Now
+http://dartmouth.edu:80/events?begin=2016-04-30&end=2016-04-30&category_ids=13&audience_ids=3&group_ids=13/	Dartmouth Events | Dartmouth College
+http://dartmouth.edu:80/#tw-picker/	Dartmouth College
+http://dartmouth.edu:80/#tw-dartgradstudy/	Dartmouth College
+http://www.dartmouth.edu:80/video/#/video/J3uEw4bD_uQ/	Video | Dartmouth College
+http://now.dartmouth.edu:80/	Dartmouth Now | News, People, Ideas
+http://admissions.dartmouth.edu:80/	Admissions
+http://www.dartmouth.edu:80/quicklinks/students/	My Dartmouth—Students
+http://www.dartmouth.edu:80/quicklinks/faculty/	My Dartmouth—Faculty
+http://www.dartmouth.edu:80/quicklinks/staff/	My Dartmouth—Staff
+http://alumni.dartmouth.edu:80/	Alumni
+http://www.dartmouth.edu:80/quicklinks/families/	My Dartmouth—Families
+http://www.dartmouth.edu:80/~prepare/	Emergency Preparedness at Dartmouth
+http://jobs.dartmouth.edu:80/	Dartmouth Employment Opportunities
+http://www.dartmouth.edu:80/sexualrespect/	Sexual Respect
+http://www.dartmouth.edu:80/copyright/	Dartmouth Copyright Statement & Guidelines
+http://dartmouth.edu:80/#main-content/research/faculty-experts/	Dartmouth College
+http://dartmouth.edu:80/#/research/	Dartmouth College
+http://dartmouth.edu:80/education/degrees	Degree Finder | Dartmouth College
+http://dartmouth.edu:80/education/graduate-schools	Graduate Schools | Dartmouth College
+http://dartmouth.edu:80/education/libraries	Libraries | Dartmouth College
+http://dartmouth.edu:80/education/lifelong-learning-0	A Dartmouth Education | Dartmouth College
+http://dartmouth.edu:80/education/summer-dartmouth	Summer at Dartmouth | Dartmouth College
+http://dartmouth.edu:80/education/undergraduate-experience	The Undergraduate Experience | Dartmouth College
+http://dartmouth.edu:80/research/news	Research News | Dartmouth College
+http://dartmouth.edu:80/research/faculty-experts	Faculty Experts | Dartmouth College
+http://dartmouth.edu:80/research/research-centers	Research Centers | Dartmouth College
+http://dartmouth.edu:80/research/schools-departments	Schools & Departments | Dartmouth College
+http://dartmouth.edu:80/research/publications-and-grants	Publications and Grants | Dartmouth College
+http://dartmouth.edu:80/research/events	Research Events | Dartmouth College
+http://dartmouth.edu:80/research/resources	Research Support | Dartmouth College
+http://dartmouth.edu:80/life-community/explore-green	Explore the Green | Dartmouth College
+http://dartmouth.edu:80/life-community/arts-across-campus	Arts Across Campus | Dartmouth College
+http://dartmouth.edu:80/life-community/athletics-recreation	Athletics & Recreation | Dartmouth College
+http://dartmouth.edu:80/life-community/diversity	Diversity | Dartmouth College
+http://dartmouth.edu:80/life-community/health-wellness	Health & Wellness | Dartmouth College
+http://dartmouth.edu:80/life-community/outdoors	Outdoors | Dartmouth College
+http://dartmouth.edu:80/life-community/residential-life	Residential Life | Dartmouth College
+http://dartmouth.edu:80/life-community/service	Service | Dartmouth College
+http://dartmouth.edu:80/life-community/student-groups-activities	Student Groups & Activities | Dartmouth College
+http://dartmouth.edu:80/life-community/sustainability	Sustainability | Dartmouth College
+http://dartmouth.edu:80/centers-institutes	Centers & Institutes | Dartmouth College
+http://global.dartmouth.edu:80/	Global Dartmouth
+http://arts.dartmouth.edu:80/#/	Arts at Dartmouth
+https://nationalzoo.si.edu:443/	Smithsonian's National Zoo
+https://nationalzoo.si.edu:443/Support/donate.cfm/	Friends of the National Zoo | Support the Smithsonian's National Zoo and Conservation Biology Institute
+http://nationalzoo.si.edu:80/Shop/	Shop the Zoo - National Zoo| FONZ
+http://nationalzoo.si.edu:80/Visit/	Visit the Smithsonian's National Zoo
+https://nationalzoo.si.edu:443/Visit/gettingtozoo.cfm/	Getting to the Zoo
+https://nationalzoo.si.edu:443/Visit/zoomap.cfm/	Zoo Map
+https://nationalzoo.si.edu:443/Visit/hours.cfm/	Hours - National Zoo
+https://nationalzoo.si.edu:443/Visit/tips-for-visiting-zoo.cfm/	FAQ's for Visiting the Zoo
+http://nationalzoo.si.edu:80/Visit/DailyPrograms/	Daily Programs - National Zoo
+https://nationalzoo.si.edu:443/Visit/food.cfm/	Food at the Zoo
+https://nationalzoo.si.edu:443/Visit/PlanYourVisit/HotelPackages/default.cfm/	Panda Hotel Packages - National Zoo| FONZ
+https://nationalzoo.si.edu:443/Visit/parkrules.cfm/	Park Rules
+https://nationalzoo.si.edu:443/Visit/accessibility.cfm/	Accessibility - National Zoo| FONZ
+http://nationalzoo.si.edu:80/smithsoniannationalzooapp/	Mobile App - National Zoo
+https://nationalzoo.si.edu:443/Publications/social-media.cfm/	Connect with the Smithsonian's National Zoo on Social Media - National Zoo
+http://nationalzoo.si.edu:80/ActivitiesAndEvents/Calendar/	Calendar - National Zoo
+http://nationalzoo.si.edu:80/events/	Events - National Zoo| FONZ
+http://nationalzoo.si.edu:80/YourEvent/	Host Your Event
+https://nationalzoo.si.edu:443/Visit/tours.cfm/	Guided Tours - National Zoo| FONZ
+http://nationalzoo.si.edu:80/Animals/	Meet Our Animals
+http://nationalzoo.si.edu:80/Animals/WebCams/	Animal Web Cams - National Zoo
+http://nationalzoo.si.edu:80/Animals/PhotoGallery/	Animal Photo Gallery - National Zoo
+http://nationalzoo.si.edu:80/Animals/AnimalIndex/	Animal Index
+http://nationalzoo.si.edu:80/Animals/Bison/	National Zoo
+http://nationalzoo.si.edu:80/Animals/AsianElephants/	Asian Elephants - National Zoo
+http://nationalzoo.si.edu:80/Animals/Birds/	Birds - National Zoo
+http://nationalzoo.si.edu:80/Animals/GiantPandas/	Smithsonian's National Zoo - Pandas
+http://nationalzoo.si.edu:80/Animals/Primates/	Great Apes and Other Primates - National Zoo
+http://nationalzoo.si.edu:80/Animals/GreatCats/	Great Cat Exhibit - National Zoo
+http://nationalzoo.si.edu:80/Animals/Invertebrates/	Invertebrates Exhibit - National Zoo
+http://nationalzoo.si.edu:80/Animals/ReptilesAmphibians/	Reptiles and Amphibians - National Zoo
+http://nationalzoo.si.edu:80/Animals/SmallMammals/	Small Mammals - National Zoo
+http://nationalzoo.si.edu:80/Animals/Amazonia/	Amazonia Exhibit - National Zoo
+http://nationalzoo.si.edu:80/Animals/AmericanTrail/	American Trail: Explore the treasures of North American Wildlife - National Zoo
+http://nationalzoo.si.edu:80/Animals/AsiaTrail/	Asia Trail - National Zoo
+http://nationalzoo.si.edu:80/Animals/AfricanSavanna/	Cheetah Conservation Station Exhibit - National Zoo
+http://nationalzoo.si.edu:80/Animals/KidsFarm/	Kids' Farm - National Zoo
+http://nationalzoo.si.edu:80/Animals/ThinkTank/	Think Tank Exhibit - National Zoo
+https://nationalzoo.si.edu:443/ActivitiesAndEvents/Celebrations/washed-ashore.cfm/	Friends of the National Zoo | Washed Ashore: Art to Save the Sea
+https://nationalzoo.si.edu:443/Support/donor-membership.cfm/	Friends of the National Zoo | Support the Smithsonian's National Zoo
+https://nationalzoo.si.edu:443/JoinFonz/scbi-club.cfm/	Friends of the National Zoo | Smithsonian Conservation and Biology Institute Club
+http://nationalzoo.si.edu:80/scbi/migratorybirds/club/	Smithsonian Migratory Bird Club at the National Zoo - Smithsonian Migratory Bird Center
+http://nationalzoo.si.edu:80/SCBI/	Smithsonian Conservation Biology Institute - National Zoo
+http://nationalzoo.si.edu:80/SCBI/AboutUs/FrontRoyal/	Front Royal Campus - National Zoo| FONZ
+http://nationalzoo.si.edu:80/SCBI/AboutUs/RockCreek/	Rock Creek Research Labs - National Zoo| FONZ
+http://nationalzoo.si.edu:80/SCBI/IntheField/	SCBI In the Field - National Zoo| FONZ
+http://nationalzoo.si.edu:80/SCBI/Scientific_Staff/	Scientific Staff - National Zoo| FONZ
+http://nationalzoo.si.edu:80/SCBI/News/	SCBI News - National Zoo
+http://nationalzoo.si.edu:80/SCBI/AnimalCare/	Center for Animal Care Sciences - National Zoo| FONZ
+http://nationalzoo.si.edu:80/SCBI/CCEG/	Center for Conservation and Evolutionary Genetics - National Zoo| FONZ
+http://www.fandango.com:80/	Movie Tickets - Movie Times - Fandango
+http://www.fandango.com:80/#/	Movie Tickets - Movie Times - Fandango
+http://www.fandango.com:80/fandango-gift-cards/	Fandango Gift Cards - Movie Gift Cards - Movie Gift Certificates
+http://www.fandango.com:80/freemovietickets/	Free Movie Tickets - Special Offers & Coupons - Discount Movie Tickets | Fandango
+https://www.fandango.com:443/account/signin?from=%2f&source=web_globalnav_signin/	My Fandango - Fandango Account - Fandango
+http://www.fandango.com:80/default.aspx/	Movie Tickets - Movie Times - Fandango
+http://www.fandango.com:80/moviesintheaters/	New Movies in Theaters Now - Recent Releases | Fandango
+http://www.fandango.com:80/thejunglebook_182745/movieoverview/	The Jungle Book (2016) | Fandango
+http://www.fandango.com:80/thehuntsman:winterswar_188451/movieoverview/	The Huntsman: Winter's War (2016) | Fandango
+http://www.fandango.com:80/barbershop:thenextcut_188449/movieoverview/	Barbershop: The Next Cut (2016) | Fandango
+http://www.fandango.com:80/zootopia_183935/movieoverview/	Zootopia (2016) | Fandango
+http://www.fandango.com:80/theboss_188400/movieoverview/	The Boss (2016) | Fandango
+http://www.fandango.com:80/batmanvsuperman:dawnofjustice_169807/movieoverview/	Batman v Superman: Dawn of Justice (2016) | Fandango
+http://www.fandango.com:80/criminal_180422/movieoverview/	Criminal  (2016) | Fandango
+http://www.fandango.com:80/mybigfatgreekwedding2_184386/movieoverview/	My Big Fat Greek Wedding 2 (2016) | Fandango
+http://www.fandango.com:80/compadres_190741/movieoverview/	Compadres (2016) | Fandango
+http://www.fandango.com:80/eyeinthesky_189278/movieoverview/	Eye in the Sky (2016) | Fandango
+http://www.fandango.com:80/ahologramfortheking_191021/movieoverview/	A Hologram for the King (2016) | Fandango
+http://www.fandango.com:80/keanu_189936/movieoverview/	Keanu (2016) | Fandango
+http://www.fandango.com:80/mothersday_189436/movieoverview/	Mother's Day (2016) | Fandango
+http://www.fandango.com:80/ratchet26clank_184085/movieoverview/	Ratchet & Clank (2016) | Fandango
+http://www.fandango.com:80/abeautifulplanetimax_187787/movieoverview/	A Beautiful Planet IMAX (2016) | Fandango
+http://www.fandango.com:80/evahesse_191043/movieoverview/	Eva Hesse (2016) | Fandango
+http://www.fandango.com:80/thefamilyfang_191606/movieoverview/	The Family Fang (2016) | Fandango
+http://www.fandango.com:80/lattesa_191773/movieoverview/	L'Attesa (2016) | Fandango
+http://www.fandango.com:80/themanwhoknewinfinity_190784/movieoverview/	The Man Who Knew Infinity (2016) | Fandango
+http://www.fandango.com:80/paliroad_190701/movieoverview/	Pali Road (2016) | Fandango
+http://www.fandango.com:80/papa:hemingwayincuba_191333/movieoverview/	Papa: Hemingway in Cuba (2016) | Fandango
+http://www.fandango.com:80/termlife_189937/movieoverview/	Term Life (2016) | Fandango
+http://www.fandango.com:80/captainamerica:civilwar_185792/movieoverview/	Captain America: Civil War (2016) | Fandango
+http://www.fandango.com:80/thedarkness_190429/movieoverview/	The Darkness  (2016) | Fandango
+http://www.fandango.com:80/moneymonster_185716/movieoverview/	Money Monster (2016) | Fandango
+http://www.fandango.com:80/neighbors2:sororityrising_188454/movieoverview/	Neighbors 2: Sorority Rising (2016) | Fandango
+http://www.fandango.com:80/theangrybirdsmovie_186944/movieoverview/	The Angry Birds Movie  (2016) | Fandango
+http://www.fandango.com:80/theniceguys_179886/movieoverview/	The Nice Guys (2016) | Fandango
+http://www.fandango.com:80/xmen:apocalypse_175470/movieoverview/	X-Men: Apocalypse (2016) | Fandango
+http://www.fandango.com:80/alicethroughthelookingglass_185806/movieoverview/	Alice Through the Looking Glass (2016) | Fandango
+http://www.fandango.com:80/mebeforeyou_180424/movieoverview/	Me Before You (2016) | Fandango
+http://www.fandango.com:80/popstar:neverstopneverstopping_190811/movieoverview/	Popstar: Never Stop Never Stopping  (2016) | Fandango
+http://www.fandango.com:80/teenagemutantninjaturtles:outoftheshadows_188455/movieoverview/	Teenage Mutant Ninja Turtles: Out of the Shadows (2016) | Fandango
+http://www.fandango.com:80/moviescomingsoon/	Movies Coming Soon – Upcoming Movies – Fandango
+http://www.fandango.com:80/boxoffice/	Top Box Office Movies - Weekend Box Office Results - Fandango
+http://www.fandango.com:80/new-dvd-releases/	New DVD Releases - New Movies on DVD + Blu-Ray | Fandango
+http://www.fandango.com:80/movie-news/	Movie News - Learn about Top New Movies | Fandango
+http://www.fandango.com:80/movie-reviews/	Movie Reviews | Fandango
+http://www.fandango.com:80/movies/family/	Kids Movies - Family Movies | Fandango
+http://www.fandango.com:80/movies/superhero/	Comic Book Movies - Sci-Fi + Action Movies - Superhero Movies | Fandango
+http://www.fandango.com:80/movies/indie/	Indie Movie Guide | Fandango
+http://www.fandango.com:80/movies/star-wars/	Star Wars Movie Guide | Fandango
+http://www.fandango.com:80/reel-kids/video_93/	Kids Review Movies | Fandango's Reel Kids
+http://www.vanderbilt.edu:80/	Vanderbilt University | Nashville, Tennessee
+http://www.vanderbilt.edu:80/logins/	Online Application Logins | Vanderbilt University | Vanderbilt University
+http://www.library.vanderbilt.edu:80/	Library | Vanderbilt University
+http://events.vanderbilt.edu:80/	- VU Calendar
+http://www.vanderbilt.edu:80/map/	Vanderbilt - Campus Map - Routing
+http://vanderbiltu.tumblr.com:80/	@vanderbiltu
+http://social.vanderbilt.edu:80/	get.social@Vanderbilt | Vanderbilt University
+http://www.vanderbilt.edu:80/about/history/	History of Vanderbilt University | Vanderbilt University | Vanderbilt University
+http://www.vanderbilt.edu:80/strategicplan/	Academic Strategic Plan | Vanderbilt University
+http://www.vanderbilt.edu:80/nashville/	Our Hometown: Nashville, Tennessee | Vanderbilt University | Vanderbilt University
+http://www.vanderbilt.edu:80/about/transition/	VU/VUMC Transition | Vanderbilt University | Vanderbilt University
+http://www.vanderbilt.edu:80/about/contact/	Contact Vanderbilt | Vanderbilt University | Vanderbilt University
+http://www.vanderbilt.edu:80/work-at-vanderbilt/	Work at Vanderbilt | Vanderbilt University
+http://www.vanderbilt.edu:80/about/	About Vanderbilt | Vanderbilt University | Vanderbilt University
+http://www.vanderbilt.edu:80/academics/disciplines/	Disciplines and Majors | Vanderbilt University | Vanderbilt University
+http://admissions.vanderbilt.edu:80/tour/	Virtual Tour | Undergraduate Admissions | Vanderbilt University
+http://admissions.vanderbilt.edu:80/	Undergraduate Admissions | Vanderbilt University
+http://www.vanderbilt.edu:80/prospective/graduate/	Graduate and Professional School Admissions | Vanderbilt University | Vanderbilt University
+http://www.vanderbilt.edu:80/financialaid/	Office of Financial Aid | Vanderbilt University
+http://admissions.vanderbilt.edu:80/dates/	Dates and Deadlines | Undergraduate Admissions | Vanderbilt University
+http://admissions.vanderbilt.edu:80/visit/	Visit Vanderbilt | Undergraduate Admissions | Vanderbilt University
+http://admissions.vanderbilt.edu:80/request/	Request Information | Undergraduate Admissions | Vanderbilt University
+http://admissions.vanderbilt.edu:80/prospective/transfer.php/	Undergraduate Transfer Students | Prospective Students | Undergraduate Admissions | Vanderbilt University
+http://admissions.vanderbilt.edu:80/learnmore/	Learn More | Undergraduate Admissions | Vanderbilt University
+http://www.vanderbilt.edu:80/prospective/	Prospective Students | Vanderbilt University | Vanderbilt University
+http://www.vanderbilt.edu:80/provost/	Office of the Provost | Vanderbilt University
+http://as.vanderbilt.edu:80/	College of Arts and Science | Vanderbilt University
+http://blair.vanderbilt.edu:80/	Blair School of Music | Vanderbilt University
+http://engineering.vanderbilt.edu:80/	School of Engineering | Vanderbilt University
+http://law.vanderbilt.edu:80/	Vanderbilt Law School
+https://medschool.vanderbilt.edu:443/	Vanderbilt University School of Medicine
+http://www.nursing.vanderbilt.edu:80/	Vanderbilt University School of Nursing
+http://peabody.vanderbilt.edu:80/	Peabody College of Education and Human Development | Vanderbilt University
+http://www.vanderbilt.edu:80/academics/	Academics at Vanderbilt | Vanderbilt University | Vanderbilt University
+http://www.vanderbilt.edu:80/living/	Living on Campus | Vanderbilt University
+http://commons.vanderbilt.edu:80/	The Commons | Vanderbilt University
+http://studentorgs.vanderbilt.edu:80/vsg/	studentorgs.vanderbilt.edu
+http://campusdining.vanderbilt.edu:80/	Vanderbilt Campus Dining
+http://www.vanderbilt.edu:80/career/	Center for Student Professional Development | Vanderbilt University
+https://webapp.mis.vanderbilt.edu:443/studioabroad/	Global Education Office
+http://www.vanderbilt.edu:80/apps/	Get mobile, Vanderbilt! | Vanderbilt University | Vanderbilt University
+http://www.vanderbilt.edu:80/student/	Students | Vanderbilt University | Vanderbilt University
+http://hr.vanderbilt.edu:80/	Human Resources | Vanderbilt University
+http://hr.vanderbilt.edu:80/benefits/	Benefits | Human Resources | Vanderbilt University
+http://virg.vanderbilt.edu:80/webtools/registry/	The Registry
+http://healthandwellness.vanderbilt.edu:80/	Health and Wellness | Vanderbilt University
+http://www.billboard.com:80/	Billboard - Music Charts, News, Photos & Video | Billboard
+http://billboard.tumblr.com:80/	
+http://www.billboard.com:80/charts#id-chart-category-greatest-of-all-time/	Charts | Billboard
+http://prometheusglobalmedia.applytojob.com:80/	Prometheus Global Media -         Job Board
+http://www.billboardevents.com:80/	Billboard Events
+http://www.metrolyrics.com:80/	Song Lyrics | MetroLyrics
+http://www.backstage.com:80/	Backstage | Auditions & Casting Calls, Talent Seeking, Advice & Tips
+http://advertising.billboard.com:80/	Billboard Media Planner
+http://www.billboard.com:80/photos	New Music Photos - Pictures & Photos - Page 1 | Billboard
+http://www.billboard.com:80/articles/columns/podcasts	Podcasts | Billboard
+http://billboard.tumblr.com:80/archive/	: Archive
+http://billboard.tumblr.com:80/ask/	• music to our ears
+http://billboard.tumblr.com:80/submit/	• Submit
+http://billboard.tumblr.com:80/#/	
+http://billboard.tumblr.com:80/tagged/Beyonce/	• Posts Tagged ‘Beyonce’
+http://billboard.tumblr.com:80/tagged/Formation/	• Posts Tagged ‘Formation’
+http://billboard.tumblr.com:80/tagged/Formation-Tour/	• Posts Tagged ‘Formation Tour’
+http://billboard.tumblr.com:80/tagged/billboard/	• Posts Tagged ‘billboard’
+http://billboard.tumblr.com:80/post/143534027634/beyonce-kicks-off-formation-world-tour-in-miami#notes/	• Beyonce Kicks Off ‘Formation World Tour’ in Miami
+http://billboard.tumblr.com:80/image/143530537359/	: Photo
+http://billboard.tumblr.com:80/tagged/Prince/	• Posts Tagged ‘Prince’
+http://billboard.tumblr.com:80/post/143530537359/remembering-prince-the-greatest-musical-talent-of#notes/	• Remembering Prince: The Greatest Musical Talent of...
+http://billboard.tumblr.com:80/tagged/prince/	• Posts Tagged ‘prince’
+http://billboard.tumblr.com:80/tagged/superbowl/	• Posts Tagged ‘superbowl’
+http://billboard.tumblr.com:80/tagged/purple-rain/	• Posts Tagged ‘purple rain’
+http://billboard.tumblr.com:80/tagged/rip/	• Posts Tagged ‘rip’
+http://billboard.tumblr.com:80/post/143485472094/princes-most-iconic-moments#notes/	• Prince’s most iconic moments 🙏💜
+http://billboard.tumblr.com:80/tagged/beyonce/	• Posts Tagged ‘beyonce’
+http://billboard.tumblr.com:80/tagged/lemonade/	• Posts Tagged ‘lemonade’
+http://billboard.tumblr.com:80/tagged/feminism/	• Posts Tagged ‘feminism’
+http://billboard.tumblr.com:80/tagged/revolution/	• Posts Tagged ‘revolution’
+http://billboard.tumblr.com:80/post/143483122204/beyonc%C3%A9s-lemonade-a-revolutionary-work-of#notes/	• Beyoncé’s “Lemonade” - a “revolutionary work of...
+http://billboard.tumblr.com:80/tagged/wiz-khalifa/	• Posts Tagged ‘wiz khalifa’
+http://billboard.tumblr.com:80/tagged/weed/	• Posts Tagged ‘weed’
+http://billboard.tumblr.com:80/tagged/420/	• Posts Tagged ‘420’
+http://billboard.tumblr.com:80/tagged/celebrities/	• Posts Tagged ‘celebrities’
+http://billboard.tumblr.com:80/post/143129025949/see-stars-celebrating-420#notes/	• See stars celebrating 4/20 🍁
+http://billboard.tumblr.com:80/tagged/rihanna/	• Posts Tagged ‘rihanna’
+http://billboard.tumblr.com:80/tagged/needed-me/	• Posts Tagged ‘needed me’
+http://billboard.tumblr.com:80/tagged/music-video/	• Posts Tagged ‘music video’
+http://billboard.tumblr.com:80/tagged/badgalriri/	• Posts Tagged ‘badgalriri’
+http://billboard.tumblr.com:80/tagged/nsfw/	• Posts Tagged ‘nsfw’
+http://billboard.tumblr.com:80/post/143124527029/rihanna-hits-the-strip-club-and-goes-in-for-the#notes/	• Rihanna hits the strip club and goes in for the...
+http://billboard.tumblr.com:80/tagged/littlemix/	• Posts Tagged ‘littlemix’
+http://billboard.tumblr.com:80/tagged/hair/	• Posts Tagged ‘hair’
+http://billboard.tumblr.com:80/tagged/musicvideo/	• Posts Tagged ‘musicvideo’
+http://billboard.tumblr.com:80/tagged/music/	• Posts Tagged ‘music’
+http://billboard.tumblr.com:80/post/143115939319/watch-little-mix-throw-a-pj-dance-party-to-forget#notes/	• Watch Little Mix throw a PJ dance party to forget...
+http://billboard.tumblr.com:80/tagged/Hot-100/	• Posts Tagged ‘Hot 100’
+http://billboard.tumblr.com:80/tagged/Boom-Boom-Pow/	• Posts Tagged ‘Boom Boom Pow’
+https://www.change.org:443/	Change.org · The world’s platform for change
+https://www.change.org:443/petitions#all/	Change.org - The world's platform for change
+http://www.mtv.com:80/news/2279807/sean-diddy-combs-ap-child-prostitution-victims-language/?utm_source=change_org&utm_medium=petition/	Diddy Thinks We Need To Stop Saying 'Child Prostitute' Immediately - MTV
+http://www.chron.com:80/business/retail/article/H-E-B-bows-to-pressure-on-selling-cage-free-eggs-7257722.php/	H-E-B's eggs to be cage-free by 2025 - Houston Chronicle
+http://www.centralfloridafuture.com:80/story/news/2016/04/19/scott-signs-chloes-law-named-late-ucf-student/83238540/	Scott signs Chloe's Law, named for late UCF student
+https://www.change.org:443/petitions#all/#featured/	Change.org - The world's platform for change
+https://www.change.org:443/petitions#all/#most-recent/	Change.org - The world's platform for change
+https://www.change.org:443/petitions#all/#today/	Change.org - The world's platform for change
+https://www.change.org:443/petitions#all/#this-week/	Change.org - The world's platform for change
+https://www.change.org:443/petitions#all/#all-time/	Change.org - The world's platform for change
+https://www.change.org:443/petitions#all/u/467083970/	Change.org - The world's platform for change
+https://www.change.org:443/petitions#all/u/12647139/	Change.org - The world's platform for change
+http://blog.change.org:80/	Change.org Blog
+http://www.mtv.com:80/news/	News - Entertainment, Music, Movies, Celebrity - MTV
+http://www.mtv.com:80/	New Music Videos, Reality TV Shows, Celebrity News, Pop Culture | MTV
+http://www.mtv.com:80/news/music/	Music News - Hip-Hop, Rock, Pop, and More - MTV - News
+http://www.mtv.com:80/news/issues/	Current Events - Social Justice News & Issues - MTV - News
+http://rights4girls.org:80/	rights4girls.org
+http://www.mtv.com:80/news/2156957/sexual-assault-language/	This Is Where The Law Messes Up When Talking About Sexual Violence - MTV
+http://www.mtv.com:80/news/2166137/schools-referring-kids-to-police/	When Black Students Are Arrested For Throwing Skittles, The Punishment Rarely Fits The Crime - MTV
+http://www.mtv.com:80/news/2223339/uplift-sexual-abuse-youtube/	Here’s How Your YouTube Faves Are Fighting Sexual Abuse Online And IRL - MTV
+http://sexworkersproject.org:80/	The Sex Workers Project
+http://www.mtv.com:80/news/index.php?mtvn_plugin=VMNRelatedContent&mtvn_action=related&to=2279807&limit=3&relations=all&title=View+related+posts&minimun=2&display_type=post/	News - Entertainment, Music, Movies, Celebrity - MTV
+http://www.zergnet.com:80/?w=20349/	ZergNet - Discover Interesting Articles
+http://www.mtv.com:80/news/about/	about - News
+http://www.viacomcareers.com:80/	Viacom Careers
+http://mainevents.mtvn.com:80/accessibility/	Closed Captioning of Internet Protocol-Delivered Video Programming Contact Information
+http://mtv.tumblr.com:80/	mtv
+https://www.facebook.com:443/chroncom/	Security Check Required
+https://myaccount.houstonchronicle.com:443/dsssubscribe.aspx?icmp=templatem&pid=527&z=00000&cmpid=chronheader/	
+http://www.chron.com:80/about/	About Us - Houston Chronicle
+http://chron.kaango.com:80/ads/choosepostad/	Choose Post Ad  -  Houston Chronicle Classifieds
+http://www.chron.com:80/careers/	Houston Chronicle Careers | Employment & Job Listings | chron.com - Houston Chronicle
+http://www.chron.com:80/privacy_policy/	Privacy policy - Houston Chronicle
+http://www.chron.com:80/terms_of_use/	Web site terms and conditions - Houston Chronicle
+http://www.chron.com:80/newsletters/	Newsletters - Houston Chronicle
+https://myaccount.houstonchronicle.com:443/dssSubscribe.aspx?z=00000&pid=308&cmpid=chronnav/	
+http://www.chron.com:80/news/houston-texas/	News and Weather for Houston & Texas - Houston Chronicle - Houston Chronicle
+http://www.chron.com:80/neighborhood/	Neighborhoods - Houston Chronicle
+http://www.chron.com:80/neighborhood/bayarea/	Bay Area - Pearland | News | Sports | Houston Chronicle | Chron.com - Houston Chronicle
+http://www.chron.com:80/neighborhood/bellaire/	Bellaire | Houston Chronicle | Chron.com - Houston Chronicle
+http://www.chron.com:80/neighborhood/cyfair/	Cy-Fair | Houston Chronicle | chron.com - Houston Chronicle
+http://www.chron.com:80/neighborhood/fortbend/	Fort Bend  | Houston Chronicle | Chron.com - Houston Chronicle
+http://www.chron.com:80/neighborhood/heights/	Heights | Houston Chronicle | chron.com - Houston Chronicle
+http://www.chron.com:80/neighborhood/katy/	Katy Community Extra from the| Houston Chronicle | chron.com - Houston Chronicle
+http://www.chron.com:80/neighborhood/kingwood/	Kingwood | Houston Chronicle | chron.com - Houston Chronicle
+http://www.chron.com:80/neighborhood/memorial/	Memorial | Memorial on chron.com | Houston Chronicle - Houston Chronicle
+http://www.chron.com:80/neighborhood/spring/	Spring | Houston Chronicle | chron.com - Houston Chronicle
+http://www.chron.com:80/neighborhood/woodlands/	The Woodlands Community Extra from the Houston Chronicle | Chron.com - Houston Chronicle
+http://www.chron.com:80/news/houston-texas/houston/	Houston | Houston Chronicle | Chron.com - Houston Chronicle
+http://www.philamuseum.org:80/	Philadelphia Museum of Art
+http://www.philamuseum.org:80/#/	Philadelphia Museum of Art
+http://www.philamuseum.org:80/visit/	Philadelphia Museum of Art - Visiting  :  Plan Your Visit
+http://www.philamuseum.org:80/dining/	Philadelphia Museum of Art - Visiting  :  Dining Options
+http://www.philamuseum.org:80/shopping/	Philadelphia Museum of Art - Visiting  :  Shopping
+http://www.philamuseum.org:80/groupvisits/	Philadelphia Museum of Art - Visiting  :  Group Visits
+http://www.philamuseum.org:80/entertaining/	Philadelphia Museum of Art - Visiting  :  Entertaining
+http://www.philamuseum.org:80/podcast/	Philadelphia Museum of Art - Visiting  :  Podcasts
+http://www.philamuseum.org:80/floorplan/	Philadelphia Museum of Art - Visiting  :  Floor Plan
+http://www.philamuseum.org:80/accessibility/	Philadelphia Museum of Art - Visiting  :  Accessibility
+http://www.philamuseum.org:80/galleries/	Philadelphia Museum of Art - On View  :  In the Galleries
+http://www.philamuseum.org:80/sculpturegarden/	Philadelphia Museum of Art - On View  :  Sculpture Garden
+http://www.philamuseum.org:80/calendar/	Philadelphia Museum of Art - Calendar  :  Today at the Museum
+http://www.philamuseum.org:80/artafter5/	Philadelphia Museum of Art - Calendar  :  Art After 5
+http://www.philamuseum.org:80/wednesdaynights/	Philadelphia Museum of Art - Calendar  :  Wednesday Nights
+http://www.philamuseum.org:80/acquisitions/	Philadelphia Museum of Art - Collections  :  New Acquisitions
+http://www.philamuseum.org:80/explore/	Philadelphia Museum of Art - Collections  :  Explore Collections
+http://www.philamuseum.org:80/conservation/	Philadelphia Museum of Art - Research  :  Conservation
+http://www.philamuseum.org:80/publications/	Philadelphia Museum of Art - Research  :  Publications
+http://www.philamuseum.org:80/archives/	Philadelphia Museum of Art - Research  :  Archives
+http://www.philamuseum.org:80/library/	Philadelphia Museum of Art - Research  :  Library and Digital Collections
+http://www.philamuseum.org:80/schooltours/	Philadelphia Museum of Art - School & Teachers  :  School Tours & Programs
+http://www.philamuseum.org:80/teacherprograms/	Philadelphia Museum of Art - School & Teachers  :  Teacher Programs
+http://www.philamuseum.org:80/teacherresources/	Philadelphia Museum of Art - School & Teachers  :  Teacher Resources
+http://www.philamuseum.org:80/communityengagement/	Philadelphia Museum of Art - School & Teachers  :  Community Engagement
+http://www.philamuseum.org:80/membership/	Philadelphia Museum of Art - Join & Support  :  Membership
+http://www.philamuseum.org:80/plannedgiving/	Philadelphia Museum of Art - Join & Support  :  Planned Giving
+http://www.philamuseum.org:80/annualfund/	Philadelphia Museum of Art - Join & Support  :  Annual Fund
+http://www.philamuseum.org:80/associates/	Philadelphia Museum of Art - Join & Support  :  Associates and Chairman's Council
+http://www.philamuseum.org:80/friendsgroups/	Philadelphia Museum of Art - Join & Support  :  Friends Groups
+http://www.philamuseum.org:80/press/	Philadelphia Museum of Art - About Us  :  Press Room
+http://www.philamuseum.org:80/stayconnected/	Philadelphia Museum of Art - About Us  :  Stay Connected
+http://www.philamuseum.org:80/ourfuture/	Philadelphia Museum of Art - About Us  :  Future
+http://www.philamuseum.org:80/jobs/	Philadelphia Museum of Art - About Us  :  Opportunities
+http://www.philamuseum.org:80/contacts/	Philadelphia Museum of Art - About Us  :  Contacts
+http://www.philamuseum.org:80/dining#foodtruck/	Philadelphia Museum of Art - Visiting  :  Dining Options
+http://www.philamuseum.org:80/calendar?id=1&et=39&dt=May_2016#8086/	Philadelphia Museum of Art - Calendar  :  Today at the Museum
+http://www.philamuseum.org:80/calendar?id=1&et=11&dt=May_2016#10322/	Philadelphia Museum of Art - Calendar  :  Today at the Museum
+http://www.philamuseum.org:80/exhibitions/838.html#video/	Philadelphia Museum of Art - Exhibitions - Creative Africa
+http://www.philamuseum.org:80/exhibitions/825.html#video/	Philadelphia Museum of Art - Exhibitions - International Pop
+https://www.facebook.com:443/philamuseum/	Security Check Required
+http://philamuseum.tumblr.com:80/	Philadelphia Museum of Art | Our Story
+https://itunes.apple.com:443/WebObjects/MZStore.woa/wa/viewArtistSeeAll?cc=us&dkId=4&ids=185692647&section=0/	Connecting to the iTunes Store.
+http://www.philamuseum.org:80/#/#/	Philadelphia Museum of Art
+http://www.philamuseum.org:80/#/exhibitions/current.html/	Philadelphia Museum of Art
+http://www.philamuseum.org:80/#/exhibitions/upcoming.html/	Philadelphia Museum of Art
+http://www.philamuseum.org:80/#/exhibitions/past.html/	Philadelphia Museum of Art
+http://www.philamuseum.org:80/#/calendar/	Philadelphia Museum of Art
+http://www.philamuseum.org:80/#/calendarEvents/programs.html/	Philadelphia Museum of Art
+http://www.philamuseum.org:80/#/calendarEvents/member_events.html/	Philadelphia Museum of Art
+http://dartmouth.edu:80/	Dartmouth College
+http://dartmouth.edu:80/#main-content/	Dartmouth College
+http://arts.dartmouth.edu:80/	Arts at Dartmouth
+http://www.dartmouthsports.com:80/	DartmouthSports.com�Official Web Site of Dartmouth Varsity Athletics
+http://admissions.dartmouth.edu:80//?utm_source=dhome&utm_medium=web&utm_campaign=dhome_promo1&utm_content=undergrad_admissions/	Admissions
+http://now.dartmouth.edu:80/category/news/	In the News | Dartmouth Now
+http://www.dartmouth.edu:80/video/#/video/J3uEw4bD_uQ/	Video | Dartmouth College
+http://now.dartmouth.edu:80/	Dartmouth Now | News, People, Ideas
+http://admissions.dartmouth.edu:80/	Admissions
+http://www.dartmouth.edu:80/quicklinks/students/	My Dartmouth—Students
+http://www.dartmouth.edu:80/quicklinks/faculty/	My Dartmouth—Faculty
+http://www.dartmouth.edu:80/quicklinks/staff/	My Dartmouth—Staff
+http://alumni.dartmouth.edu:80/	Alumni
+http://www.dartmouth.edu:80/quicklinks/families/	My Dartmouth—Families
+http://www.dartmouth.edu:80/~prepare/	Emergency Preparedness at Dartmouth
+http://jobs.dartmouth.edu:80/	Dartmouth Employment Opportunities
+http://www.dartmouth.edu:80/sexualrespect/	Sexual Respect
+http://www.dartmouth.edu:80/copyright/	Dartmouth Copyright Statement & Guidelines
+http://dartmouth.edu:80/#main-content/education/lifelong-learning-0/	Dartmouth College
+http://dartmouth.edu:80/#main-content/education/lifelong-learning/	Dartmouth College
+http://dartmouth.edu:80/education/graduate-schools	Graduate Schools | Dartmouth College
+http://dartmouth.edu:80/education/lifelong-learning-0	A Dartmouth Education | Dartmouth College
+http://dartmouth.edu:80/education/summer-dartmouth	Summer at Dartmouth | Dartmouth College
+http://dartmouth.edu:80/research/research-centers	Research Centers | Dartmouth College
+http://dartmouth.edu:80/life-community/health-wellness	Health & Wellness | Dartmouth College
+http://dartmouth.edu:80/life-community/outdoors	Outdoors | Dartmouth College
+http://global.dartmouth.edu:80/	Global Dartmouth
+http://arts.dartmouth.edu:80/#/	Arts at Dartmouth
+http://arts.dartmouth.edu:80/users/sign_in/?ajax=true/	Arts at Dartmouth
+http://arts.dartmouth.edu:80/#addEventWindow/	Arts at Dartmouth
+http://arts.dartmouth.edu:80/#type=upcoming_events/	Arts at Dartmouth
+http://arts.dartmouth.edu:80/#type=artsbook/	Arts at Dartmouth
+http://www.dartmouth.edu:80/arts/directory/	Arts at Dartmouth Directory
+http://www.dartmouth.edu:80/arts/news/	Arts at Dartmouth News
+http://arts.dartmouth.edu:80/#searchbubble/	Arts at Dartmouth
+http://arts.dartmouth.edu:80/timeline/tutorial/	arts.dartmouth.edu
+http://arts.dartmouth.edu:80/#yearbubble/	Arts at Dartmouth
+http://www.dartmouthsports.com:80/ViewArticle.dbml?DB_OEM_ID=11600&ATCLID=210926189/	- DartmouthSports.com�Official Web Site of Dartmouth Varsity Athletics
+http://www.dartmouthsports.com:80/ViewArticle.dbml?DB_OEM_ID=11600&ATCLID=210926188/	- DartmouthSports.com�Official Web Site of Dartmouth Varsity Athletics

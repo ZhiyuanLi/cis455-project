@@ -20,10 +20,11 @@ import org.apache.hadoop.mapred.JobConf;
 public class CrawlerDriver extends Configured implements Tool
 {
 	private static int workers = 0;
-	private static String indexDBDir = "";
+	private static String indexFile = "";
 	private static int maxSize = 0;
-	private static String linksPath = "";
-	private static String imagesDBDir = "";
+	private static String linksFile = "";
+	private static String imageFile = "";
+	private static String titleFile = "";
 	private static int numFiles = Integer.MAX_VALUE;
 	private static int pagesPerCrawl = 100;
 	/**
@@ -58,12 +59,13 @@ public class CrawlerDriver extends Configured implements Tool
 	{
 		deleteDirectory(args[1]);
 		Configuration conf = new Configuration();
-		conf.set("indexDBDir", indexDBDir);
-		conf.set("imgsDBDir", imagesDBDir);
-		conf.set("frontierPath", args[1]);
+		conf.set("indexFile", indexFile);
+		conf.set("imageFile", imageFile);
+		conf.set("titleFile", titleFile);
 		conf.set("maxSize", "" + maxSize);
-		conf.set("linksPath", linksPath);
-		conf.set("files", "" + pagesPerCrawl);
+		conf.set("linksFile", linksFile);
+		//conf.set("files", "" + pagesPerCrawl);
+		conf.set("files", "" + (numFiles / workers));
 		Job job = new Job(conf);
 		job.setJobName("Crawler Step");
 		FileInputFormat.setInputPaths(job, new Path(args[0]));
@@ -85,32 +87,33 @@ public class CrawlerDriver extends Configured implements Tool
 	 */
 	public int run(String[] args) throws Exception
 	{
-		if ((args.length < 8) || (args.length > 9))
+		if ((args.length < 9) || (args.length > 10))
 		{
-			System.out.println("Usage: CrawlerDriver <seed urls path> <index db root> <image db root> <shuffle out path>" +
-					   " <crawler out path> <max file size> <out links log path> <numWorkers> [num of files]");
+			System.out.println("Usage: CrawlerDriver <seed urls path> <out links log file> <index file> <title file> <image file> <shuffle out path>" +
+					   " <crawler out path> <max file size> <numWorkers> [num of files]");
 			return -2;
 		}
 		long startTime = System.currentTimeMillis();
 		String seedPath = args[0];
-		workers = Integer.parseInt(args[7]);
-		indexDBDir = args[1];
-		imagesDBDir = args[2];
-		String URLPath = args[3];
-		String frontierPath = args[4];
-		maxSize = Integer.parseInt(args[5]);
-		linksPath = args[6];
-		numFiles = (args.length == 9) ? Integer.parseInt(args[8]) : Integer.MAX_VALUE;
+		workers = Integer.parseInt(args[8]);
+		indexFile = args[2];
+		imageFile = args[4];
+		titleFile = args[3];
+		String URLPath = args[5];
+		String frontierPath = args[6];
+		maxSize = Integer.parseInt(args[7]);
+		linksFile = args[1];
+		numFiles = (args.length == 10) ? Integer.parseInt(args[9]) : Integer.MAX_VALUE;
 		boolean success = runCrawler(new String[] {seedPath, frontierPath});
 		int iterations = 1;
 		// we process workers URLs at a time
-		while (iterations < (numFiles / (workers * pagesPerCrawl)))
+		/*while (iterations < (numFiles / (workers * pagesPerCrawl)))
 		{
 			success &= runShuffle(new String[] {frontierPath, URLPath});
 			success &= runCrawler(new String[] {URLPath, frontierPath});
 			System.out.println("********************************************** URLs Processed = " + iterations * workers * pagesPerCrawl + "**********************************");
 			iterations++;
-		}
+		}*/
 		deleteDirectory(URLPath);
 		System.out.println("Time elapsed: " + (System.currentTimeMillis() - startTime));
 		return success ? 0 : -1;
