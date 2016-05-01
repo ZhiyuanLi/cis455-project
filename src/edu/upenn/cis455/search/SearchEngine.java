@@ -15,6 +15,12 @@ import edu.upenn.cis455.storage.DynamoDBWrapper;
 import edu.upenn.cis455.storage.SingleWord;
 import edu.upenn.cis455.storage.SingleWordContent;
 
+/**
+ * search engine to get top n results
+ * 
+ * @author zhiyuanli
+ *
+ */
 public class SearchEngine {
 
 	private String query;
@@ -52,8 +58,8 @@ public class SearchEngine {
 	 * helper method to do single word query
 	 */
 	private void doSingleWordQuery() {
-//		formSingleWordDocList();
-//		formSingleWordContentDocList();
+		// formSingleWordDocList();
+		// formSingleWordContentDocList();
 		formBiWordContentDocList();
 	}
 
@@ -119,7 +125,7 @@ public class SearchEngine {
 		}
 
 	}
-	
+
 	private void formBiWordContentDocList() {
 		biWordList = queryWeightComputation.getBiWordList();
 		// int length = singleWordList.size();
@@ -156,11 +162,19 @@ public class SearchEngine {
 	private void updateSingleWordWeight() {
 		singleWordWeight = queryWeightComputation.getSingleWordWeight();
 	}
+
 	/**
 	 * helper method to get newest BiWordWeight
 	 */
 	private void updateBiWordWeight() {
 		biWordWeight = queryWeightComputation.getBiWordWeight();
+	}
+
+	/**
+	 * @return the results
+	 */
+	public ArrayList<DocInfo> getResults() {
+		return results;
 	}
 
 	public static void main(String[] args) {

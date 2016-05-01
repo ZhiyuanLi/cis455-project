@@ -1,5 +1,7 @@
 package edu.upenn.cis455.indexer;
 
+
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -19,22 +21,23 @@ public class InterValue implements WritableComparable<InterValue> {
 	 * Instance variables for InterValue
 	 */
 	private Text docId;
+	private Text hits;
 	private DoubleWritable tf;
-
+	
 	/**
 	 * Constructor
 	 * @param docId
 	 * @param tf
 	 */
-	public InterValue(String docId, double tf) {
-		set(new Text(docId), new DoubleWritable(tf));
+	public InterValue(String docId, String hits, double tf) {
+		set(new Text(docId), new Text(hits), new DoubleWritable(tf));
 	}
 	
 	/**
 	 * Constructor
 	 */
 	public InterValue() {
-		set(new Text(), new DoubleWritable());
+		set(new Text(), new Text(), new DoubleWritable());
 	}
 	
 	/**
@@ -42,8 +45,8 @@ public class InterValue implements WritableComparable<InterValue> {
 	 * @param docId
 	 * @param tf
 	 */
-	public InterValue(Text docId, DoubleWritable tf) {
-		set(docId, tf);
+	public InterValue(Text docId, Text hits, DoubleWritable tf) {
+		set(docId, hits, tf);
 	}
 	
 	/**
@@ -51,8 +54,9 @@ public class InterValue implements WritableComparable<InterValue> {
 	 * @param docId
 	 * @param tf
 	 */
-	public void set(Text docId, DoubleWritable tf) {
+	public void set(Text docId, Text hits, DoubleWritable tf) {
 		this.docId = docId;
+		this.hits = hits;
 		this.tf = tf;
 	}
 	
@@ -61,6 +65,13 @@ public class InterValue implements WritableComparable<InterValue> {
 	 */
 	public Text getDocId() {
 		return docId;
+	}
+
+	/**
+	 * @return the hits
+	 */
+	public Text getHits() {
+		return hits;
 	}
 
 	/**
@@ -73,12 +84,14 @@ public class InterValue implements WritableComparable<InterValue> {
 	@Override
 	public void readFields(DataInput arg0) throws IOException {
 		docId.readFields(arg0);
+		hits.readFields(arg0);
 		tf.readFields(arg0);
 	}
 
 	@Override
 	public void write(DataOutput arg0) throws IOException {
 		docId.write(arg0);
+		hits.write(arg0);
 		tf.write(arg0);
 	}
 
@@ -91,6 +104,6 @@ public class InterValue implements WritableComparable<InterValue> {
 
 	@Override
 	public String toString() {
-		return docId.toString() + "," + tf.toString() + ";";
+		return docId.toString() + "," + hits.toString() + "," + tf.toString() + ";";
 	}
 }

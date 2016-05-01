@@ -33,7 +33,7 @@ public class DynamoDBWrapper {
 		AWSCredentials credentials = new BasicAWSCredentials("AKIAI5RD7TPQ6HRG5NEQ",
 				"FdMAW9DZrDdEKca0VLQx+vVgEnE38U9aMsokhadi");
 		client = new AmazonDynamoDBClient(credentials);
-		client.setEndpoint("dynamodb.us-west-2.amazonaws.com");
+		client.setEndpoint("dynamodb.us-west-1.amazonaws.com");
 
 		mapper = new DynamoDBMapper(client);
 	}
@@ -96,13 +96,15 @@ public class DynamoDBWrapper {
 	 * 
 	 * @param word
 	 * @param url
+	 * @param position
 	 * @param idf
 	 * @param tf_idf
 	 */
-	public void addSingleWordContent(String word, String url, Double idf, Double tf_idf) {
+	public void addSingleWordContent(String word, String url, String position, Double idf, Double tf_idf) {
 		SingleWordContent item = new SingleWordContent();
 		item.setWord(word);
 		item.setUrl(url);
+		item.setPosition(position);
 		item.setIdf(idf);
 		item.setTf_idf(tf_idf);
 		mapper.save(item);
@@ -145,10 +147,12 @@ public class DynamoDBWrapper {
 
 	public static void main(String[] args) throws Exception {
 		DynamoDBWrapper w = new DynamoDBWrapper();
-		List<SingleWord> items = w.getSingleWordQuery("test");
-		for (SingleWord item : items) {
-			System.out.println(item.getWord() + " " + item.getUrl() + " " + item.getIdf() + " " + item.getTf_idf());
-		}
+		w.addSingleWord("test", "http://www.google.com", 1.0, 2.0);
+		// List<SingleWord> items = w.getSingleWordQuery("test");
+		// for (SingleWord item : items) {
+		// System.out.println(item.getWord() + " " + item.getUrl() + " " +
+		// item.getIdf() + " " + item.getTf_idf());
+		// }
 
 	}
 

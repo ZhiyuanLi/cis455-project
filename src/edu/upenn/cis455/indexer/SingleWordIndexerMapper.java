@@ -8,73 +8,80 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.Mapper;
 
 public class SingleWordIndexerMapper extends Mapper<LongWritable, Text, Text, InterValue> {
-	
+
+	private Text interKey;
+	private InterValue interValue;
+
 	@Override
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+		// System.out.println("mapper starts");
 		String[] temp = value.toString().split("\t", 2);
-		// System.out.println("split complete");
 		if (temp.length == 2) {
+			// System.out.println("mapper real starts");
 			// Get input key value pair
 			String docId = temp[0];
 			String docContent = temp[1];
-			// System.out.println("get key value");
-			// System.out.println(inputKey);
-			// pre-deal with content
+			// Get word frequency map， pre-deal with content
+			Hashtable<String, Double> wordFrequencyMap = new Hashtable<String, Double>();
+			Hashtable<String, ArrayList<Integer>> wordHitsMap = new Hashtable<String, ArrayList<Integer>>();
 			Tokenizer tokenizer = new Tokenizer(docContent);
-			// Get word frequency map
-			Hashtable<String, Integer> wordFrequencyMap = new Hashtable<String, Integer>();
-//			Hashtable<String, ArrayList<Integer>> wordHitsMap = new Hashtable<String, ArrayList<Integer>>();
-			//			int position = 0;
+			int position = 0;
+			String word = null;
+			String pWord = null;
 			while (tokenizer.hasNext()) {
-				// System.out.println("hasnext=true");
-				String k = tokenizer.nextToken();
-				// System.out.println("getnext");
-				// System.out.println("token: " + k);
-				String word = WordProcessor.preProcess(k);
-				// System.out.println("preprocess: "+ word);
+				word = WordProcessor.preProcess(tokenizer.nextToken());
 				if (!word.equals("")) {
-//					position++;
-					// System.out.println("hello: " + word.toLowerCase());
-					String pWord = WordProcessor.process(word.toLowerCase());
-					// System.out.println("process: " + pWord);
+					pWord = WordProcessor.process(word.toLowerCase());
+					// update word frequency map and word hits map
 					if (pWord != null) {
-						Integer frequecy = 1;
-//						ArrayList<Integer> hits = new ArrayList<Integer>();
+						position++;
+						Double frequecy = 1.0;
+						ArrayList<Integer> hits = new ArrayList<Integer>();
 						if (wordFrequencyMap.containsKey(pWord)) {
 							frequecy = wordFrequencyMap.get(pWord) + 1;
-//							hits = wordHitsMap.get(pWord);
+							hits = wordHitsMap.get(pWord);
 						}
-//						hits.add(position);
+						hits.add(position);
 						wordFrequencyMap.put(pWord, frequecy);
-//						wordHitsMap.put(pWord, hits);
+						wordHitsMap.put(pWord, hits);
 					}
-					// System.out.println("endofwhile");
 				}
 			}
-			// System.out.println("tokenizer finished");
 			// Do emit if word frequency is not empty
 			if (!wordFrequencyMap.isEmpty()) {
-				// Get max frequency
-				Integer maxFrequency = Collections.max(wordFrequencyMap.values());
+				// Compute the module
+				Double module = 0.0;
+				for (String w : wordFrequencyMap.keySet()) {
+					module += Math.pow(wordFrequencyMap.get(w), 2);
+				}
+				module = Math.sqrt(module);
+				// Get normalize word frequency map
+				Double maxFrequency = 0.0;
+				for (String w : wordFrequencyMap.keySet()) {
+					Double frequency = wordFrequencyMap.get(w) / module;
+					if (frequency > maxFrequency) {
+						maxFrequency = frequency;
+					}
+					wordFrequencyMap.put(w, frequency);
+				}
 				// Compute the TF score and emit
-				for (String word : wordFrequencyMap.keySet()) {
+				for (String w : wordFrequencyMap.keySet()) {
 					// get tf score of that word
-					double tf = IndexerDriver.TF_FACTOR + (1 - IndexerDriver.TF_FACTOR) * ((double) wordFrequencyMap.get(word) / maxFrequency);
-					// System.out.println(word + ":::" + inputKey + "," + tf);
+					double tf = IndexerDriver.TF_FACTOR
+							+ (1 - IndexerDriver.TF_FACTOR) * ((double) wordFrequencyMap.get(w) / maxFrequency);
 					// get hits position of that word
-//					StringBuffer hitsBuffer = new StringBuffer("[");
-//					ArrayList<Integer> hits = wordHitsMap.get(word);
-//					for (int i = 0; i < hits.size(); i++) {
-//						if (i == hits.size() - 1) {
-//							hitsBuffer.append(hits.get(i));
-//						} else {
-//							hitsBuffer.append(hits.get(i)).append(",");
-//						}
-//					}
-//					hitsBuffer.append("]");
-					// System.out.println("current url is : " + inputKey + ":: "
-					// + word);
-					context.write(new Text(word), new InterValue(docId, tf));
+					StringBuffer hitsBuffer = new StringBuffer("");
+					ArrayList<Integer> hits = wordHitsMap.get(w);
+					for (int i = 0; i < hits.size(); i++) {
+						if (i == hits.size() - 1) {
+							hitsBuffer.append(hits.get(i));
+						} else {
+							hitsBuffer.append(hits.get(i)).append(",");
+						}
+					}
+					interKey = new Text(w);
+					interValue = new InterValue(docId, hitsBuffer.toString(), tf);
+					context.write(interKey, interValue);
 				}
 			}
 		}
