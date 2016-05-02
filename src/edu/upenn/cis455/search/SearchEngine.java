@@ -12,7 +12,7 @@ import com.sun.org.apache.bcel.internal.generic.NEWARRAY;
 
 import edu.upenn.cis455.storage.BiWordContent;
 import edu.upenn.cis455.storage.DynamoDBWrapper;
-import edu.upenn.cis455.storage.SingleWord;
+import edu.upenn.cis455.storage.SingleWordTitle;
 import edu.upenn.cis455.storage.SingleWordContent;
 
 /**
@@ -23,13 +23,11 @@ import edu.upenn.cis455.storage.SingleWordContent;
  */
 public class SearchEngine {
 
-	private String query;
+//	private String query;
 	private DynamoDBWrapper db;
 	private QueryWeightComputation queryWeightComputation;
 	private ArrayList<String> singleWordList;
-	private ArrayList<String> biWordList;
 	private Hashtable<String, Double> singleWordWeight;
-	private Hashtable<String, Double> biWordWeight;
 	private Hashtable<String, DocInfo> docList;
 	private ArrayList<DocInfo> results;
 
@@ -46,9 +44,16 @@ public class SearchEngine {
 
 	}
 
+	/**
+	 * set query
+	 * 
+	 * @param query
+	 */
 	public void setQuery(String query) {
-		this.query = query;
+		// pre calculate
 		queryWeightComputation.setQuery(query);
+//		this.query = queryWeightComputation.getValidQuery();
+		singleWordList = queryWeightComputation.getSingleWordList();
 		doSingleWordQuery();
 		results = new ArrayList<DocInfo>(docList.values());
 		Collections.sort(results);
@@ -58,100 +63,83 @@ public class SearchEngine {
 	 * helper method to do single word query
 	 */
 	private void doSingleWordQuery() {
-		// formSingleWordDocList();
-		// formSingleWordContentDocList();
-		formBiWordContentDocList();
+		// formSingleWordTitleDocList();
+		formSingleWordContentDocList();
+		// formBiWordContentDocList();
 	}
 
 	/**
 	 * helper method to generate single word doc list
 	 */
 	private void formSingleWordContentDocList() {
-		singleWordList = queryWeightComputation.getSingleWordList();
-		// int length = singleWordList.size();
-		// int i = 0;// word order
+		
+		List<SingleWordContent> items;
+		int position = 0;
 		for (String word : singleWordList) {
-			List<SingleWordContent> items = db.getSingleWordContentQuery(word);
+			position++;
+			items = db.getSingleWordContentQuery(word);
+
 			if (!items.isEmpty()) {
 				// take idf into word weight
 				queryWeightComputation.setSingleWordIdf(word, items.get(0).getIdf());
+				String url, hits;
 				updateSingleWordWeight();
+
 				for (SingleWordContent item : items) {
-					String url = item.getUrl();
+					url = item.getUrl();
+					hits = item.getHits();
 					// TODO: get pagerank scores
 					DocInfo docInfo = docList.get(url);
 					if (docInfo == null) {
-						docInfo = new DocInfo();
+						docInfo = new DocInfo(singleWordList.size());
+						docInfo.pagerankScore = db.getPageRankScore(url);
 					}
-					// docInfo.tf_idfArray[i] = item.getTf_idf();
 					docInfo.url = url;
+					docInfo.addWord(word, position, hits);
 					docInfo.indexScore += item.getTf_idf() * singleWordWeight.get(word);
-					// System.out.println(item.getUrl() +
-					// Arrays.toString(docInfo.tf_idfArray));
 					docList.put(url, docInfo);
 				}
+
 			}
-			// i++;
+		}
+
+		for (DocInfo docInfo : docList.values()) {
+			docInfo.calculateTotalScore();
 		}
 
 	}
 
-	private void formSingleWordDocList() {
-		singleWordList = queryWeightComputation.getSingleWordList();
-		// int length = singleWordList.size();
-		// int i = 0;// word order
+	private void formSingleWordTitleDocList() {
+		int position = 0;
 		for (String word : singleWordList) {
-			List<SingleWord> items = db.getSingleWordQuery(word);
+			position++;
+			List<SingleWordTitle> items = db.getSingleWordTitleQuery(word);
 			if (!items.isEmpty()) {
 				// take idf into word weight
 				queryWeightComputation.setSingleWordIdf(word, items.get(0).getIdf());
+				String url, hits;
 				updateSingleWordWeight();
-				for (SingleWord item : items) {
-					String url = item.getUrl();
+
+				for (SingleWordTitle item : items) {
+					url = item.getUrl();
+					hits = item.getHits();
 					// TODO: get pagerank scores
 					DocInfo docInfo = docList.get(url);
 					if (docInfo == null) {
-						docInfo = new DocInfo();
+						docInfo = new DocInfo(singleWordList.size());
+						docInfo.pagerankScore = db.getPageRankScore(url);
 					}
-					// docInfo.tf_idfArray[i] = item.getTf_idf();
 					docInfo.url = url;
+					docInfo.addWord(word, position, hits);
 					docInfo.indexScore += item.getTf_idf() * singleWordWeight.get(word);
-					// System.out.println(item.getUrl() +
-					// Arrays.toString(docInfo.tf_idfArray));
 					docList.put(url, docInfo);
 				}
+
 			}
-			// i++;
 		}
 
-	}
-
-	private void formBiWordContentDocList() {
-		biWordList = queryWeightComputation.getBiWordList();
-		// int length = singleWordList.size();
-		// int i = 0;// word order
-		for (String word : biWordList) {
-			List<BiWordContent> items = db.getBiWordContentQuery(word);
-			if (!items.isEmpty()) {
-				// take idf into word weight
-				queryWeightComputation.setBiWordIdf(word, items.get(0).getIdf());
-				updateBiWordWeight();
-				for (BiWordContent item : items) {
-					String url = item.getUrl();
-					// TODO: get pagerank scores
-					DocInfo docInfo = docList.get(url);
-					if (docInfo == null) {
-						docInfo = new DocInfo();
-					}
-					// docInfo.tf_idfArray[i] = item.getTf_idf();
-					docInfo.url = url;
-					docInfo.indexScore += item.getTf_idf() * biWordWeight.get(word);
-					// System.out.println(item.getUrl() +
-					// Arrays.toString(docInfo.tf_idfArray));
-					docList.put(url, docInfo);
-				}
-			}
-			// i++;
+		for (DocInfo docInfo : docList.values()) {
+			docInfo.calculateTotalScore();
 		}
 
 	}
@@ -164,13 +152,6 @@ public class SearchEngine {
 	}
 
 	/**
-	 * helper method to get newest BiWordWeight
-	 */
-	private void updateBiWordWeight() {
-		biWordWeight = queryWeightComputation.getBiWordWeight();
-	}
-
-	/**
 	 * @return the results
 	 */
 	public ArrayList<DocInfo> getResults() {
@@ -179,9 +160,9 @@ public class SearchEngine {
 
 	public static void main(String[] args) {
 		SearchEngine engine = new SearchEngine();
-		engine.setQuery("inspired bible");
+		engine.setQuery("food");
 		for (DocInfo docInfo : engine.results) {
-			System.out.println(docInfo.url + "" + docInfo.indexScore);
+			System.out.println(docInfo.url + "" + docInfo.totalScore);
 		}
 	}
 }

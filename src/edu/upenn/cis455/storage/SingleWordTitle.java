@@ -11,10 +11,11 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
  * @author zhiyuanli
  *
  */
-@DynamoDBTable(tableName = "SingleWord")
-public class SingleWord {
+@DynamoDBTable(tableName = "SingleWordTitle")
+public class SingleWordTitle {
 	private String word;
 	private String url;
+	private String hits;
 	private Double idf;
 	private Double tf_idf;
 
@@ -48,6 +49,22 @@ public class SingleWord {
 	 */
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	/**
+	 * @return the hits
+	 */
+	@DynamoDBAttribute(attributeName = "hits")
+	public String getHits() {
+		return hits;
+	}
+
+	/**
+	 * @param hits
+	 *            the hits to set
+	 */
+	public void setHits(String hits) {
+		this.hits = hits;
 	}
 
 	/**

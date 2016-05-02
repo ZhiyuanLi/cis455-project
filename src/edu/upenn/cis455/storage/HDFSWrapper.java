@@ -73,7 +73,7 @@ public class HDFSWrapper {
 //						+ Double.parseDouble(String.format("%.3f", Double.parseDouble(s[3]))) + "\"\n}\n");
 //				fileWriter.write("}\n}\n}");
 //				dynamoDB.addSingleWordContent(s[0], s[1], Double.parseDouble(s[2]), Double.parseDouble(s[3]));
-				dynamoDB.addBiWordContent(s[0], s[1], Double.parseDouble(s[2]), Double.parseDouble(s[3]));
+//				dynamoDB.addBiWordContent(s[0], s[1], Double.parseDouble(s[2]), Double.parseDouble(s[3]));
 				System.out.println(j);
 
 				line = br.readLine();

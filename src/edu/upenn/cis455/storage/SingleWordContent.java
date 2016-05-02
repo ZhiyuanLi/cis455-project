@@ -15,7 +15,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 public class SingleWordContent {
 	private String word;
 	private String url;
-	private String position;
+	private String hits;
 	private Double idf;
 	private Double tf_idf;
 
@@ -52,20 +52,21 @@ public class SingleWordContent {
 	}
 
 	/**
-	 * @return the position
+	 * @return the hits
 	 */
-	@DynamoDBAttribute(attributeName = "position")
-	public String getPosition() {
-		return position;
+	@DynamoDBAttribute(attributeName = "hits")
+	public String getHits() {
+		return hits;
 	}
 
 	/**
-	 * @param position the position to set
+	 * @param hits
+	 *            the hits to set
 	 */
-	public void setPosition(String position) {
-		this.position = position;
+	public void setHits(String hits) {
+		this.hits = hits;
 	}
-	
+
 	/**
 	 * @return the idf
 	 */

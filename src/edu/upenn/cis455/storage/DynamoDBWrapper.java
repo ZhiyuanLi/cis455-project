@@ -1,5 +1,12 @@
 package edu.upenn.cis455.storage;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.amazonaws.auth.AWSCredentials;
@@ -19,6 +26,7 @@ public class DynamoDBWrapper {
 
 	private AmazonDynamoDBClient client;
 	private DynamoDBMapper mapper;
+	private ArrayList<SingleWordContent> contentList;
 
 	/**
 	 * Constructor
@@ -36,6 +44,7 @@ public class DynamoDBWrapper {
 		client.setEndpoint("dynamodb.us-west-1.amazonaws.com");
 
 		mapper = new DynamoDBMapper(client);
+		contentList = new ArrayList<SingleWordContent>();
 	}
 
 	/**
@@ -44,30 +53,32 @@ public class DynamoDBWrapper {
 	 * @param word
 	 * @return a doc list
 	 */
-	public List<SingleWord> getSingleWordQuery(String word) {
-		SingleWord partitionKey = new SingleWord();
+	public List<SingleWordTitle> getSingleWordTitleQuery(String word) {
+		SingleWordTitle partitionKey = new SingleWordTitle();
 
 		partitionKey.setWord(word);
-		DynamoDBQueryExpression<SingleWord> queryExpression = new DynamoDBQueryExpression<SingleWord>()
+		DynamoDBQueryExpression<SingleWordTitle> queryExpression = new DynamoDBQueryExpression<SingleWordTitle>()
 				.withHashKeyValues(partitionKey);
 
-		List<SingleWord> itemList = mapper.query(SingleWord.class, queryExpression);
+		List<SingleWordTitle> itemList = mapper.query(SingleWordTitle.class, queryExpression);
 
 		return itemList;
 	}
 
 	/**
-	 * add single word to SingleWord table
+	 * add single word to SingleWordTitle table
 	 * 
 	 * @param word
 	 * @param url
+	 * @param hits
 	 * @param idf
 	 * @param tf_idf
 	 */
-	public void addSingleWord(String word, String url, Double idf, Double tf_idf) {
-		SingleWord item = new SingleWord();
+	public void addSingleWordTitle(String word, String url, String hits, Double idf, Double tf_idf) {
+		SingleWordTitle item = new SingleWordTitle();
 		item.setWord(word);
 		item.setUrl(url);
+		item.setHits(hits);
 		item.setIdf(idf);
 		item.setTf_idf(tf_idf);
 		mapper.save(item);
@@ -96,63 +107,112 @@ public class DynamoDBWrapper {
 	 * 
 	 * @param word
 	 * @param url
-	 * @param position
+	 * @param hits
 	 * @param idf
 	 * @param tf_idf
 	 */
-	public void addSingleWordContent(String word, String url, String position, Double idf, Double tf_idf) {
+	public void addSingleWordContent(String word, String url, String hits, Double idf, Double tf_idf) {
 		SingleWordContent item = new SingleWordContent();
 		item.setWord(word);
 		item.setUrl(url);
-		item.setPosition(position);
+		item.setHits(hits);
 		item.setIdf(idf);
 		item.setTf_idf(tf_idf);
-		mapper.save(item);
+		contentList.add(item);
 	}
 
 	/**
-	 * query BiWord Content table
+	 * get page rank score
 	 * 
-	 * @param word
-	 * @return a doc list
-	 */
-	public List<BiWordContent> getBiWordContentQuery(String word) {
-		BiWordContent partitionKey = new BiWordContent();
-
-		partitionKey.setWord(word);
-		DynamoDBQueryExpression<BiWordContent> queryExpression = new DynamoDBQueryExpression<BiWordContent>()
-				.withHashKeyValues(partitionKey);
-
-		List<BiWordContent> itemList = mapper.query(BiWordContent.class, queryExpression);
-
-		return itemList;
-	}
-
-	/**
-	 * add bi word to SingleWordContent table
-	 * 
-	 * @param word
 	 * @param url
-	 * @param idf
-	 * @param tf_idf
+	 * @return
 	 */
-	public void addBiWordContent(String word, String url, Double idf, Double tf_idf) {
-		BiWordContent item = new BiWordContent();
-		item.setWord(word);
-		item.setUrl(url);
-		item.setIdf(idf);
-		item.setTf_idf(tf_idf);
-		mapper.save(item);
+	public int getPageRankScore(String url) {
+		// TODO: get pagerank
+		return 0;
 	}
+
+	public void pushDataToSingWordContent(String path) throws IOException {
+		File dir = new File(path);
+		BufferedReader br;
+		int i = 0;
+		if (dir.isDirectory()) {
+			for (File file : dir.listFiles()) {
+				br = new BufferedReader(new FileReader(file));
+				String line;
+				line = br.readLine();
+				while (line != null && !line.equals("")) {
+
+					String[] s = line.split("\t");
+					if (s.length == 5) {
+						addSingleWordContent(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
+						i++;
+					}
+					line = br.readLine();
+
+				}
+			}
+
+		}
+
+		System.out.println(contentList.size());
+		for (int j = 0; j <= contentList.size() / 100; j++) {
+			if (j == contentList.size() / 100) {
+				// System.out.println(j * 100);
+				// System.out.println(contentList.size());
+				mapper.batchSave(contentList.subList(j * 100, contentList.size()));
+				break;
+			}
+			mapper.batchSave(contentList.subList(j * 100, j * 100 + 100));
+			// System.out.println((j * 100) + " " + (j * 100 + 100));
+			System.out.println((j * 100 + 100) + "uplaoded!");
+		}
+
+	}
+
+	// /**
+	// * query BiWord Content table
+	// *
+	// * @param word
+	// * @return a doc list
+	// */
+	// public List<BiWordContent> getBiWordContentQuery(String word) {
+	// BiWordContent partitionKey = new BiWordContent();
+	//
+	// partitionKey.setWord(word);
+	// DynamoDBQueryExpression<BiWordContent> queryExpression = new
+	// DynamoDBQueryExpression<BiWordContent>()
+	// .withHashKeyValues(partitionKey);
+	//
+	// List<BiWordContent> itemList = mapper.query(BiWordContent.class,
+	// queryExpression);
+	//
+	// return itemList;
+	// }
+	//
+	// /**
+	// * add bi word to SingleWordContent table
+	// *
+	// * @param word
+	// * @param url
+	// * @param idf
+	// * @param tf_idf
+	// */
+	// public void addBiWordContent(String word, String url, Double idf, Double
+	// tf_idf) {
+	// BiWordContent item = new BiWordContent();
+	// item.setWord(word);
+	// item.setUrl(url);
+	// item.setIdf(idf);
+	// item.setTf_idf(tf_idf);
+	// mapper.save(item);
+	// }
 
 	public static void main(String[] args) throws Exception {
 		DynamoDBWrapper w = new DynamoDBWrapper();
-		w.addSingleWord("test", "http://www.google.com", 1.0, 2.0);
-		// List<SingleWord> items = w.getSingleWordQuery("test");
-		// for (SingleWord item : items) {
-		// System.out.println(item.getWord() + " " + item.getUrl() + " " +
-		// item.getIdf() + " " + item.getTf_idf());
-		// }
+		// w.addSingleWordTitle("test", "http://www.google.com", "1,2", 1.0,
+		// 2.0);
+		w.pushDataToSingWordContent("/Users/zhiyuanli/Downloads/content_test_input");
 
 	}
 
