@@ -1,5 +1,6 @@
 package edu.upenn.cis455.indexer;
 
+
 /**
  * This class offers method to process with words
  * 
@@ -59,9 +60,10 @@ public class WordProcessor {
 	public static String concat(String word1, String word2) {
 		return word1.concat("=&=" + word2);
 	}
+	
 
-	public static void main(String[] args) {
-		System.out.println(preProcess("000"));
-		System.out.println(concat("ny", "times"));
-	}
+//	public static void main(String[] args) {
+//		System.out.println(preProcess("000"));
+//		System.out.println(concat("ny", "times"));
+//	}
 }

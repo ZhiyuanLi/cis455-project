@@ -16,19 +16,29 @@ public class IndexerReducer extends Reducer<Text, InterValue, Text, Text> {
 		int count = 0;
 		ArrayList<InterValue> vTemp = new ArrayList<InterValue>();
 		// get copy of interValues
+		InterValue iv = null;
+		Text docId = null;
+		Text hits = null;
+		DoubleWritable tf = null;
 		for (InterValue interValue : interValues) {
 			count++;
-			vTemp.add(new InterValue(new Text(interValue.getDocId()), new Text(interValue.getHits()),
-					new DoubleWritable(Double.parseDouble(interValue.getTf().toString()))));
+			docId = new Text(interValue.getDocId());
+			hits = new Text(interValue.getHits());
+			tf = new DoubleWritable(Double.parseDouble(interValue.getTf().toString()));
+			iv = new InterValue(docId, hits, tf);
+			vTemp.add(iv);
 		}
 		// compute idf
 		double idf = Math.log((double) IndexerDriver.N / count);
 		// get sort interValues by tf
 		Collections.sort(vTemp);
+		OutValue outValue;
+		Text output = null;
 		for (int i = 0; i < IndexerDriver.OUPUTSIZE && i < count; i++) {
-			InterValue v = vTemp.get(i);
-			OutValue outValue = new OutValue(v.getDocId(), v.getHits(), idf, v.getTf().get() * idf);
-			context.write(interKey, new Text(outValue.toString()));
+			iv = vTemp.get(i);
+			outValue = new OutValue(iv.getDocId(), iv.getHits(), idf, iv.getTf().get() * idf);
+			output = new Text(outValue.toString());
+			context.write(interKey, output);
 		}
 	}
 }
