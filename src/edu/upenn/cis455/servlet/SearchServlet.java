@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.upenn.cis455.search.DocInfo;
 import edu.upenn.cis455.search.SearchEngine;
+import edu.upenn.cis455.search.SearchEngineMultiThread;
+import edu.upenn.cis455.search.SpellCheck;
 import edu.upenn.cis455.storage.SingleWordTitle;
 
 /**
@@ -21,7 +23,7 @@ import edu.upenn.cis455.storage.SingleWordTitle;
 @SuppressWarnings("serial")
 public class SearchServlet extends HttpServlet {
 
-	private SearchEngine searchEngine;
+	private SearchEngineMultiThread searchEngine;
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -44,6 +46,7 @@ public class SearchServlet extends HttpServlet {
 		out.println(
 				"<form method=\"post\"><p class=\"s\"><input name=\"query\" id=\"search\" type=\"search\" required></p>");
 		out.println("<br><input type=\"checkbox\" name=\"weather\" value=\"true\">Search Weather");
+		out.println("<br><input type=\"checkbox\" name=\"spellcheck\" value=\"true\">Spell Check");
 		out.println("<br><input type=\"checkbox\" name=\"debug\" value=\"true\">Debug Mode");
 		out.println("</form></body></html>");
 
@@ -56,6 +59,7 @@ public class SearchServlet extends HttpServlet {
 		System.out.println(request.getParameter("query"));
 		System.out.println(request.getParameter("weather"));
 		System.out.println(request.getParameter("debug"));
+		String spellCheck = request.getParameter("spellcheck");
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		String docType = "<!DOCTYPE html>\n";
@@ -71,14 +75,27 @@ public class SearchServlet extends HttpServlet {
 		out.println("</style></head>");
 		out.println("<h1>Search Results</h1>");
 		//
-		searchEngine = new SearchEngine();
-		//
-		searchEngine.setQuery(request.getParameter("query"));
+		searchEngine = new SearchEngineMultiThread();
+		String query = request.getParameter("query");
+		String revisedQuery = null;
+		if (spellCheck != null) {
+			SpellCheck sp = new SpellCheck(query);
+			revisedQuery = sp.getResult();
+			if (!revisedQuery.equals("")) {
+				query = revisedQuery;
+			}
+		}
+
+		searchEngine.doSearchQuery(query);
+
 		String url;
 		for (DocInfo docInfo : searchEngine.getResults()) {
 			url = docInfo.url;
 			if (!url.startsWith("http")) {
 				url = "http://" + url;
+			}
+			if (revisedQuery != null && !revisedQuery.equals("")) {
+				out.println("<p>" + "Do you mean " + revisedQuery + " ?" + "</p>");
 			}
 			out.println("<a href=\"" + url + "\">" + " " + url + " " + docInfo.totalScore + "</a>");
 		}
@@ -87,6 +104,8 @@ public class SearchServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
+		String filePath = "/home/cis455/big.txt";
+		SpellCheck.readDict(filePath);
 		// try {
 		// searchEngine = new SearchEngine();
 		// } catch (Exception e) {

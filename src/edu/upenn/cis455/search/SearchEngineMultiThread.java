@@ -22,7 +22,7 @@ public class SearchEngineMultiThread {
 	private int querySize;
 	private ArrayList<String> queryWords;
 	private Hashtable<String, DocInfo> docList;
-	protected ArrayList<DocInfo> results;
+	private ArrayList<DocInfo> results;
 
 	/**
 	 * Constructor for SearchEngineMultiThread
@@ -145,6 +145,13 @@ public class SearchEngineMultiThread {
 			docInfo.indexScore += item.getTf_idf() * queryWordInfo.getWeight();
 			docList.put(url, docInfo);
 		}
+	}
+
+	/**
+	 * @return the results
+	 */
+	public ArrayList<DocInfo> getResults() {
+		return results;
 	}
 
 	public static void main(String[] args) {
