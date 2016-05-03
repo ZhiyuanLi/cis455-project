@@ -3,7 +3,9 @@ package edu.upenn.cis455.search;
 import edu.upenn.cis455.indexer.IndexerDriver;
 
 /**
- * @author woody
+ * QueryWordInfo stores each word info such as positon, weights in the query
+ * 
+ * @author Di Wu
  *
  */
 public class QueryWordInfo {
@@ -67,7 +69,7 @@ public class QueryWordInfo {
 	 * @param max
 	 */
 	public void setTf(double maxFreq) {
-		this.weight = IndexerDriver.TF_FACTOR + (1 - IndexerDriver.TF_FACTOR) * (weight/ maxFreq);
+		this.weight = IndexerDriver.TF_FACTOR + (1 - IndexerDriver.TF_FACTOR) * (weight / maxFreq);
 	}
 
 	/**

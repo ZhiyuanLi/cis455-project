@@ -4,13 +4,17 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 /**
- * this class stores each word info for one doc
+ * This class stores each query word info for one doc
  * 
- * @author zhiyuanli
+ * @author Zhiyuan Li
+ * @author Di Wu
  *
  */
 public class DocInfo implements Comparable<DocInfo> {
 
+	/**
+	 * Instance of DocInfo
+	 */
 	public String url;
 	protected int querySize;
 	protected int wordNumberInDoc;
@@ -73,36 +77,42 @@ public class DocInfo implements Comparable<DocInfo> {
 	 * @return words hits difference
 	 */
 	private int getWordsDiffInOrder() {
+		// 0. initialize variables to help get word diff in order
 		int diff = 0;
 		boolean inOrder = false;
 		WordInfo prev;
 		WordInfo cur;
+		
 		// 1. if the word queue has more than 3 words
 		while ((wordQueue.size() >= 3)) {
 			prev = wordQueue.poll();
 			cur = wordQueue.poll();
 			// calculate closest distinct words difference
 			if (cur.position > prev.position) {
-				diff += cur.hit - prev.hit;
+				diff += (cur.hit - prev.hit);
 				inOrder = true;
 			}
 			// move to next
 			prev = cur;
 			cur = wordQueue.poll();
 		}
-		// 2. after setp1 or word queue originally has size=2
+		
+		// 2. after setp1 or word queue originally has size equals 2
 		if (wordQueue.size() == 2) {
 			prev = wordQueue.poll();
 			cur = wordQueue.poll();
 			// calculate closest distinct words difference
 			if (cur.position > prev.position) {
-				diff += cur.hit = prev.hit;
+				diff += (cur.hit - prev.hit);
 				inOrder = true;
 			}
-		} else if (wordQueue.size() == 1) {
-			// 3. word queue originally has size=1
+		} 
+		
+		// 3. word queue originally has size equals 1
+		else if (wordQueue.size() == 1) {	
 			inOrder = false;
 		}
+		
 		// 4. no words in order ,the order difference is huge
 		if (inOrder == false) {
 			return Integer.MAX_VALUE;
@@ -123,7 +133,8 @@ public class DocInfo implements Comparable<DocInfo> {
 	/**
 	 * inner class to store word info
 	 * 
-	 * @author zhiyuanli
+	 * @author Zhiyuan Li
+	 * @author Di Wu
 	 *
 	 */
 	private class WordInfo implements Comparable<WordInfo> {

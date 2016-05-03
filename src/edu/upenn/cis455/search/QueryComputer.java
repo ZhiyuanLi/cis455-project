@@ -7,7 +7,9 @@ import edu.upenn.cis455.indexer.Tokenizer;
 import edu.upenn.cis455.indexer.WordProcessor;
 
 /**
- * @author woody
+ * QueryComputer to compute and store query words info
+ * 
+ * @author Di Wu
  *
  */
 public class QueryComputer {
@@ -50,7 +52,8 @@ public class QueryComputer {
 					word = WordProcessor.process(word.toLowerCase());
 					if (word != null) {
 						// 2.1 if encounter a new word, querySize++, create a
-						// new QueryWordInfo for this word, queryWords add this word
+						// new QueryWordInfo for this word, queryWords add this
+						// word
 						if (!queryWordInfoList.containsKey(word)) {
 							querySize++;
 							queryWords.add(word);
@@ -103,41 +106,30 @@ public class QueryComputer {
 	}
 
 	/**
-	 * This is used to get update weight for particular word
+	 * This is used to get QueryWordInfo for particular word
 	 * 
 	 * @param word
-	 * @return
+	 * @return QueryWordInfo for particular word
 	 */
 	public QueryWordInfo getQueryWordInfo(String word) {
 		return queryWordInfoList.get(word);
 	}
-	
+
 	/**
-	 * Get the query words in set
-	 * @return
+	 * Get the query words in ArrayList
+	 * 
+	 * @return the query words in ArrayList
 	 */
 	public ArrayList<String> getQueryWords() {
 		return queryWords;
 	}
 
 	/**
+	 * Get the query size
+	 * 
 	 * @return the querySize
 	 */
 	public int getQuerySize() {
 		return querySize;
 	}
-
-	// public void print() {
-	// for (String word: queryWordInfoList.keySet()) {
-	// System.out.println(queryWordInfoList.get(word));
-	// }
-	// }
-	//
-	// public static void main(String[] args) {
-	// QueryComputer q = new QueryComputer();
-	// q.setQuery("fast food");
-	//// q.setWordWeight("world", 12.5);
-	//// q.setWordWeight("good", 12);
-	// q.print();
-	// }
 }

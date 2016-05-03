@@ -6,18 +6,27 @@ import edu.upenn.cis455.storage.DynamoDBWrapper;
 import edu.upenn.cis455.storage.SingleWordContent;
 
 /**
- * @author woody
+ * SearchEngineMultiThread do search using multi-thread
+ * 
+ * @author Di Wu
+ * @author Zhiyuan Li
  *
  */
 public class SearchEngineMultiThread {
 
+	/**
+	 * Instance for SearchEngineMultiThread
+	 */
 	private DynamoDBWrapper db;
 	protected QueryComputer qComputer;
-	private ArrayList<String> queryWords;
 	private int querySize;
+	private ArrayList<String> queryWords;
 	private Hashtable<String, DocInfo> docList;
 	protected ArrayList<DocInfo> results;
 
+	/**
+	 * Constructor for SearchEngineMultiThread
+	 */
 	public SearchEngineMultiThread() {
 		try {
 			db = new DynamoDBWrapper();
@@ -29,7 +38,7 @@ public class SearchEngineMultiThread {
 	}
 
 	/**
-	 * do search query
+	 * Do search query
 	 * 
 	 * @param queryS
 	 *            query to be search
@@ -37,24 +46,24 @@ public class SearchEngineMultiThread {
 	public void doSearchQuery(String queryS) {
 		// 1. set query to query computer
 		qComputer.setQuery(queryS);
-		
+
 		// 2. get query words from query
 		queryWords = qComputer.getQueryWords();
-		
+
 		// 3. get query size from query computer
 		querySize = qComputer.getQuerySize();
-		
+
 		// 4. issue thread to get every word doc list and compute the score for
 		// each doc
 		try {
 			issueThreads();
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			System.out.println("@ doSearchQuery");
 		}
-		
+
 		// 5. get doc list
 		results = new ArrayList<DocInfo>(docList.values());
-		
+
 		// 6. sort doc list by score
 		Collections.sort(results);
 	}
@@ -90,7 +99,7 @@ public class SearchEngineMultiThread {
 			threadPool[i].join();
 		}
 
-		// 4. compute doc list score 
+		// 4. compute doc list score
 		List<SingleWordContent> items;
 		for (i = 0; i < querySize; i++) {
 			items = contentWorkers[i].getContentItems();
@@ -99,7 +108,7 @@ public class SearchEngineMultiThread {
 				computeDoc(word, items);
 			}
 		}
-		
+
 		// 5. sort doc list by its total score
 		for (DocInfo docInfo : docList.values()) {
 			docInfo.calculateTotalScore();
@@ -108,6 +117,7 @@ public class SearchEngineMultiThread {
 
 	/**
 	 * This method is used to compute doc list score for a word
+	 * 
 	 * @param word
 	 * @param items
 	 */
@@ -115,13 +125,13 @@ public class SearchEngineMultiThread {
 		// 0. declare variable that help to compute doc info
 		String url, hits;
 		QueryWordInfo queryWordInfo;
-		
+
 		// 1. compute this word idf
 		qComputer.setQueryWordIdf(word, items.get(0).getIdf());
-		
+
 		// 2. get this word query info
 		queryWordInfo = qComputer.getQueryWordInfo(word);
-		
+
 		// 3. do computation for each doc
 		for (SingleWordContent item : items) {
 			url = item.getUrl();
