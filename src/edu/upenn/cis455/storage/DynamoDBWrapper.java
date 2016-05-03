@@ -26,7 +26,10 @@ public class DynamoDBWrapper {
 
 	private AmazonDynamoDBClient client;
 	private DynamoDBMapper mapper;
+	// TODO:
+	private ArrayList<SingleWordTitle> titleList;
 	private ArrayList<SingleWordContent> contentList;
+	private ArrayList<ImageContent> imageList;
 
 	/**
 	 * Constructor
@@ -44,7 +47,9 @@ public class DynamoDBWrapper {
 		client.setEndpoint("dynamodb.us-west-1.amazonaws.com");
 
 		mapper = new DynamoDBMapper(client);
+		titleList = new ArrayList<SingleWordTitle>();
 		contentList = new ArrayList<SingleWordContent>();
+		imageList = new ArrayList<ImageContent>();
 	}
 
 	/**
@@ -119,6 +124,45 @@ public class DynamoDBWrapper {
 		item.setIdf(idf);
 		item.setTf_idf(tf_idf);
 		contentList.add(item);
+	}
+	
+	
+	/**
+	 * query SingleWord Content table
+	 * 
+	 * @param word
+	 * @return a doc list
+	 */
+	public List<ImageContent> getImageContentQuery(String word) {
+		ImageContent partitionKey = new ImageContent();
+
+		partitionKey.setWord(word);
+		DynamoDBQueryExpression<ImageContent> queryExpression = new DynamoDBQueryExpression<ImageContent>()
+				.withHashKeyValues(partitionKey);
+
+		List<ImageContent> itemList = mapper.query(ImageContent.class, queryExpression);
+
+		return itemList;
+	}
+
+	/**
+	 * add single word to SingleWordContent table
+	 * 
+	 * @param word
+	 * @param url
+	 * @param hits
+	 * @param idf
+	 * @param tf_idf
+	 */
+	public void addImageContent(String word, String url, String hits, Double idf, Double tf_idf) {
+		ImageContent item = new ImageContent();
+		item.setWord(word);
+		item.setUrl(url);
+		item.setHits(hits);
+		item.setIdf(idf);
+		item.setTf_idf(tf_idf);
+		// TODO:
+		imageList.add(item);
 	}
 
 	/**

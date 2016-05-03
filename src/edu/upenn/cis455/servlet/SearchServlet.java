@@ -86,7 +86,7 @@ public class SearchServlet extends HttpServlet {
 			}
 		}
 
-		searchEngine.doSearchQuery(query);
+		searchEngine.doSearchQuery(query, "word");
 
 		String url;
 		for (DocInfo docInfo : searchEngine.getResults()) {

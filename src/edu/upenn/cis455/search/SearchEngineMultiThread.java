@@ -4,6 +4,7 @@ import java.util.*;
 
 import edu.upenn.cis455.storage.DynamoDBWrapper;
 import edu.upenn.cis455.storage.SingleWordContent;
+import edu.upenn.cis455.storage.SingleWordTitle;
 
 /**
  * SearchEngineMultiThread do search using multi-thread
@@ -31,7 +32,7 @@ public class SearchEngineMultiThread {
 		try {
 			db = new DynamoDBWrapper();
 			qComputer = new QueryComputer();
-			docList = new Hashtable<>();
+			docList = new Hashtable<String, DocInfo>();
 		} catch (Exception e) {
 			System.out.println("@ SearchEngineMultiThread");
 		}
@@ -43,7 +44,7 @@ public class SearchEngineMultiThread {
 	 * @param queryS
 	 *            query to be search
 	 */
-	public void doSearchQuery(String queryS) {
+	public void doSearchQuery(String queryS, String searchType) {
 		// 1. set query to query computer
 		qComputer.setQuery(queryS);
 
@@ -56,7 +57,7 @@ public class SearchEngineMultiThread {
 		// 4. issue thread to get every word doc list and compute the score for
 		// each doc
 		try {
-			issueThreads();
+			issueThreads(searchType);
 		} catch (InterruptedException e) {
 			System.out.println("@ doSearchQuery");
 		}
@@ -74,7 +75,21 @@ public class SearchEngineMultiThread {
 	 * @param isContent
 	 * @throws InterruptedException
 	 */
-	public void issueThreads() throws InterruptedException {
+	public void issueThreads(String searchType) throws InterruptedException {
+		switch (searchType) {
+		case "word":
+			issueWordContentThread();
+			issueWordTitleThread();
+			break;
+
+		case "image":
+			issueImageThread();
+			break;
+		}
+
+	}
+
+	private void issueWordContentThread() throws InterruptedException {
 		// 0. declare variables to help to issueThreads
 		int i = 0;
 		// 1. open a thread pool, open contentWorkers
@@ -105,7 +120,90 @@ public class SearchEngineMultiThread {
 			items = contentWorkers[i].getContentItems();
 			if (!items.isEmpty()) {
 				word = contentWorkers[i].getWord();
-				computeDoc(word, items);
+				computeContentDoc(word, items);
+			}
+		}
+
+		// 5. sort doc list by its total score
+		for (DocInfo docInfo : docList.values()) {
+			docInfo.calculateTotalScore();
+		}
+	}
+
+	private void issueWordTitleThread() throws InterruptedException {
+		// 0. declare variables to help to issueThreads
+		int i = 0;
+		// 1. open a thread pool, open contentWorkers
+		Thread[] threadPool = new Thread[querySize];
+		TitleSearchWorker[] titleWorkers = new TitleSearchWorker[querySize];
+
+		// 2. start thread
+		// 2.1 declare variable to help start thread
+		TitleSearchWorker tsw;
+		String word;
+		// 2.2 add thread to pool, start thread
+		for (i = 0; i < querySize; i++) {
+			word = queryWords.get(i);
+			tsw = new TitleSearchWorker(db, word);
+			titleWorkers[i] = tsw;
+			threadPool[i] = new Thread(tsw);
+			threadPool[i].start();
+		}
+
+		// 3. join thread, wait all thread to get items back
+		for (i = 0; i < querySize; i++) {
+			threadPool[i].join();
+		}
+
+		// 4. compute doc list score
+		List<SingleWordTitle> items;
+		for (i = 0; i < querySize; i++) {
+			items = titleWorkers[i].getTitleItems();
+			if (!items.isEmpty()) {
+				word = titleWorkers[i].getWord();
+				computeTitleDoc(word, items);
+			}
+		}
+
+		// 5. sort doc list by its total score
+		for (DocInfo docInfo : docList.values()) {
+			docInfo.calculateTotalScore();
+		}
+	}
+
+	private void issueImageThread() throws InterruptedException {
+		// 0. declare variables to help to issueThreads
+		int i = 0;
+		// 1. open a thread pool, open contentWorkers
+		Thread[] threadPool = new Thread[querySize];
+		TitleSearchWorker[] titleWorkers = new TitleSearchWorker[querySize];
+
+		// 2. start thread
+		// 2.1 declare variable to help start thread
+		ContentSearchWorker csw;
+		TitleSearchWorker tsw;
+		String word;
+		// 2.2 add thread to pool, start thread
+		for (i = 0; i < querySize; i++) {
+			word = queryWords.get(i);
+			tsw = new TitleSearchWorker(db, word);
+			titleWorkers[i] = tsw;
+			threadPool[i] = new Thread(tsw);
+			threadPool[i].start();
+		}
+
+		// 3. join thread, wait all thread to get items back
+		for (i = 0; i < querySize; i++) {
+			threadPool[i].join();
+		}
+
+		// 4. compute doc list score
+		List<SingleWordTitle> items;
+		for (i = 0; i < querySize; i++) {
+			items = titleWorkers[i].getTitleItems();
+			if (!items.isEmpty()) {
+				word = titleWorkers[i].getWord();
+				computeTitleDoc(word, items);
 			}
 		}
 
@@ -121,7 +219,7 @@ public class SearchEngineMultiThread {
 	 * @param word
 	 * @param items
 	 */
-	private void computeDoc(String word, List<SingleWordContent> items) {
+	private void computeContentDoc(String word, List<SingleWordContent> items) {
 		// 0. declare variable that help to compute doc info
 		String url, hits;
 		QueryWordInfo queryWordInfo;
@@ -148,18 +246,51 @@ public class SearchEngineMultiThread {
 	}
 
 	/**
+	 * 
 	 * @return the results
 	 */
 	public ArrayList<DocInfo> getResults() {
 		return results;
 	}
 
+	/**
+	 * This method is used to compute doc list score for a word
+	 * 
+	 * @param word
+	 * @param items
+	 */
+	private void computeTitleDoc(String word, List<SingleWordTitle> items) {
+		// 0. declare variable that help to compute doc info
+		String url, hits;
+		QueryWordInfo queryWordInfo;
+
+		// 1. compute this word idf
+		qComputer.setQueryWordIdf(word, items.get(0).getIdf());
+
+		// 2. get this word query info
+		queryWordInfo = qComputer.getQueryWordInfo(word);
+
+		// 3. do computation for each doc
+		for (SingleWordTitle item : items) {
+			url = item.getUrl();
+			hits = item.getHits();
+			DocInfo docInfo = docList.get(url);
+			if (docInfo == null) {
+				docInfo = new DocInfo(querySize, url);
+				docInfo.pagerankScore = db.getPageRankScore(url);
+			}
+			docInfo.addWord(word, queryWordInfo.getPosition(), hits);
+			docInfo.indexScore += item.getTf_idf() * queryWordInfo.getWeight();
+			docList.put(url, docInfo);
+		}
+
+	}
+
 	public static void main(String[] args) {
 		SearchEngineMultiThread engine = new SearchEngineMultiThread();
-		engine.doSearchQuery("fast food");
+		engine.doSearchQuery("fast food", "word");
 		for (DocInfo docInfo : engine.results) {
 			System.out.println(docInfo.url + "" + docInfo.totalScore);
 		}
 	}
-
 }
