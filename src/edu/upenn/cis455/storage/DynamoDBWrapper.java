@@ -44,7 +44,7 @@ public class DynamoDBWrapper {
 		AWSCredentials credentials = new BasicAWSCredentials("AKIAI5RD7TPQ6HRG5NEQ",
 				"FdMAW9DZrDdEKca0VLQx+vVgEnE38U9aMsokhadi");
 		client = new AmazonDynamoDBClient(credentials);
-		client.setEndpoint("dynamodb.us-west-1.amazonaws.com");
+		client.setEndpoint("dynamodb.us-east-1.amazonaws.com");
 
 		mapper = new DynamoDBMapper(client);
 		titleList = new ArrayList<SingleWordTitle>();
@@ -125,8 +125,7 @@ public class DynamoDBWrapper {
 		item.setTf_idf(tf_idf);
 		contentList.add(item);
 	}
-	
-	
+
 	/**
 	 * query SingleWord Content table
 	 * 
@@ -214,6 +213,61 @@ public class DynamoDBWrapper {
 
 	}
 
+	public void pushDataToImageContent(String path, int lineNum) throws IOException {
+		File dir = new File(path);
+		BufferedReader br;
+
+		int i = 0;
+		if (dir.isDirectory()) {
+			for (File file : dir.listFiles()) {
+				br = new BufferedReader(new FileReader(file));
+				String line;
+				line = br.readLine();
+				while (line != null && !line.equals("")) {
+
+					String[] s = line.split("\t");
+					if (s.length == 5) {
+						addImageContent(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
+						i++;
+					}
+					line = br.readLine();
+
+					if (i % lineNum == 0) {
+						System.out.println(imageList.size());
+						for (int j = 0; j <= imageList.size() / 100; j++) {
+							if (j == imageList.size() / 100) {
+								// System.out.println(j * 100);
+								// System.out.println(contentList.size());
+								mapper.batchSave(imageList.subList(j * 100, imageList.size()));
+								break;
+							}
+							mapper.batchSave(imageList.subList(j * 100, j * 100 + 100));
+							// System.out.println((j * 100) + " " + (j * 100 +
+							// 100));
+							System.out.println((j * 100 + 100) + "uplaoded!");
+						}
+						imageList.clear();
+					}
+				}
+
+			}
+
+		}
+		for (int j = 0; j <= imageList.size() / 100; j++) {
+			if (j == imageList.size() / 100) {
+				// System.out.println(j * 100);
+				// System.out.println(contentList.size());
+				mapper.batchSave(imageList.subList(j * 100, imageList.size()));
+				break;
+			}
+			mapper.batchSave(imageList.subList(j * 100, j * 100 + 100));
+			// System.out.println((j * 100) + " " + (j * 100 +
+			// 100));
+			System.out.println((j * 100 + 100) + "uplaoded!");
+		}
+
+	}
+
 	// /**
 	// * query BiWord Content table
 	// *
@@ -256,7 +310,8 @@ public class DynamoDBWrapper {
 		DynamoDBWrapper w = new DynamoDBWrapper();
 		// w.addSingleWordTitle("test", "http://www.google.com", "1,2", 1.0,
 		// 2.0);
-		w.pushDataToSingWordContent("/Users/zhiyuanli/Downloads/content_test_input");
+		// w.pushDataToSingWordContent("/Users/zhiyuanli/Downloads/content_test_input");
+		w.pushDataToImageContent("/Users/woody/Downloads/imageIn/imageOutput", 100000);
 
 	}
 
