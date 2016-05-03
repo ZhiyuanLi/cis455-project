@@ -13,8 +13,6 @@ public class QueryWordInfo {
 	 */
 	private String word;
 	private int position;
-	private int freq;
-	private double tf;
 	private double weight;
 
 	/**
@@ -26,9 +24,7 @@ public class QueryWordInfo {
 	public QueryWordInfo(String word, int position) {
 		this.word = word;
 		this.position = position;
-		this.freq = 1;
-		this.tf = 0.0;
-		this.weight = 0.0;
+		this.weight = 1.0;
 	}
 
 	/**
@@ -53,7 +49,7 @@ public class QueryWordInfo {
 	 * Update the word frequency
 	 */
 	public void addFreq() {
-		this.freq++;
+		this.weight++;
 	}
 
 	/**
@@ -61,26 +57,26 @@ public class QueryWordInfo {
 	 * 
 	 * @return
 	 */
-	public int getFreq() {
-		return this.freq;
+	public double getFreq() {
+		return this.weight;
 	}
 
 	/**
-	 * Set up the word tf
+	 * Set up the word tf, update weight
 	 * 
 	 * @param max
 	 */
-	public void setTf(int max) {
-		this.tf = IndexerDriver.TF_FACTOR + (1 - IndexerDriver.TF_FACTOR) * ((double) freq / max);
+	public void setTf(double maxFreq) {
+		this.weight = IndexerDriver.TF_FACTOR + (1 - IndexerDriver.TF_FACTOR) * (weight/ maxFreq);
 	}
 
 	/**
-	 * Set up the word idf
+	 * Set up the word idf, update weight
 	 * 
 	 * @param idf
 	 */
-	public void setWeight(double idf) {
-		this.weight = tf * idf;
+	public void setIdf(double idf) {
+		this.weight = weight * idf;
 	}
 
 	/**
@@ -94,6 +90,6 @@ public class QueryWordInfo {
 
 	@Override
 	public String toString() {
-		return this.word + " : " + this.tf + " : " + this.position + " : " + this.weight;
+		return this.word + " : " + this.position + " : " + this.weight;
 	}
 }

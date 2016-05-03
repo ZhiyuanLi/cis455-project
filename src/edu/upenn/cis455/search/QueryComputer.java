@@ -6,62 +6,118 @@ import java.util.*;
 import edu.upenn.cis455.indexer.Tokenizer;
 import edu.upenn.cis455.indexer.WordProcessor;
 
+/**
+ * @author woody
+ *
+ */
 public class QueryComputer {
 
+	/**
+	 * Instance variable for QueryComputer
+	 */
 	private int querySize;
+	private ArrayList<String> queryWords;
 	private Hashtable<String, QueryWordInfo> queryWordInfoList;
 
+	/**
+	 * Constructor for QueryComputer
+	 */
 	public QueryComputer() {
 		querySize = 0;
+		queryWords = new ArrayList<String>();
 		queryWordInfoList = new Hashtable<String, QueryWordInfo>();
 	}
 
+	/**
+	 * Set query
+	 * 
+	 * @param queryS
+	 */
 	public void setQuery(String queryS) {
 		try {
-			Tokenizer tokenizer = new Tokenizer(queryS);
+
+			// 1.initialize variables that help to set query
 			int position = 1;
-			int maxFreq = 1;
+			double maxFreq = 1;
+			String word = null;
+			Tokenizer tokenizer = new Tokenizer(queryS);
+			QueryWordInfo queryWordInfo = null;
+
+			// 2.split query using tokenizer
 			while (tokenizer.hasNext()) {
-				String word = WordProcessor.preProcess(tokenizer.nextToken());
+				word = WordProcessor.preProcess(tokenizer.nextToken());
 				if (!word.equals("")) {
-					String pWord = WordProcessor.process(word.toLowerCase());
-					QueryWordInfo queryWordInfo;
-					if (pWord != null) {
-						queryWordInfo = new QueryWordInfo(pWord, position);
-						if (queryWordInfoList.containsKey(pWord)) {
-							queryWordInfo = queryWordInfoList.get(pWord);
+					word = WordProcessor.process(word.toLowerCase());
+					if (word != null) {
+						// 2.1 if encounter a new word, querySize++, create a
+						// new QueryWordInfo for this word, queryWords add this word
+						if (!queryWordInfoList.containsKey(word)) {
+							querySize++;
+							queryWords.add(word);
+							queryWordInfo = new QueryWordInfo(word, position);
+						}
+						// 2.2 if not a new word, update this word
+						// QueryWordInfo, update the maxFreq of this query
+						else {
+							queryWordInfo = queryWordInfoList.get(word);
 							queryWordInfo.addFreq();
-							if (maxFreq < queryWordInfo.getFreq()) {
-								maxFreq = queryWordInfo.getFreq();
+							if (maxFreq < queryWordInfo.getWeight()) {
+								maxFreq = queryWordInfo.getWeight();
 							}
 						}
-						queryWordInfoList.put(pWord, queryWordInfo);
+						// 2.3 put word and this QueryWordInfo to
+						// queryWordInfoList
+						queryWordInfoList.put(word, queryWordInfo);
+						// 2.4 update word position
 						position++;
 					}
 				}
 			}
+
+			// 3. compute every word tf of this query
 			setQueryWordTf(maxFreq);
 		} catch (IOException e) {
 			System.out.println("@ Set Query");
 		}
 	}
-	
-	private void setQueryWordTf(int maxFreq) {
+
+	/**
+	 * This is private method set every word tf in this query
+	 * 
+	 * @param maxFreq
+	 */
+	private void setQueryWordTf(double maxFreq) {
 		for (String word : queryWordInfoList.keySet()) {
-			querySize++;
 			queryWordInfoList.get(word).setTf(maxFreq);
 		}
 	}
-	
-	public void setWordWeight(String word, double idf) {
-		queryWordInfoList.get(word).setWeight(idf);
+
+	/**
+	 * This is used to set idf for particular word
+	 * 
+	 * @param word
+	 * @param idf
+	 */
+	public void setQueryWordIdf(String word, double idf) {
+		queryWordInfoList.get(word).setIdf(idf);
 	}
 
 	/**
-	 * @return the queryWordInfoList
+	 * This is used to get update weight for particular word
+	 * 
+	 * @param word
+	 * @return
 	 */
-	public Hashtable<String, QueryWordInfo> getQueryWordInfoList() {
-		return queryWordInfoList;
+	public QueryWordInfo getQueryWordInfo(String word) {
+		return queryWordInfoList.get(word);
+	}
+	
+	/**
+	 * Get the query words in set
+	 * @return
+	 */
+	public ArrayList<String> getQueryWords() {
+		return queryWords;
 	}
 
 	/**
@@ -70,29 +126,18 @@ public class QueryComputer {
 	public int getQuerySize() {
 		return querySize;
 	}
-	
-	
-	public QueryWordInfo getUpdateWordInfo(String word) {
-		return queryWordInfoList.get(word);
-	}
-	
 
-	
-	
-	
-	
-	
-	public void print() {
-		for (String word: queryWordInfoList.keySet()) {
-			System.out.println(queryWordInfoList.get(word));
-		}
-	}
-	
-	public static void main(String[] args) {
-		QueryComputer q = new QueryComputer();
-		q.setQuery("fast food");
-//		q.setWordWeight("world", 12.5);
-//		q.setWordWeight("good", 12);
-		q.print();
-	}
+	// public void print() {
+	// for (String word: queryWordInfoList.keySet()) {
+	// System.out.println(queryWordInfoList.get(word));
+	// }
+	// }
+	//
+	// public static void main(String[] args) {
+	// QueryComputer q = new QueryComputer();
+	// q.setQuery("fast food");
+	//// q.setWordWeight("world", 12.5);
+	//// q.setWordWeight("good", 12);
+	// q.print();
+	// }
 }

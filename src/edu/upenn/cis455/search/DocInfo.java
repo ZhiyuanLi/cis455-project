@@ -12,34 +12,37 @@ import java.util.Queue;
 public class DocInfo implements Comparable<DocInfo> {
 
 	public String url;
-	// protected String query;
 	protected int querySize;
 	protected int wordNumberInDoc;
 	protected Queue<WordInfo> wordQueue;
-	protected StringBuilder wordsInOrder;
 	protected double indexScore;
 	protected double pagerankScore;
 	public double totalScore;
 
-	public DocInfo(int querySize) {
-		// this.query = query;
+	/**
+	 * constructor
+	 * 
+	 * @param querySize
+	 * @param url
+	 */
+	public DocInfo(int querySize, String url) {
 		this.querySize = querySize;
+		this.url = url;
 		this.wordNumberInDoc = 0;
-		url = "";
-		wordQueue = new PriorityQueue<WordInfo>();
-		wordsInOrder = new StringBuilder();
-		indexScore = 0;
-		pagerankScore = 0;
-		totalScore = 0;
+		this.wordQueue = new PriorityQueue<WordInfo>();
+		this.indexScore = 0;
+		this.pagerankScore = 0;
+		this.totalScore = 0;
 	}
 
 	/**
 	 * get the total score
 	 */
 	public void calculateTotalScore() {
-		int orderScore = getWordsInOrderDiff();
+		int diffInOrder = getWordsDiffInOrder();
 		if (querySize != 1) {
-			indexScore = indexScore * wordNumberInDoc * 0.5 + indexScore * wordNumberInDoc * 0.5 / orderScore;
+			// TODO: more tunning!!! & add pagerank
+			indexScore = indexScore * wordNumberInDoc * 0.5 + indexScore * wordNumberInDoc * 0.5 / diffInOrder;
 		}
 		totalScore = indexScore + pagerankScore;
 	}
@@ -51,84 +54,71 @@ public class DocInfo implements Comparable<DocInfo> {
 	 * @param hits
 	 */
 	public void addWord(String word, int position, String hits) {
+		// 1. update query word number occurs in doc
 		wordNumberInDoc++;
-		String[] temp = hits.split(",");
+		// 2. add word info to word queue
+		// 2.1 declare variable to help add word info
 		WordInfo w;
+		// 2.2 create word info for every position and add it to word queue
+		String[] temp = hits.split(",");
 		for (int i = 0; i < temp.length; i++) {
 			w = new WordInfo(word, position, Integer.parseInt(temp[i]));
 			wordQueue.offer(w);
 		}
 	}
-	//
-	// /**
-	// * get words in order as a whole string
-	// *
-	// * @return
-	// */
-	// private String getWordsInOrder() {
-	// while (!wordQueue.isEmpty()) {
-	// wordsInOrder.append(wordQueue.poll().word).append(" ");
-	// }
-	// return wordsInOrder.toString().trim();
-	// }
 
-	private int getWordsInOrderDiff() {
+	/**
+	 * get words hits difference in order
+	 * 
+	 * @return words hits difference
+	 */
+	private int getWordsDiffInOrder() {
 		int diff = 0;
 		boolean inOrder = false;
 		WordInfo prev;
 		WordInfo cur;
+		// 1. if the word queue has more than 3 words
 		while ((wordQueue.size() >= 3)) {
 			prev = wordQueue.poll();
 			cur = wordQueue.poll();
+			// calculate closest distinct words difference
 			if (cur.position > prev.position) {
 				diff += cur.hit - prev.hit;
 				inOrder = true;
 			}
+			// move to next
 			prev = cur;
 			cur = wordQueue.poll();
 		}
+		// 2. after setp1 or word queue originally has size=2
 		if (wordQueue.size() == 2) {
 			prev = wordQueue.poll();
 			cur = wordQueue.poll();
+			// calculate closest distinct words difference
 			if (cur.position > prev.position) {
 				diff += cur.hit = prev.hit;
 				inOrder = true;
 			}
 		} else if (wordQueue.size() == 1) {
+			// 3. word queue originally has size=1
 			inOrder = false;
 		}
+		// 4. no words in order ,the order difference is huge
 		if (inOrder == false) {
 			return Integer.MAX_VALUE;
 		}
 		return diff;
 	}
 
-	// /**
-	// * check the doc preserve words in order
-	// *
-	// * @return
-	// */
-	// private boolean isContaninsQuery() {
-	// return getWordsInOrder().contains(query);
-	// }
-
 	@Override
 	public int compareTo(DocInfo o) {
-		// TODO: change to totalscore
-		double own = this.totalScore;
-
-		double other = o.totalScore;
-		// descending order
-		if (own > other) {
-			return -1;
-		} else if (own < other) {
-			return 1;
-		} else {
+		if (totalScore == o.totalScore) {
 			return 0;
+		} else {
+			// descending order
+			return totalScore < o.totalScore ? 1 : -1;
 		}
 	}
-	
-	
 
 	/**
 	 * inner class to store word info
@@ -138,10 +128,29 @@ public class DocInfo implements Comparable<DocInfo> {
 	 */
 	private class WordInfo implements Comparable<WordInfo> {
 
+		/**
+		 * Instance for WordInfo
+		 */
+		@SuppressWarnings("unused")
 		protected String word;
+
+		/**
+		 * position in query
+		 */
 		protected int position;
+
+		/**
+		 * hit in doc
+		 */
 		protected int hit;
 
+		/**
+		 * Constructor for WordInfo
+		 * 
+		 * @param word
+		 * @param position
+		 * @param hit
+		 */
 		public WordInfo(String word, int position, int hit) {
 			this.word = word;
 			this.position = position;
@@ -153,15 +162,9 @@ public class DocInfo implements Comparable<DocInfo> {
 			if (hit == o.hit) {
 				return 0;
 			} else {
+				// ascending order
 				return hit < o.hit ? -1 : 1;
 			}
 		}
 	}
-
-	// public static void main(String[] args) {
-	// DocInfo d = new DocInfo("I love apple pie");
-	// d.addWord("apple", "10,27,80");
-	// d.addWord("pie", "-1,13,200");
-	// System.out.println(d.getWordsInOrder());
-	// }
 }

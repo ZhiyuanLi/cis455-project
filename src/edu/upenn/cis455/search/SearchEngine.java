@@ -14,7 +14,7 @@ import edu.upenn.cis455.storage.SingleWordContent;
  */
 public class SearchEngine {
 
-//	private String query;
+	// private String query;
 	private DynamoDBWrapper db;
 	private QueryWeightComputation queryWeightComputation;
 	private ArrayList<QueryWordInfo> singleWordList;
@@ -43,9 +43,9 @@ public class SearchEngine {
 	public void setQuery(String query) {
 		// pre calculate
 		queryWeightComputation.setQuery(query);
-//		this.query = queryWeightComputation.getValidQuery();
-//		singleWordList = queryWeightComputation.getSingleWordList();
-//		singleWordWeight = queryWeightComputation.getSingleWordWeight();
+		// this.query = queryWeightComputation.getValidQuery();
+		// singleWordList = queryWeightComputation.getSingleWordList();
+		// singleWordWeight = queryWeightComputation.getSingleWordWeight();
 		doSingleWordQuery();
 		results = new ArrayList<DocInfo>(docList.values());
 		Collections.sort(results);
@@ -64,7 +64,7 @@ public class SearchEngine {
 	 * helper method to generate single word doc list
 	 */
 	private void formSingleWordContentDocList() {
-		
+
 		List<SingleWordContent> items;
 		int position = 0;
 		for (QueryWordInfo word : singleWordList) {
@@ -83,7 +83,7 @@ public class SearchEngine {
 					// TODO: get pagerank scores
 					DocInfo docInfo = docList.get(url);
 					if (docInfo == null) {
-						docInfo = new DocInfo(singleWordList.size());
+						docInfo = new DocInfo(singleWordList.size(), url);
 						docInfo.pagerankScore = db.getPageRankScore(url);
 					}
 					docInfo.url = url;
@@ -118,10 +118,9 @@ public class SearchEngine {
 					// TODO: get pagerank scores
 					DocInfo docInfo = docList.get(url);
 					if (docInfo == null) {
-						docInfo = new DocInfo(singleWordList.size());
+						docInfo = new DocInfo(singleWordList.size(), url);
 						docInfo.pagerankScore = db.getPageRankScore(url);
 					}
-					docInfo.url = url;
 					docInfo.addWord(word.getWord(), position, hits);
 					docInfo.indexScore += item.getTf_idf() * singleWordWeight.get(word);
 					docList.put(url, docInfo);

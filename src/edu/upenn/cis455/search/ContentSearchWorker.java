@@ -21,6 +21,13 @@ public class ContentSearchWorker implements Runnable {
 		contentItems = db.getSingleWordContentQuery(word);
 		System.out.println(word + " = end");
 	}
+	
+	/**
+	 * @return the word
+	 */
+	public String getWord() {
+		return word;
+	}
 
 	/**
 	 * @return the contentItems
@@ -28,6 +35,8 @@ public class ContentSearchWorker implements Runnable {
 	public List<SingleWordContent> getContentItems() {
 		return contentItems;
 	}
+
+	
 	
 	
 

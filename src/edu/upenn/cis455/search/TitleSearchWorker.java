@@ -21,6 +21,15 @@ public class TitleSearchWorker implements Runnable {
 	public void run() {
 		titleItems = db.getSingleWordTitleQuery(word);
 	}
+	
+	
+
+	/**
+	 * @return the word
+	 */
+	public String getWord() {
+		return word;
+	}
 
 	/**
 	 * @return the titleItems
