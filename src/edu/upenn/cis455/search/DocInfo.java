@@ -127,6 +127,8 @@ public class DocInfo implements Comparable<DocInfo> {
 			return 0;
 		}
 	}
+	
+	
 
 	/**
 	 * inner class to store word info
@@ -154,7 +156,6 @@ public class DocInfo implements Comparable<DocInfo> {
 				return hit < o.hit ? -1 : 1;
 			}
 		}
-
 	}
 
 	// public static void main(String[] args) {

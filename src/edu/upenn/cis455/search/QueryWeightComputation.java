@@ -15,18 +15,18 @@ import edu.upenn.cis455.indexer.WordProcessor;
  */
 public class QueryWeightComputation {
 
-	private StringBuilder validQuery;
-	private ArrayList<String> singleWordList;
-	private Hashtable<String, Double> singleWordWeight;
+//	private StringBuilder validQuery;
+	private ArrayList<QueryWordInfo> singleWordList;
+	private Hashtable<QueryWordInfo, Double> singleWordWeight;
 
 	/**
 	 * Constructor
 	 */
 	public QueryWeightComputation() {
 		// TODO Auto-generated constructor stub
-		validQuery = new StringBuilder("");
-		singleWordList = new ArrayList<String>();
-		singleWordWeight = new Hashtable<String, Double>();
+//		validQuery = new StringBuilder("");
+		singleWordList = new ArrayList<QueryWordInfo>();
+		singleWordWeight = new Hashtable<QueryWordInfo, Double>();
 	}
 
 	/**
@@ -46,14 +46,14 @@ public class QueryWeightComputation {
 	/**
 	 * @return the singleWordList
 	 */
-	public ArrayList<String> getSingleWordList() {
+	public ArrayList<QueryWordInfo> getSingleWordList() {
 		return singleWordList;
 	}
 
 	/**
 	 * @return the singleWordWeight
 	 */
-	public Hashtable<String, Double> getSingleWordWeight() {
+	public Hashtable<QueryWordInfo, Double> getSingleWordWeight() {
 		return singleWordWeight;
 	}
 
@@ -67,40 +67,35 @@ public class QueryWeightComputation {
 
 		double max = 1.0;
 		Tokenizer tokenizer = new Tokenizer(query);
+		int position = 1;
 		while (tokenizer.hasNext()) {
 			String word = WordProcessor.preProcess(tokenizer.nextToken());
 			if (!word.equals("")) {
 				String pWord = WordProcessor.process(word.toLowerCase());
+				QueryWordInfo queryWordInfo;
 				if (pWord != null) {
+					queryWordInfo = new QueryWordInfo(pWord, position);
+					position++;
 					Double frequecy = 1.0;
 					if (singleWordWeight.containsKey(pWord)) {
 						frequecy = singleWordWeight.get(pWord) + 1.0;
 						if (frequecy > max) {
 							max = frequecy;
-						}
+					 	}
 					}
-					singleWordWeight.put(pWord, frequecy);
+					singleWordWeight.put(queryWordInfo, frequecy);
 				}
 
 			}
 		}
 
-		for (String word : singleWordWeight.keySet()) {
-			double tf = IndexerDriver.TF_FACTOR + (1 - IndexerDriver.TF_FACTOR) * (singleWordWeight.get(word) / max);
-			validQuery.append(word + " ");
-			singleWordList.add(word);
-			singleWordWeight.put(word, tf);
+		for (QueryWordInfo wordInfo : singleWordWeight.keySet()) {
+			double tf = IndexerDriver.TF_FACTOR + (1 - IndexerDriver.TF_FACTOR) * (singleWordWeight.get(wordInfo) / max);
+//			validQuery.append(word + " ");
+			singleWordList.add(wordInfo);
+			singleWordWeight.put(wordInfo, tf);
 		}
 
-	}
-	
-
-
-	/**
-	 * @return the validQuery
-	 */
-	public String getValidQuery() {
-		return validQuery.toString().trim();
 	}
 
 	/**
@@ -109,8 +104,10 @@ public class QueryWeightComputation {
 	 * @param word
 	 * @param idf
 	 */
-	public void setSingleWordIdf(String word, double idf) {
+	public void setSingleWordIdf(QueryWordInfo word, double idf) {
 		singleWordWeight.put(word, singleWordWeight.get(word) * idf);
 	}
+	
+	
 
 }

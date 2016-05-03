@@ -1,16 +1,7 @@
 package edu.upenn.cis455.search;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
-import com.sun.org.apache.bcel.internal.generic.NEWARRAY;
-
-import edu.upenn.cis455.storage.BiWordContent;
 import edu.upenn.cis455.storage.DynamoDBWrapper;
 import edu.upenn.cis455.storage.SingleWordTitle;
 import edu.upenn.cis455.storage.SingleWordContent;
@@ -26,8 +17,8 @@ public class SearchEngine {
 //	private String query;
 	private DynamoDBWrapper db;
 	private QueryWeightComputation queryWeightComputation;
-	private ArrayList<String> singleWordList;
-	private Hashtable<String, Double> singleWordWeight;
+	private ArrayList<QueryWordInfo> singleWordList;
+	private Hashtable<QueryWordInfo, Double> singleWordWeight;
 	private Hashtable<String, DocInfo> docList;
 	private ArrayList<DocInfo> results;
 
@@ -53,7 +44,8 @@ public class SearchEngine {
 		// pre calculate
 		queryWeightComputation.setQuery(query);
 //		this.query = queryWeightComputation.getValidQuery();
-		singleWordList = queryWeightComputation.getSingleWordList();
+//		singleWordList = queryWeightComputation.getSingleWordList();
+//		singleWordWeight = queryWeightComputation.getSingleWordWeight();
 		doSingleWordQuery();
 		results = new ArrayList<DocInfo>(docList.values());
 		Collections.sort(results);
@@ -75,9 +67,9 @@ public class SearchEngine {
 		
 		List<SingleWordContent> items;
 		int position = 0;
-		for (String word : singleWordList) {
+		for (QueryWordInfo word : singleWordList) {
 			position++;
-			items = db.getSingleWordContentQuery(word);
+			items = db.getSingleWordContentQuery(word.getWord());
 
 			if (!items.isEmpty()) {
 				// take idf into word weight
@@ -95,7 +87,7 @@ public class SearchEngine {
 						docInfo.pagerankScore = db.getPageRankScore(url);
 					}
 					docInfo.url = url;
-					docInfo.addWord(word, position, hits);
+					docInfo.addWord(word.getWord(), position, hits);
 					docInfo.indexScore += item.getTf_idf() * singleWordWeight.get(word);
 					docList.put(url, docInfo);
 				}
@@ -111,9 +103,9 @@ public class SearchEngine {
 
 	private void formSingleWordTitleDocList() {
 		int position = 0;
-		for (String word : singleWordList) {
+		for (QueryWordInfo word : singleWordList) {
 			position++;
-			List<SingleWordTitle> items = db.getSingleWordTitleQuery(word);
+			List<SingleWordTitle> items = db.getSingleWordTitleQuery(word.getWord());
 			if (!items.isEmpty()) {
 				// take idf into word weight
 				queryWeightComputation.setSingleWordIdf(word, items.get(0).getIdf());
@@ -130,7 +122,7 @@ public class SearchEngine {
 						docInfo.pagerankScore = db.getPageRankScore(url);
 					}
 					docInfo.url = url;
-					docInfo.addWord(word, position, hits);
+					docInfo.addWord(word.getWord(), position, hits);
 					docInfo.indexScore += item.getTf_idf() * singleWordWeight.get(word);
 					docList.put(url, docInfo);
 				}
