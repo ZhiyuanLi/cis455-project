@@ -80,6 +80,7 @@ public class SingleWordIndexerMapper extends Mapper<LongWritable, Text, Text, In
 						}
 					}
 					interKey = new Text(w);
+					System.out.println(hitsBuffer.toString());
 					interValue = new InterValue(docId, hitsBuffer.toString(), tf);
 					context.write(interKey, interValue);
 				}

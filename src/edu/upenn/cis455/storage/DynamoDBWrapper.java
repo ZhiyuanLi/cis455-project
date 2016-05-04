@@ -194,22 +194,24 @@ public class DynamoDBWrapper {
 					line = br.readLine();
 
 				}
+				
+				System.out.println(titleList.size());
+				for (int j = 0; j <= titleList.size() / 100; j++) {
+					if (j == titleList.size() / 100) {
+						// System.out.println(j * 100);
+						// System.out.println(contentList.size());
+						mapper.batchSave(titleList.subList(j * 100, titleList.size()));
+						break;
+					}
+					mapper.batchSave(titleList.subList(j * 100, j * 100 + 100));
+					// System.out.println((j * 100) + " " + (j * 100 + 100));
+					System.out.println((j * 100 + 100) + "uplaoded!");
+				}
+				System.out.println(file.getName() + " done!");
+				titleList.clear();
 			}
 
-		}
-
-		System.out.println(titleList.size());
-		for (int j = 0; j <= titleList.size() / 100; j++) {
-			if (j == titleList.size() / 100) {
-				// System.out.println(j * 100);
-				// System.out.println(contentList.size());
-				mapper.batchSave(titleList.subList(j * 100, titleList.size()));
-				break;
-			}
-			mapper.batchSave(titleList.subList(j * 100, j * 100 + 100));
-			// System.out.println((j * 100) + " " + (j * 100 + 100));
-			System.out.println((j * 100 + 100) + "uplaoded!");
-		}
+		}	
 
 	}
 	
@@ -233,21 +235,23 @@ public class DynamoDBWrapper {
 					line = br.readLine();
 
 				}
+
+				System.out.println(contentList.size());
+				for (int j = 0; j <= contentList.size() / 100; j++) {
+					if (j == contentList.size() / 100) {
+						// System.out.println(j * 100);
+						// System.out.println(contentList.size());
+						mapper.batchSave(contentList.subList(j * 100, contentList.size()));
+						break;
+					}
+					mapper.batchSave(contentList.subList(j * 100, j * 100 + 100));
+					// System.out.println((j * 100) + " " + (j * 100 + 100));
+//					System.out.println((j * 100 + 100) + "uplaoded!");
+				}
+				
+				System.out.println(file.getName() + " done");
 			}
 
-		}
-
-		System.out.println(contentList.size());
-		for (int j = 0; j <= contentList.size() / 100; j++) {
-			if (j == contentList.size() / 100) {
-				// System.out.println(j * 100);
-				// System.out.println(contentList.size());
-				mapper.batchSave(contentList.subList(j * 100, contentList.size()));
-				break;
-			}
-			mapper.batchSave(contentList.subList(j * 100, j * 100 + 100));
-			// System.out.println((j * 100) + " " + (j * 100 + 100));
-			System.out.println((j * 100 + 100) + "uplaoded!");
 		}
 
 	}
@@ -351,7 +355,7 @@ public class DynamoDBWrapper {
 		// 2.0);
 		// w.pushDataToSingWordContent("/Users/zhiyuanli/Downloads/content_test_input");
 //		w.pushDataToImageContent("/Users/woody/Downloads/imageIn/imageOutput", 100000);
-		w.pushDataToSingWordTitle("./titleout");
+		w.pushDataToSingWordTitle("/Users/woody/Downloads/ContentIn");
 
 	}
 
