@@ -1,14 +1,7 @@
 package edu.upenn.cis455.storage;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -75,7 +68,7 @@ public class DynamoDBWrapper {
 	}
 
 	/**
-	 * add single word to SingleWordTitle table
+	 * add tuple to SingleWordTitle table
 	 * 
 	 * @param word
 	 * @param url
@@ -94,7 +87,7 @@ public class DynamoDBWrapper {
 	}
 
 	/**
-	 * query SingleWord Content table
+	 * query SingleWordContent table
 	 * 
 	 * @param word
 	 * @return a doc list
@@ -112,7 +105,7 @@ public class DynamoDBWrapper {
 	}
 
 	/**
-	 * add single word to SingleWordContent table
+	 * add tuple to SingleWordContent table
 	 * 
 	 * @param word
 	 * @param url
@@ -131,7 +124,7 @@ public class DynamoDBWrapper {
 	}
 
 	/**
-	 * query SingleWord Content table
+	 * query ImageContent table
 	 * 
 	 * @param word
 	 * @return a doc list
@@ -149,7 +142,7 @@ public class DynamoDBWrapper {
 	}
 
 	/**
-	 * add single word to SingleWordContent table
+	 * add tuple to ImageContent table
 	 * 
 	 * @param word
 	 * @param url
@@ -164,7 +157,6 @@ public class DynamoDBWrapper {
 		item.setHits(hits);
 		item.setIdf(idf);
 		item.setTf_idf(tf_idf);
-		// TODO:
 		imageList.add(item);
 	}
 
@@ -179,7 +171,13 @@ public class DynamoDBWrapper {
 		return 0;
 	}
 
-	public void pushDataToSingWordTitle(String path) throws IOException {
+	/**
+	 * upload data to SingleWordTitle table
+	 * 
+	 * @param path
+	 * @throws IOException
+	 */
+	public void pushDataToSingleWordTitle(String path) throws IOException {
 		File dir = new File(path);
 		BufferedReader br;
 		int i = 0;
@@ -189,7 +187,6 @@ public class DynamoDBWrapper {
 				String line;
 				line = br.readLine();
 				while (line != null && !line.equals("")) {
-
 					String[] s = line.split("\t");
 					String key = null;
 					int checksum = 0;
@@ -200,7 +197,6 @@ public class DynamoDBWrapper {
 						if (!URLhashes.contains(checksum)) {
 							addSingleWordTitle(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
 							URLhashes.add(checksum);
-							
 						}
 					}
 					line = br.readLine();
@@ -210,24 +206,26 @@ public class DynamoDBWrapper {
 				System.out.println(titleList.size());
 				for (int j = 0; j <= titleList.size() / 100; j++) {
 					if (j == titleList.size() / 100) {
-						// System.out.println(j * 100);
-						// System.out.println(contentList.size());
-//						mapper.batchSave(titleList.subList(j * 100, titleList.size()));
+						mapper.batchSave(titleList.subList(j * 100, titleList.size()));
 						break;
 					}
-//					mapper.batchSave(titleList.subList(j * 100, j * 100 + 100));
-					// System.out.println((j * 100) + " " + (j * 100 + 100));
+					mapper.batchSave(titleList.subList(j * 100, j * 100 + 100));
 					System.out.println((j * 100 + 100) + "uplaoded!");
 				}
 				System.out.println(file.getName() + " done!");
+				URLhashes.clear();
 				titleList.clear();
 			}
-
 		}
-
 	}
 
-	public void pushDataToSingWordContent(String path) throws IOException {
+	/**
+	 * upload data to SingleWordContent table
+	 * 
+	 * @param path
+	 * @throws IOException
+	 */
+	public void pushDataToSingleWordContent(String path) throws IOException {
 		File dir = new File(path);
 		BufferedReader br;
 		int i = 0;
@@ -237,7 +235,6 @@ public class DynamoDBWrapper {
 				String line;
 				line = br.readLine();
 				while (line != null && !line.equals("")) {
-					
 					String[] s = line.split("\t");
 					String key = null;
 					int checksum = 0;
@@ -248,13 +245,10 @@ public class DynamoDBWrapper {
 						if (!URLhashes.contains(checksum)) {
 							addSingleWordContent(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
 							URLhashes.add(checksum);
-							
 						}
 					}
 					line = br.readLine();
-
 				}
-
 				System.out.println("i : " + i);
 				System.out.println(contentList.size());
 				for (int j = 0; j <= contentList.size() / 100; j++) {
@@ -265,18 +259,22 @@ public class DynamoDBWrapper {
 					mapper.batchSave(contentList.subList(j * 100, j * 100 + 100));
 					System.out.println((j * 100 + 100) + " uploaded!");
 				}
-
 				System.out.println(file.getName() + " done");
+				URLhashes.clear();
+				contentList.clear();
 			}
-
 		}
-
 	}
 
-	public void pushDataToImageContent(String path, int lineNum) throws IOException {
+	/**
+	 * upload data to ImageContent table
+	 * 
+	 * @param path
+	 * @throws IOException
+	 */
+	public void pushDataToImageContent(String path) throws IOException {
 		File dir = new File(path);
 		BufferedReader br;
-
 		int i = 0;
 		if (dir.isDirectory()) {
 			for (File file : dir.listFiles()) {
@@ -284,97 +282,49 @@ public class DynamoDBWrapper {
 				String line;
 				line = br.readLine();
 				while (line != null && !line.equals("")) {
-
 					String[] s = line.split("\t");
+					String key = null;
+					int checksum = 0;
 					if (s.length == 5) {
-						addImageContent(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
+						key = s[0] + " " + s[1];
+						checksum = hash.hash(key);
 						i++;
+						if (!URLhashes.contains(checksum)) {
+							addImageContent(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
+							URLhashes.add(checksum);
+						}
 					}
 					line = br.readLine();
-
-					if (i % lineNum == 0) {
-						System.out.println(imageList.size());
-						for (int j = 0; j <= imageList.size() / 100; j++) {
-							if (j == imageList.size() / 100) {
-								// System.out.println(j * 100);
-								// System.out.println(contentList.size());
-								mapper.batchSave(imageList.subList(j * 100, imageList.size()));
-								break;
-							}
-							mapper.batchSave(imageList.subList(j * 100, j * 100 + 100));
-							// System.out.println((j * 100) + " " + (j * 100 +
-							// 100));
-							System.out.println((j * 100 + 100) + "uplaoded!");
-						}
-						imageList.clear();
-					}
 				}
-
+				System.out.println("i : " + i);
+				System.out.println(imageList.size());
+				for (int j = 0; j <= imageList.size() / 100; j++) {
+					if (j == imageList.size() / 100) {
+						mapper.batchSave(imageList.subList(j * 100, imageList.size()));
+						break;
+					}
+					mapper.batchSave(imageList.subList(j * 100, j * 100 + 100));
+					System.out.println((j * 100 + 100) + " uploaded!");
+				}
+				System.out.println(file.getName() + " done");
+				URLhashes.clear();
+				imageList.clear();
 			}
-
 		}
-		for (int j = 0; j <= imageList.size() / 100; j++) {
-			if (j == imageList.size() / 100) {
-				// System.out.println(j * 100);
-				// System.out.println(contentList.size());
-				mapper.batchSave(imageList.subList(j * 100, imageList.size()));
-				break;
-			}
-			mapper.batchSave(imageList.subList(j * 100, j * 100 + 100));
-			// System.out.println((j * 100) + " " + (j * 100 +
-			// 100));
-			System.out.println((j * 100 + 100) + "uplaoded!");
-		}
-
 	}
-
-	// /**
-	// * query BiWord Content table
-	// *
-	// * @param word
-	// * @return a doc list
-	// */
-	// public List<BiWordContent> getBiWordContentQuery(String word) {
-	// BiWordContent partitionKey = new BiWordContent();
-	//
-	// partitionKey.setWord(word);
-	// DynamoDBQueryExpression<BiWordContent> queryExpression = new
-	// DynamoDBQueryExpression<BiWordContent>()
-	// .withHashKeyValues(partitionKey);
-	//
-	// List<BiWordContent> itemList = mapper.query(BiWordContent.class,
-	// queryExpression);
-	//
-	// return itemList;
-	// }
-	//
-	// /**
-	// * add bi word to SingleWordContent table
-	// *
-	// * @param word
-	// * @param url
-	// * @param idf
-	// * @param tf_idf
-	// */
-	// public void addBiWordContent(String word, String url, Double idf, Double
-	// tf_idf) {
-	// BiWordContent item = new BiWordContent();
-	// item.setWord(word);
-	// item.setUrl(url);
-	// item.setIdf(idf);
-	// item.setTf_idf(tf_idf);
-	// mapper.save(item);
-	// }
 
 	public static void main(String[] args) throws Exception {
 		DynamoDBWrapper w = new DynamoDBWrapper();
-		// w.addSingleWordTitle("test", "http://www.google.com", "1,2", 1.0,
-		// 2.0);
-		// w.pushDataToSingWordContent("/Users/zhiyuanli/Downloads/content_test_input");
-		// w.pushDataToImageContent("/Users/woody/Downloads/imageIn/imageOutput",
-		// 100000);
-		w.pushDataToSingWordContent("/Users/woody/Downloads/ContentIn");
-
+		switch (args[0]) {
+		case "title":
+			w.pushDataToSingleWordTitle("/Users/woody/Downloads/TitleIn");
+			break;
+		case "content":
+			w.pushDataToSingleWordContent("/Users/woody/Downloads/ContentIn");
+			break;
+		case "image":
+			w.pushDataToImageContent("/Users/woody/Downloads/ImageIn");
+			break;
+		}
 	}
-
 }
