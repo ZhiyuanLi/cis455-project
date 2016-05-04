@@ -16,8 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.tidy.Tidy;
 import javax.net.ssl.SSLSocketFactory;
@@ -139,7 +137,7 @@ public class HttpCrawlerClient
 			}
 			socket.close();
 		}
-		catch (IOException | NumberFormatException e)
+		catch (Exception e)
 		{
 			code = 404;
 		}
@@ -218,7 +216,7 @@ public class HttpCrawlerClient
 	/**
 	 * From MS1: Given string content, generate document using db factory and tidy
 	 * @param content - the content to parse
-	 * @return Returns the XML Document's DOM tree
+	 * @return Returns the Document's DOM tree
 	 */
 	public Document generateHTMLDom(String content)
 	{
@@ -244,27 +242,6 @@ public class HttpCrawlerClient
 		{
 		}
 		return d;
-	}
-
-	/**
-	 * Generate document from url xml file
-	 * @param urlString - The XML URL
-	 * @return Returns the document
-	 */
-	public Document generateXMLDom(String content)
-	{
-		Document d = null;
-		try
-		{
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			d = dBuilder.parse(new ByteArrayInputStream(content.getBytes()));
-			return d;
-		}
-		catch (Exception e)
-		{
-			return null;
-		}
 	}
 
 	/**
@@ -444,7 +421,7 @@ public class HttpCrawlerClient
 	}
 
 	/**
-	 * get content body of HTML of XML file
+	 * get content body of HTML file
 	 * @return - Returns the file contents
 	 */
 	public String getBody()

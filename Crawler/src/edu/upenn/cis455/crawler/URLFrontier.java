@@ -1,5 +1,5 @@
 // URL Frontier API similat to the one in Mercator Architecture
-// @author Wei Song
+// @author Wei Song and Christopher Besser
 package edu.upenn.cis455.crawler;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -20,7 +20,7 @@ public class URLFrontier
 	 */
 	public void add(String url)
 	{
-		if ((urlQueue.size() < 1000) && !urlQueue.contains(url))
+		if ((urlQueue.size() < 100000) && !urlQueue.contains(url))
 		{
 			urlQueue.offer(url);
 		}

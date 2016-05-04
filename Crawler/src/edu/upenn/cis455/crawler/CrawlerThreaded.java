@@ -1,5 +1,5 @@
 // Crawler worker for a miltithreaded crawler
-// Authors: Wei Song and Chrisopher Besser
+// Authors: All
 package edu.upenn.cis455.crawler;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,18 +30,7 @@ public class CrawlerThreaded
 {
 	private int count = 0;
 	private int numFiles = 1000000;
-	private String linksFile = "";
-	private String titleFile = "";
-	private String indexFile = "";
-	private String imageFile = "";
-	private PrintWriter linksWriter;
-	private PrintWriter titleWriter;
-	private PrintWriter indexWriter;
-	private PrintWriter imageWriter;
-	private ReentrantLock linksLock = new ReentrantLock();
-	private ReentrantLock titleLock = new ReentrantLock();
-	private ReentrantLock indexLock = new ReentrantLock();
-	private ReentrantLock imageLock = new ReentrantLock();
+	private ReentrantLock countLock = new ReentrantLock();
 	private Map<String, Long> timeMap = new HashMap<String, Long>();
 	private ReentrantLock timeLock = new ReentrantLock();
 	private Map<String, Robot> hostRobotMap = new HashMap<String, Robot>();
@@ -70,116 +59,26 @@ public class CrawlerThreaded
 		try
 		{
 			this.numFiles = numFiles;
-			linksWriter = new PrintWriter(new BufferedWriter(new FileWriter(linksFile)));
-			titleWriter = new PrintWriter(new BufferedWriter(new FileWriter(titleFile)));
-			indexWriter = new PrintWriter(new BufferedWriter(new FileWriter(indexFile)));
-			imageWriter = new PrintWriter(new BufferedWriter(new FileWriter(imageFile)));
 			workers = new Thread[numWorkers];
 			BufferedReader reader = new BufferedReader(new FileReader(inFile));
 			while (reader.ready())
 			{
 				String url = reader.readLine();
-				System.out.println("URL = " + url);
 				frontier.add(url);
 			}
 			reader.close();
 			for (int i = 0; i < numWorkers; i++)
 			{
-				workers[i] = new CrawlerWorker();
-				workers[i].run();
+				workers[i] = new CrawlerWorker(linksFile + i + ".txt", titleFile + i + ".txt", indexFile + i + ".txt", imageFile + i + ".txt");
+			}
+			for (int i = 0; i < numWorkers; i++)
+			{
+				workers[i].start();
 			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Write a line to the links file
-	 * @param line - the line to write
-	 */
-	private void writeLinks(String line)
-	{
-		try
-		{
-			linksLock.lock();
-			linksWriter.println(line);
-			linksWriter.flush();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			linksLock.unlock();
-		}
-	}
-
-	/**
-	 * Write a line to the title file
-	 * @param line - the line to write
-	 */
-	private void writeTitle(String line)
-	{
-		try
-		{
-			titleLock.lock();
-			titleWriter.println(line);
-			titleWriter.flush();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			titleLock.unlock();
-		}
-	}
-
-	/**
-	 * Write a line to the HTML text file
-	 * @param line - the line to write
-	 */
-	private void writeIndex(String line)
-	{
-		try
-		{
-			indexLock.lock();
-			indexWriter.println(line);
-			indexWriter.flush();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			indexLock.unlock();
-		}
-	}
-
-	/**
-	 * Write a line to the indexer image file
-	 * @param line - the line to write
-	 */
-	private void writeImage(String line)
-	{
-		try
-		{
-			imageLock.lock();
-			imageWriter.println(line);
-			imageWriter.flush();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			imageLock.unlock();
 		}
 	}
 
@@ -206,28 +105,175 @@ public class CrawlerThreaded
 		CrawlerThreaded center = new CrawlerThreaded(Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2], args[3], args[4], args[5], args[6]);
 	}
 
-	/**
-	 * Close the writers
-	 */
-	public void close()
-	{
-		titleWriter.close();
-		indexWriter.close();
-		imageWriter.close();
-		linksWriter.close();
-	}
-
 	private class CrawlerWorker extends Thread
 	{
 		private String contentType;
 		private int contentLen;
 		private long lastModified;
 		private boolean secure = false;
+		private PrintWriter linksWriter;
+		private PrintWriter imageWriter;
+		private PrintWriter indexWriter;
+		private PrintWriter titleWriter;
+		private String linksBuffer = "";
+		private String imageBuffer = "";
+		private String indexBuffer = "";
+		private String titleBuffer = "";
+		private int linkBufferCount = 0;
+		private int indexBufferCount = 0;
+		private int imageBufferCount = 0;
+		private int titleBufferCount = 0;
 		/**
 		 * constructor.
+		 * @param linksFile - the PageRank input file
+		 * @param titleFile - the indexer title file
+		 * @param indexFile - the indexer body file
+		 * @param imageFile - the indexer image file
 	 	 */
-		public CrawlerWorker()
+		public CrawlerWorker(String linksFile, String titleFile, String indexFile, String imageFile)
 		{
+			try
+			{
+				linksWriter = new PrintWriter(new BufferedWriter(new FileWriter(linksFile, true)));
+				titleWriter = new PrintWriter(new BufferedWriter(new FileWriter(titleFile, true)));
+				indexWriter = new PrintWriter(new BufferedWriter(new FileWriter(indexFile, true)));
+				imageWriter = new PrintWriter(new BufferedWriter(new FileWriter(imageFile, true)));
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		/**
+		 * Write to the links file
+		 * @param line - the line to write
+		 */
+		public void writeLinks(String line)
+		{
+			if (linkBufferCount < 100)
+			{
+				linkBufferCount++;
+				linksBuffer = linksBuffer + line + "\n";
+				return;
+			}
+			try
+			{
+				linksWriter.print(linksBuffer);
+				linksWriter.flush();
+				linksBuffer = "";
+				linkBufferCount = 0;
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		/**
+		 * Write to the image file
+		 * @param line - the line to write
+		 */
+		public void writeImage(String line)
+		{
+			if (imageBufferCount < 100)
+			{
+				imageBufferCount++;
+				imageBuffer = imageBuffer + line + "\n";
+				return;
+			}
+			try
+			{
+				imageWriter.print(imageBuffer);
+				imageWriter.flush();
+				imageBuffer = "";
+				imageBufferCount = 0;
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		/**
+		 * Write to the title file
+		 * @param line - the line to write
+		 */
+		public void writeTitle(String line)
+		{
+			if (titleBufferCount < 100)
+			{
+				titleBufferCount++;
+				titleBuffer = titleBuffer + line + "\n";
+				return;
+			}
+			try
+			{
+				titleWriter.print(titleBuffer);
+				titleWriter.flush();
+				titleBuffer = "";
+				titleBufferCount = 0;
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		/**
+		 * Write to the index file
+		 * @param line - the line to write
+		 */
+		public void writeIndex(String line)
+		{
+			if (indexBufferCount < 100)
+			{
+				indexBufferCount++;
+				indexBuffer = indexBuffer + line + "\n";
+				return;
+			}
+			try
+			{
+				indexWriter.print(indexBuffer);
+				indexWriter.flush();
+				indexBuffer = "";
+				indexBufferCount = 0;
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		/**
+		 * Close the writers and flush buffers
+		 */
+		public void close()
+		{
+			if (titleBuffer.length() > 0)
+			{
+				titleWriter.print(titleBuffer);
+				titleWriter.flush();
+			}
+			titleWriter.close();
+			if (indexBuffer.length() > 0)
+			{
+				indexWriter.print(indexBuffer);
+				indexWriter.flush();
+			}
+			indexWriter.close();
+			if (imageBuffer.length() > 0)
+			{
+				imageWriter.print(imageBuffer);
+				imageWriter.flush();
+			}
+			imageWriter.close();
+			if (linksBuffer.length() > 0)
+			{
+				linksWriter.print(linksBuffer);
+				linksWriter.flush();
+			}
+			linksWriter.close();
 		}
 
 		/**
@@ -257,8 +303,6 @@ public class CrawlerThreaded
 		public void run()
 		{
 			// count the number of file crawled
-			count = 0;
-			System.out.println("Thread is running");
 			while (!frontier.isEmpty())
 			{
 				String currentURL;
@@ -332,6 +376,7 @@ public class CrawlerThreaded
 					break;
 				}
 			}
+			close();
 		}
 
 		/**
@@ -545,16 +590,6 @@ public class CrawlerThreaded
 				String host = client.getHost();
 				extractAndEnqueue(currentURL, doc, host);
 			}
-			else if (contentType.trim().equalsIgnoreCase("text/xml") || contentType.trim().equalsIgnoreCase("application/xml")
-				 || contentType.trim().endsWith("+xml"))
-			{
-				// xml: add to database and update channel
-				doc = client.generateXMLDom(body);
-				if (doc == null)
-				{
-					return;
-				}
-			}
 			if (doc != null)
 			{
 				String title = client.getHost();
@@ -569,7 +604,7 @@ public class CrawlerThreaded
 				{
 					return;
 				}
-				if ((count % 100) == 0)
+				if ((count % 1000) == 0)
 				{
 					System.out.println(count + " pages crawled.");
 				}
@@ -578,7 +613,15 @@ public class CrawlerThreaded
 				String noHTML = Jsoup.parse(body).text().toLowerCase().trim();
 				writeIndex(currentURL + "\t" + noHTML);
 				extractImageURLs(currentURL, doc, client.getHost(), crawlTime, title);
-				count++;
+				try
+				{
+					countLock.lock();
+					count++;
+				}
+				finally
+				{
+					countLock.unlock();
+				}
 			}
 			else
 			{
@@ -634,8 +677,7 @@ public class CrawlerThreaded
 				return false;
 			}
 			// check type
-			if (!contentType.trim().toLowerCase().contains("text/html") && !contentType.trim().toLowerCase().equals("text/xml")
-			    && !contentType.trim().toLowerCase().equals("application/xml") && !contentType.trim().toLowerCase().endsWith("+xml"))
+			if (!contentType.trim().toLowerCase().contains("text/html"))
 			{
 				return false;
 			}
@@ -648,8 +690,8 @@ public class CrawlerThreaded
 		}
 
 		/**
-		 * Extract all links from HTML and add to frontier, only apply on HTML file, XML file do not extract, directly download
-		 * @param url - the URL of the HTML/XML file
+		 * Extract all links from HTML and add to frontier, only apply on HTML file
+		 * @param url - the URL of the HTML file
 		 * @param doc - the document tree of the file
 		 * @param host - the hostname
 		 */
@@ -671,7 +713,11 @@ public class CrawlerThreaded
 						{
 							extractedLink = url + extractedLink;
 						}
-						if (!extractedLink.endsWith("xml") && !extractedLink.endsWith("html") && (extractedLink.charAt(extractedLink.length() - 1) != '/'))
+						if (extractedLink.endsWith("xml"))
+						{
+							continue;
+						}
+						if (!extractedLink.endsWith("html") && (extractedLink.charAt(extractedLink.length() - 1) != '/'))
 						{
 							extractedLink = extractedLink + "/";
 						}
@@ -697,7 +743,7 @@ public class CrawlerThreaded
 
 		/**
 		 * Extract image URLs
-		 * @param url - the URL of the HTML/XML file
+		 * @param url - the URL of the HTML file
 		 * @param doc - the document tree of the file
 		 * @param host - the hostname
 		 * @param crawlTime - the time the page was crawled
@@ -777,7 +823,7 @@ public class CrawlerThreaded
 			{
 				// case 3: not end with /
 				String firstPartURL = url;
-				if (url.endsWith("xml") || url.endsWith("html"))
+				if (url.endsWith("html"))
 				{
 					firstPartURL = url.substring(0, url.lastIndexOf("/"));
 				}
@@ -785,19 +831,19 @@ public class CrawlerThreaded
 				{
 					firstPartURL = "/" + firstPartURL;
 				}
-				// if URL does not end with xml of html, append /
+				// if URL does not end with html, append /
 				return firstPartURL + relativePath;
 			}
 		}
 
 		/**
-		 * Check type first, if not an xml or html file, append / at the end if needed
+		 * Check type first, if not an  html file, append / at the end if needed
 		 * @param url - the URL to add '/' to the end of
 		 * @return Returns the correctly formatted URL
 		 */
 		private String fixURL(String url)
 		{
-			if (!url.endsWith(".xml") && !url.endsWith(".html"))
+			if (!url.endsWith(".html"))
 			{
 				if (!url.endsWith("/"))
 				{
