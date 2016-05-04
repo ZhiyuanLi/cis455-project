@@ -64,9 +64,9 @@ public class CrawlerDriver extends Configured implements Tool
 		conf.set("titleFile", titleFile);
 		conf.set("maxSize", "" + maxSize);
 		conf.set("linksFile", linksFile);
-		//conf.set("files", "" + pagesPerCrawl);
-		conf.set("files", "" + (numFiles / workers));
+		conf.set("files", "" + pagesPerCrawl);
 		Job job = new Job(conf);
+		job.setJarByClass(CrawlerDriver.class);
 		job.setJobName("Crawler Step");
 		FileInputFormat.setInputPaths(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
@@ -107,13 +107,13 @@ public class CrawlerDriver extends Configured implements Tool
 		boolean success = runCrawler(new String[] {seedPath, frontierPath});
 		int iterations = 1;
 		// we process workers URLs at a time
-		/*while (iterations < (numFiles / (workers * pagesPerCrawl)))
+		while (iterations < (numFiles / (workers * pagesPerCrawl)))
 		{
 			success &= runShuffle(new String[] {frontierPath, URLPath});
 			success &= runCrawler(new String[] {URLPath, frontierPath});
 			System.out.println("********************************************** URLs Processed = " + iterations * workers * pagesPerCrawl + "**********************************");
 			iterations++;
-		}*/
+		}
 		deleteDirectory(URLPath);
 		System.out.println("Time elapsed: " + (System.currentTimeMillis() - startTime));
 		return success ? 0 : -1;

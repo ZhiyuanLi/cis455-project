@@ -9,7 +9,7 @@ http://www.princeton.edu/main:80/
 http://www.columbia.edu:80/
 https://www.cornell.edu:443/
 https://www.brown.edu:443/
-http://www.dartmouth.edu:80/
+http://dartmouth.edu:80/
 https://www.temple.edu:443/
 http://www.philamuseum.org:80/
 http://www.muttermuseum.org:80/

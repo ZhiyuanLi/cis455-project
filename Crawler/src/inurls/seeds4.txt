@@ -1,11 +1,9 @@
-https://www.facebook.com:443/
 https://www.twitter.com:443/
 http://www.usnews.com:80/
 https://www.stanford.edu:443/
 http://www.uchicago.edu:80/
 http://www.web.mit.edu:80/
 https://www.duke.edu:443/
-https://www.caltech.edu:443/
 https://www.jhu.edu:443/
 http://www.northwestern.edu:80/
 http://www.vanderbilt.edu:80/

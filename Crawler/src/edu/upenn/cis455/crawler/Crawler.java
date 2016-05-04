@@ -81,7 +81,7 @@ public class Crawler
 			while (reader.ready())
 			{
 				String url = reader.readLine();
-				frontier.add(fixURL(url));
+				frontier.add(url);
 			}
 			reader.close();
 			linksWriter = new PrintWriter(new BufferedWriter(new FileWriter(linksFile, true)));
@@ -107,20 +107,15 @@ public class Crawler
 	public Crawler(String linksFile, String indexFile, String titleFile, String imageFile, LinkedList<String> urls, int maxSize, int maxNum)
 	{
 		this.indexFile = indexFile;
-		System.out.println("Index file = " + indexFile);
 		this.imageFile = imageFile;
-		System.out.println("Image File = " + imageFile);
 		this.titleFile = titleFile;
-		System.out.println("Title file = " + titleFile);
 		this.linksFile = linksFile;
-		System.out.println("Links File = " + linksFile);
 		this.maxSize = maxSize;
-		System.out.println("Size = " + maxSize);
 		this.maxNum = maxNum;
 		frontier = new URLFrontier();
 		for (String s: urls)
 		{
-			frontier.add(fixURL(s));
+			frontier.add(s);
 		}
 		try
 		{
@@ -133,6 +128,27 @@ public class Crawler
 		{
 			e.printStackTrace();
 			return;
+		}
+	}
+
+	/**
+	 * Add http to the beginning of the url
+	 * @param url - the url to prepend
+	 * @return Returns the prepended url
+	 */
+	public String prependURL(String url)
+	{
+		if (url.startsWith("//"))
+		{
+			return "http" + url;
+		}
+		else if (!url.startsWith("http"))
+		{
+			return "http://" + url;
+		}
+		else
+		{
+			return url;
 		}
 	}
 
@@ -246,7 +262,14 @@ public class Crawler
 			String currentURL = frontier.poll();
 			// Step 2. send head and get response to check if document is valid
 			HttpCrawlerClient client = new HttpCrawlerClient();
-			client.parseURL(currentURL);
+			try
+			{
+				client.parseURL(currentURL);
+			}
+			catch (Exception e)
+			{
+				continue;
+			}
 			secure = client.isSecure();
 			client.headRequest();
 			// get header response
@@ -378,16 +401,7 @@ public class Crawler
 			if (!checkDelayTime(robot, agent, lastCrawlTime))
 			{
 				// added to frontier and crawl next time
-				HttpURL normURL;
-				try
-				{
-					normURL = new HttpURL(currentURL, secure);
-				}
-				catch (Exception e)
-				{
-					return false;
-				}
-				frontier.add(normURL.getNormalizeURL(secure));
+				frontier.add(prependURL(currentURL));
 				return false;
 			}
 		}
@@ -496,6 +510,10 @@ public class Crawler
 			{
 				return;
 			}
+			if ((count % 100) == 0)
+			{
+				System.out.println(count + " pages crawled.");
+			}
 			writeTitle(currentURL + "\t" + title);
 			long crawlTime = System.currentTimeMillis();
 			String noHTML = Jsoup.parse(body).text().toLowerCase().trim();
@@ -537,23 +555,14 @@ public class Crawler
 		// check code
 		if ((client.getCode() == 301) || (client.getCode() == 302))
 		{
-			String location = client.getRedirectURL();
-			if ((location != null) && !location.equals(client.getURL()))
+			String location = client.getRedirectURL().trim();
+			if ((location != null) && !location.equals(client.getURL().trim()))
 			{
-				HttpURL normURL;
-				try
-				{
-					normURL = new HttpURL(location, location.startsWith("https"));
-				}
-				catch (Exception e)
-				{
-					return false;
-				}
-				frontier.add(normURL.getNormalizeURL(location.startsWith("https")));
+				frontier.add(prependURL(location));
 			}
 			return false;
 		}
-		if (client.getCode() != 200)
+		else if (client.getCode() != 200)
 		{
 			return false;
 		}
@@ -591,26 +600,21 @@ public class Crawler
 				String extractedLink = uniformURL(host, linkNode.getNodeValue().trim() + "", url);
 				if ((extractedLink != null) && (extractedLink.length() > 0))
 				{
-					if (!extractedLink.endsWith("xml") && (extractedLink.charAt(extractedLink.length() - 1) != '/'))
+					if (extractedLink.startsWith("/") && !extractedLink.startsWith("//"))
+					{
+						extractedLink = url + extractedLink;
+					}
+					if (!extractedLink.endsWith("xml") && !extractedLink.endsWith("html") && (extractedLink.charAt(extractedLink.length() - 1) != '/'))
 					{
 						extractedLink = extractedLink + "/";
 					}
 					found = true;
 					line = line + extractedLink + " ";
-					HttpURL normURL;
-					try
-					{
-						normURL = new HttpURL(extractedLink, extractedLink.startsWith("https"));
-					}
-					catch (Exception e)
-					{
-						return;
-					}
-					frontier.add(normURL.getNormalizeURL(extractedLink.startsWith("https")));
+					frontier.add(prependURL(extractedLink));
 				}
 			}
 		}
-		if (found && !URLHashes.contains(hash.hash(url)))
+		if (found)
 		{
 			writeLinks(line.trim());
 		}
