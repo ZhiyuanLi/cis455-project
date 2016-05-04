@@ -238,13 +238,6 @@ public class DynamoDBWrapper {
 				line = br.readLine();
 				while (line != null && !line.equals("")) {
 					
-
-//					String[] s = line.split("\t");
-//					if (s.length == 5) {
-//						addSingleWordContent(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
-//						i++;
-//					}
-//					line = br.readLine();
 					String[] s = line.split("\t");
 					String key = null;
 					int checksum = 0;
@@ -264,16 +257,13 @@ public class DynamoDBWrapper {
 
 				System.out.println("i : " + i);
 				System.out.println(contentList.size());
-				for (int j = 0; j <= contentList.size() / 5; j++) {
-					if (j == contentList.size() / 5) {
-						// System.out.println(j * 100);
-						// System.out.println(contentList.size());
-//						mapper.batchSave(contentList.subList(j * 5, contentList.size()));
+				for (int j = 0; j <= contentList.size() / 100; j++) {
+					if (j == contentList.size() / 100) {
+						mapper.batchSave(contentList.subList(j * 100, contentList.size()));
 						break;
 					}
-//					mapper.batchSave(contentList.subList(j * 5, j * 5 + 5));
-					// System.out.println((j * 100) + " " + (j * 100 + 100));
-					System.out.println((j * 5 + 5) + " uploaded!");
+					mapper.batchSave(contentList.subList(j * 100, j * 100 + 100));
+					System.out.println((j * 100 + 100) + " uploaded!");
 				}
 
 				System.out.println(file.getName() + " done");
@@ -383,7 +373,7 @@ public class DynamoDBWrapper {
 		// w.pushDataToSingWordContent("/Users/zhiyuanli/Downloads/content_test_input");
 		// w.pushDataToImageContent("/Users/woody/Downloads/imageIn/imageOutput",
 		// 100000);
-		w.pushDataToSingWordContent("/Users/zhiyuanli/Downloads/contentout/test");
+		w.pushDataToSingWordContent("/Users/woody/Downloads/ContentIn");
 
 	}
 
