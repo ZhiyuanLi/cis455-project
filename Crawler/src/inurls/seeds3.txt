@@ -13,7 +13,4 @@ http://dartmouth.edu:80/
 https://www.temple.edu:443/
 http://www.philamuseum.org:80/
 http://www.muttermuseum.org:80/
-http://www.nytimes.com:80/
-http://www.usatoday.com:80/
-http://www.tvguide.com:80/
 http://www.wikia.com/fandom:80/

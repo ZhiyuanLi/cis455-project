@@ -1,5 +1,3 @@
-https://www.twitter.com:443/
-http://www.usnews.com:80/
 https://www.stanford.edu:443/
 http://www.uchicago.edu:80/
 http://www.web.mit.edu:80/

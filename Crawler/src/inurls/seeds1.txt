@@ -9,11 +9,7 @@ https://www.buzzfeed.com/
 http://www.gamestop.com:80/
 http://www.upenn.edu:80/
 http://www.espn.go.com:80/
-http://www.cnn.com:80/
-http://www.thedp.com:80/
 http://www.google.com:80/
 http://www.stackoverflow.com:80/
-http://www.cbs.com:80/
 http://www.ebay.com:80/
 http://www.forbes.com:80/
-http://www.abc.go.com:80/
