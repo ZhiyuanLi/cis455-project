@@ -151,7 +151,7 @@ public class CrawlerThreaded
 		 */
 		public void writeLinks(String line)
 		{
-			if (linkBufferCount < 100)
+			if (linkBufferCount < 10)
 			{
 				linkBufferCount++;
 				linksBuffer = linksBuffer + line + "\n";
@@ -226,7 +226,7 @@ public class CrawlerThreaded
 		 */
 		public void writeIndex(String line)
 		{
-			if (indexBufferCount < 100)
+			if (indexBufferCount < 10)
 			{
 				indexBufferCount++;
 				indexBuffer = indexBuffer + line + "\n";
