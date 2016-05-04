@@ -7,12 +7,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.PropertiesCredentials;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.planetj.math.rabinhash.RabinHashFunction32;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 
@@ -30,6 +32,8 @@ public class DynamoDBWrapper {
 	private ArrayList<SingleWordTitle> titleList;
 	private ArrayList<SingleWordContent> contentList;
 	private ArrayList<ImageContent> imageList;
+	private RabinHashFunction32 hash = RabinHashFunction32.DEFAULT_HASH_FUNCTION;
+	private HashSet<Integer> URLhashes = new HashSet<Integer>();
 
 	/**
 	 * Constructor
@@ -174,7 +178,7 @@ public class DynamoDBWrapper {
 		// TODO: get pagerank
 		return 0;
 	}
-	
+
 	public void pushDataToSingWordTitle(String path) throws IOException {
 		File dir = new File(path);
 		BufferedReader br;
@@ -187,23 +191,31 @@ public class DynamoDBWrapper {
 				while (line != null && !line.equals("")) {
 
 					String[] s = line.split("\t");
+					String key = null;
+					int checksum = 0;
 					if (s.length == 5) {
-						addSingleWordTitle(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
+						key = s[0] + " " + s[1];
+						checksum = hash.hash(key);
 						i++;
+						if (!URLhashes.contains(checksum)) {
+							addSingleWordTitle(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
+							URLhashes.add(checksum);
+							
+						}
 					}
 					line = br.readLine();
-
 				}
-				
+
+				System.out.println("i : " + i);
 				System.out.println(titleList.size());
 				for (int j = 0; j <= titleList.size() / 100; j++) {
 					if (j == titleList.size() / 100) {
 						// System.out.println(j * 100);
 						// System.out.println(contentList.size());
-						mapper.batchSave(titleList.subList(j * 100, titleList.size()));
+//						mapper.batchSave(titleList.subList(j * 100, titleList.size()));
 						break;
 					}
-					mapper.batchSave(titleList.subList(j * 100, j * 100 + 100));
+//					mapper.batchSave(titleList.subList(j * 100, j * 100 + 100));
 					// System.out.println((j * 100) + " " + (j * 100 + 100));
 					System.out.println((j * 100 + 100) + "uplaoded!");
 				}
@@ -211,11 +223,10 @@ public class DynamoDBWrapper {
 				titleList.clear();
 			}
 
-		}	
+		}
 
 	}
-	
-	
+
 	public void pushDataToSingWordContent(String path) throws IOException {
 		File dir = new File(path);
 		BufferedReader br;
@@ -226,29 +237,45 @@ public class DynamoDBWrapper {
 				String line;
 				line = br.readLine();
 				while (line != null && !line.equals("")) {
+					
 
+//					String[] s = line.split("\t");
+//					if (s.length == 5) {
+//						addSingleWordContent(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
+//						i++;
+//					}
+//					line = br.readLine();
 					String[] s = line.split("\t");
+					String key = null;
+					int checksum = 0;
 					if (s.length == 5) {
-						addSingleWordContent(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
+						key = s[0] + " " + s[1];
+						checksum = hash.hash(key);
 						i++;
+						if (!URLhashes.contains(checksum)) {
+							addSingleWordContent(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
+							URLhashes.add(checksum);
+							
+						}
 					}
 					line = br.readLine();
 
 				}
 
+				System.out.println("i : " + i);
 				System.out.println(contentList.size());
-				for (int j = 0; j <= contentList.size() / 100; j++) {
-					if (j == contentList.size() / 100) {
+				for (int j = 0; j <= contentList.size() / 5; j++) {
+					if (j == contentList.size() / 5) {
 						// System.out.println(j * 100);
 						// System.out.println(contentList.size());
-						mapper.batchSave(contentList.subList(j * 100, contentList.size()));
+//						mapper.batchSave(contentList.subList(j * 5, contentList.size()));
 						break;
 					}
-					mapper.batchSave(contentList.subList(j * 100, j * 100 + 100));
+//					mapper.batchSave(contentList.subList(j * 5, j * 5 + 5));
 					// System.out.println((j * 100) + " " + (j * 100 + 100));
-//					System.out.println((j * 100 + 100) + "uplaoded!");
+					System.out.println((j * 5 + 5) + " uploaded!");
 				}
-				
+
 				System.out.println(file.getName() + " done");
 			}
 
@@ -354,8 +381,9 @@ public class DynamoDBWrapper {
 		// w.addSingleWordTitle("test", "http://www.google.com", "1,2", 1.0,
 		// 2.0);
 		// w.pushDataToSingWordContent("/Users/zhiyuanli/Downloads/content_test_input");
-//		w.pushDataToImageContent("/Users/woody/Downloads/imageIn/imageOutput", 100000);
-		w.pushDataToSingWordTitle("/Users/woody/Downloads/ContentIn");
+		// w.pushDataToImageContent("/Users/woody/Downloads/imageIn/imageOutput",
+		// 100000);
+		w.pushDataToSingWordContent("/Users/zhiyuanli/Downloads/contentout/test");
 
 	}
 
