@@ -38,10 +38,13 @@ public class SearchServlet extends HttpServlet {
 		out.println(
 				"html,body{background: #34addb;color: #fff;padding: 24px;position: relative;z-index: 0;font-family: Helvetica Neue, Helvetica, Arial, sans-serif;text-shadow: 0 1px 1px rgba(0,150,200,.5);line-height: 1.5;}");
 		out.println("body {margin: 0 auto;width: 500px;}");
-		out.println("h1 {font-size: 1.5em;margin-bottom: .5em;font-weight: 700;}");
+		out.println("h1 {font-size: 3.5em;margin-bottom: .5em;font-weight: 700;}");
+
 		out.println(
-				"p {    margin-bottom: 1.5em;}a {    text-decoration: none;    font-weight: 700;    color: #ff9;}#search {    -webkit-appearance: none;    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;    width: 24px;    padding: 0 10px;    height: 24px;    font-size: 14px;    color: #666;    line-height: 24px;    border: 0;    border-radius: 50px;    box-shadow: 0 0 0 1px rgba(0,150,200,.5), inset 0 2px 5px rgba(0,100,150,.3), 0 2px 0 rgba(255,255,255,.6);    position: relative;    z-index: 5;    -webkit-transition: .3s ease;    -moz-transition: .3s ease;}#search:focus {    outline: none;    width: 180px;}p.s {    z-index: 4;    position: relative;    padding: 5px;    line-height: 0;    border-radius: 100px;    background: #b9ecfe;    background-image: -webkit-linear-gradient(#dbf6ff,#b9ecfe);    background-image: -moz-linear-gradient(#dbf6ff,#b9ecfe);    display: inline-block;    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 5px rgba(0,100,150,.4);}p.s:hover {    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 3px 2px rgba(100,200,255,.5);}p.s:after {    content: '';    display: block;    position: absolute;    width: 5px;    height: 20px;    background: #b9ecfe;    bottom: -10px;    right: -3px;    border-radius: 0 0 5px 5px;    -webkit-transform: rotate(-45deg);    -moz-transform: rotate(-45deg);    box-shadow: inset 0 -1px 0 rgbA(255,255,255,.6), -2px 2px 2px rgba(0,100,150,.4);}p.s:hover:after {    box-shadow: inset 0 -1px 0 rgba(255,255,255,.6), -2px 2px 2px 1px rgba(100,200,255,.5);}");
+				"p {    margin-bottom: 1.5em;}a {    text-decoration: none;    font-weight: 700;    color: #ff9;}#search {    -webkit-appearance: none;    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;    width: 24px;    padding: 0 10px;    height: 24px;    font-size: 14px;    color: #666;    line-height: 24px;    border: 0;    border-radius: 50px;    box-shadow: 0 0 0 1px rgba(0,150,200,.5), inset 0 2px 5px rgba(0,100,150,.3), 0 2px 0 rgba(255,255,255,.6);    position: relative;    z-index: 5;    -webkit-transition: .3s ease;    -moz-transition: .3s ease;}#search:focus {    outline: none;    width: 180px;}p.s {    z-index: 4;    position: relative;    padding: 5px;    line-height: 0;    border-radius: 100px;    background: #b9ecfe;    background-image: -webkit-linear-gradient(#dbf6ff,#b9ecfe);    background-image: -moz-linear-gradient(#dbf6ff,#b9ecfe);    display: inline-block;    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 5px rgba(0,100,150,.4);}p.s:hover {    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 3px 2px rgba(100,200,255,.5);}p.s:after {    content: '';    display: block;    position: absolute;    width: 5px;    height: 30px;    background: #b9ecfe;    bottom: -10px;    right: -3px;    border-radius: 0 0 5px 5px;    -webkit-transform: rotate(-45deg);    -moz-transform: rotate(-45deg);    box-shadow: inset 0 -1px 0 rgbA(255,255,255,.6), -2px 2px 2px rgba(0,100,150,.4);}p.s:hover:after {    box-shadow: inset 0 -1px 0 rgba(255,255,255,.6), -2px 2px 2px 1px rgba(100,200,255,.5);}");
 		out.println("</style></head>");
+		out.println(
+				"<side><select name= \"mode\"><option value=\"web\">Web</option><option value=\"image\">Image</option></select></side>");
 		out.println("<h1>Mini Google</h1>");
 		out.println(
 				"<form method=\"post\"><p class=\"s\"><input name=\"query\" id=\"search\" type=\"search\" required></p>");
@@ -69,9 +72,10 @@ public class SearchServlet extends HttpServlet {
 		out.println(
 				"html,body{background: #34addb;color: #fff;padding: 24px;position: relative;z-index: 0;font-family: Helvetica Neue, Helvetica, Arial, sans-serif;text-shadow: 0 1px 1px rgba(0,150,200,.5);line-height: 1.5;}");
 		out.println("body {margin: 0 auto;width: 500px;}");
-		out.println("h1 {font-size: 1.5em;margin-bottom: .5em;font-weight: 700;}");
+		out.println("h1 {font-size: 3.5em;margin-bottom: .5em;font-weight: 700;}");
+
 		out.println(
-				"p {    margin-bottom: 1.5em;}a {    text-decoration: none;    font-weight: 700;    color: #ff9;}#search {    -webkit-appearance: none;    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;    width: 24px;    padding: 0 10px;    height: 24px;    font-size: 14px;    color: #666;    line-height: 24px;    border: 0;    border-radius: 50px;    box-shadow: 0 0 0 1px rgba(0,150,200,.5), inset 0 2px 5px rgba(0,100,150,.3), 0 2px 0 rgba(255,255,255,.6);    position: relative;    z-index: 5;    -webkit-transition: .3s ease;    -moz-transition: .3s ease;}#search:focus {    outline: none;    width: 180px;}p.s {    z-index: 4;    position: relative;    padding: 5px;    line-height: 0;    border-radius: 100px;    background: #b9ecfe;    background-image: -webkit-linear-gradient(#dbf6ff,#b9ecfe);    background-image: -moz-linear-gradient(#dbf6ff,#b9ecfe);    display: inline-block;    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 5px rgba(0,100,150,.4);}p.s:hover {    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 3px 2px rgba(100,200,255,.5);}p.s:after {    content: '';    display: block;    position: absolute;    width: 5px;    height: 20px;    background: #b9ecfe;    bottom: -10px;    right: -3px;    border-radius: 0 0 5px 5px;    -webkit-transform: rotate(-45deg);    -moz-transform: rotate(-45deg);    box-shadow: inset 0 -1px 0 rgbA(255,255,255,.6), -2px 2px 2px rgba(0,100,150,.4);}p.s:hover:after {    box-shadow: inset 0 -1px 0 rgba(255,255,255,.6), -2px 2px 2px 1px rgba(100,200,255,.5);}");
+				"p {    margin-bottom: 1.5em;}a {    text-decoration: none;    font-weight: 700;    color: #ff9;}#search {    -webkit-appearance: none;    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;    width: 24px;    padding: 0 10px;    height: 24px;    font-size: 14px;    color: #666;    line-height: 24px;    border: 0;    border-radius: 50px;    box-shadow: 0 0 0 1px rgba(0,150,200,.5), inset 0 2px 5px rgba(0,100,150,.3), 0 2px 0 rgba(255,255,255,.6);    position: relative;    z-index: 5;    -webkit-transition: .3s ease;    -moz-transition: .3s ease;}#search:focus {    outline: none;    width: 180px;}p.s {    z-index: 4;    position: relative;    padding: 5px;    line-height: 0;    border-radius: 100px;    background: #b9ecfe;    background-image: -webkit-linear-gradient(#dbf6ff,#b9ecfe);    background-image: -moz-linear-gradient(#dbf6ff,#b9ecfe);    display: inline-block;    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 5px rgba(0,100,150,.4);}p.s:hover {    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 3px 2px rgba(100,200,255,.5);}p.s:after {    content: '';    display: block;    position: absolute;    width: 5px;    height: 30px;    background: #b9ecfe;    bottom: -10px;    right: -3px;    border-radius: 0 0 5px 5px;    -webkit-transform: rotate(-45deg);    -moz-transform: rotate(-45deg);    box-shadow: inset 0 -1px 0 rgbA(255,255,255,.6), -2px 2px 2px rgba(0,100,150,.4);}p.s:hover:after {    box-shadow: inset 0 -1px 0 rgba(255,255,255,.6), -2px 2px 2px 1px rgba(100,200,255,.5);}");
 		out.println("</style></head>");
 		out.println("<h1>Search Results</h1>");
 		//
@@ -87,6 +91,9 @@ public class SearchServlet extends HttpServlet {
 		}
 
 		searchEngine.doSearchQuery(query, "word");
+		if (revisedQuery != null && !revisedQuery.equals("")) {
+			out.println("<p>" + "Do you mean " + revisedQuery + " ?" + "</p>");
+		}
 
 		String url;
 		for (DocInfo docInfo : searchEngine.getResults()) {
@@ -94,9 +101,7 @@ public class SearchServlet extends HttpServlet {
 			if (!url.startsWith("http")) {
 				url = "http://" + url;
 			}
-			if (revisedQuery != null && !revisedQuery.equals("")) {
-				out.println("<p>" + "Do you mean " + revisedQuery + " ?" + "</p>");
-			}
+
 			out.println("<a href=\"" + url + "\">" + " " + url + " " + docInfo.totalScore + "</a>");
 		}
 		out.println("</body></html>");

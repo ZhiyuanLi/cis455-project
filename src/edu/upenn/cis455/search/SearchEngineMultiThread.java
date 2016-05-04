@@ -3,6 +3,7 @@ package edu.upenn.cis455.search;
 import java.util.*;
 
 import edu.upenn.cis455.storage.DynamoDBWrapper;
+import edu.upenn.cis455.storage.ImageContent;
 import edu.upenn.cis455.storage.SingleWordContent;
 import edu.upenn.cis455.storage.SingleWordTitle;
 
@@ -78,7 +79,7 @@ public class SearchEngineMultiThread {
 	public void issueThreads(String searchType) throws InterruptedException {
 		switch (searchType) {
 		case "word":
-			issueWordContentThread();
+			// issueWordContentThread();
 			issueWordTitleThread();
 			break;
 
@@ -150,7 +151,9 @@ public class SearchEngineMultiThread {
 			threadPool[i].start();
 		}
 
+		
 		// 3. join thread, wait all thread to get items back
+		System.out.println(querySize);
 		for (i = 0; i < querySize; i++) {
 			threadPool[i].join();
 		}
@@ -176,19 +179,18 @@ public class SearchEngineMultiThread {
 		int i = 0;
 		// 1. open a thread pool, open contentWorkers
 		Thread[] threadPool = new Thread[querySize];
-		TitleSearchWorker[] titleWorkers = new TitleSearchWorker[querySize];
+		ImageSearchWorker[] imageWorkers = new ImageSearchWorker[querySize];
 
 		// 2. start thread
 		// 2.1 declare variable to help start thread
-		ContentSearchWorker csw;
-		TitleSearchWorker tsw;
+		ImageSearchWorker isw;
 		String word;
 		// 2.2 add thread to pool, start thread
 		for (i = 0; i < querySize; i++) {
 			word = queryWords.get(i);
-			tsw = new TitleSearchWorker(db, word);
-			titleWorkers[i] = tsw;
-			threadPool[i] = new Thread(tsw);
+			isw = new ImageSearchWorker(db, word);
+			imageWorkers[i] = isw;
+			threadPool[i] = new Thread(isw);
 			threadPool[i].start();
 		}
 
@@ -198,12 +200,12 @@ public class SearchEngineMultiThread {
 		}
 
 		// 4. compute doc list score
-		List<SingleWordTitle> items;
+		List<ImageContent> items;
 		for (i = 0; i < querySize; i++) {
-			items = titleWorkers[i].getTitleItems();
+			items = imageWorkers[i].getImageItems();
 			if (!items.isEmpty()) {
-				word = titleWorkers[i].getWord();
-				computeTitleDoc(word, items);
+				word = imageWorkers[i].getWord();
+				computeImageDoc(word, items);
 			}
 		}
 
@@ -246,14 +248,6 @@ public class SearchEngineMultiThread {
 	}
 
 	/**
-	 * 
-	 * @return the results
-	 */
-	public ArrayList<DocInfo> getResults() {
-		return results;
-	}
-
-	/**
 	 * This method is used to compute doc list score for a word
 	 * 
 	 * @param word
@@ -286,9 +280,50 @@ public class SearchEngineMultiThread {
 
 	}
 
+	/**
+	 * This method is used to compute doc list score for a word
+	 * 
+	 * @param word
+	 * @param items
+	 */
+	private void computeImageDoc(String word, List<ImageContent> items) {
+		// 0. declare variable that help to compute doc info
+		String url, hits;
+		QueryWordInfo queryWordInfo;
+
+		// 1. compute this word idf
+		qComputer.setQueryWordIdf(word, items.get(0).getIdf());
+
+		// 2. get this word query info
+		queryWordInfo = qComputer.getQueryWordInfo(word);
+
+		// 3. do computation for each doc
+		for (ImageContent item : items) {
+			url = item.getUrl();
+			hits = item.getHits();
+			DocInfo docInfo = docList.get(url);
+			if (docInfo == null) {
+				docInfo = new DocInfo(querySize, url);
+				docInfo.pagerankScore = db.getPageRankScore(url);
+			}
+			docInfo.addWord(word, queryWordInfo.getPosition(), hits);
+			docInfo.indexScore += item.getTf_idf() * queryWordInfo.getWeight();
+			docList.put(url, docInfo);
+		}
+
+	}
+
+	/**
+	 * 
+	 * @return the results
+	 */
+	public ArrayList<DocInfo> getResults() {
+		return results;
+	}
+
 	public static void main(String[] args) {
 		SearchEngineMultiThread engine = new SearchEngineMultiThread();
-		engine.doSearchQuery("fast food", "word");
+		engine.doSearchQuery("buzz food", "word");
 		for (DocInfo docInfo : engine.results) {
 			System.out.println(docInfo.url + "" + docInfo.totalScore);
 		}
