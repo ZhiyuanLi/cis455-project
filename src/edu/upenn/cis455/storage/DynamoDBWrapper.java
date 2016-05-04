@@ -86,7 +86,7 @@ public class DynamoDBWrapper {
 		item.setHits(hits);
 		item.setIdf(idf);
 		item.setTf_idf(tf_idf);
-		mapper.save(item);
+		titleList.add(item);
 	}
 
 	/**
@@ -174,7 +174,46 @@ public class DynamoDBWrapper {
 		// TODO: get pagerank
 		return 0;
 	}
+	
+	public void pushDataToSingWordTitle(String path) throws IOException {
+		File dir = new File(path);
+		BufferedReader br;
+		int i = 0;
+		if (dir.isDirectory()) {
+			for (File file : dir.listFiles()) {
+				br = new BufferedReader(new FileReader(file));
+				String line;
+				line = br.readLine();
+				while (line != null && !line.equals("")) {
 
+					String[] s = line.split("\t");
+					if (s.length == 5) {
+						addSingleWordTitle(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
+						i++;
+					}
+					line = br.readLine();
+
+				}
+			}
+
+		}
+
+		System.out.println(titleList.size());
+		for (int j = 0; j <= titleList.size() / 100; j++) {
+			if (j == titleList.size() / 100) {
+				// System.out.println(j * 100);
+				// System.out.println(contentList.size());
+				mapper.batchSave(titleList.subList(j * 100, titleList.size()));
+				break;
+			}
+			mapper.batchSave(titleList.subList(j * 100, j * 100 + 100));
+			// System.out.println((j * 100) + " " + (j * 100 + 100));
+			System.out.println((j * 100 + 100) + "uplaoded!");
+		}
+
+	}
+	
+	
 	public void pushDataToSingWordContent(String path) throws IOException {
 		File dir = new File(path);
 		BufferedReader br;
@@ -311,7 +350,8 @@ public class DynamoDBWrapper {
 		// w.addSingleWordTitle("test", "http://www.google.com", "1,2", 1.0,
 		// 2.0);
 		// w.pushDataToSingWordContent("/Users/zhiyuanli/Downloads/content_test_input");
-		w.pushDataToImageContent("/Users/woody/Downloads/imageIn/imageOutput", 100000);
+//		w.pushDataToImageContent("/Users/woody/Downloads/imageIn/imageOutput", 100000);
+		w.pushDataToSingWordTitle("./titleout");
 
 	}
 
