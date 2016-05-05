@@ -346,6 +346,7 @@ public class SearchEngineMultiThread {
 			DocInfo docInfo = docList.get(url);
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, url);
+				docInfo.title = WordTitle.getTitle(url);
 				docInfo.queryGeoLocation = geolocation;
 				docInfo.docGeoLocation = PageRank.getGeolocation(url);
 //				docInfo.pagerankScore = PageRank.getRank(url);		
@@ -366,20 +367,20 @@ public class SearchEngineMultiThread {
 	}
 
 	public static void main(String[] args) {
-		PageRank.loadPageRank("pagerank");
+//		PageRank.loadPageRank("pagerank");
 
 		WordTitle.loadWordTitle("/Users/woody/Downloads/455ProjectData/IndexerInput/title");
 		SearchEngineMultiThread engine = new SearchEngineMultiThread();
 		System.gc();
 		long time1 = System.currentTimeMillis();
-		engine.doSearchQuery("mathematical experimental", "word", "philly");
+		engine.doSearchQuery("apple watch", "word", "philly");
 		long time2 = System.currentTimeMillis();
 		engine.queryTime = time2 - time1;
 		int i = 0;
 		for (DocInfo docInfo : engine.results) {
 			if (i < 300) {
 				i++;
-				System.out.println(docInfo.url + ":" + docInfo.title + ":" + docInfo.totalScore);
+				System.out.println(docInfo.url + ":" + docInfo.title + ":"  + docInfo.wordNumberInUrlHost + ":"+ docInfo.totalScore);
 			}
 		}
 	}

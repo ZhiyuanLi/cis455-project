@@ -21,7 +21,7 @@ public class DocInfo implements Comparable<DocInfo> {
 	public String title;
 	public String queryGeoLocation, docGeoLocation;
 	protected boolean queryInTitle;
-	protected int wordNumberInUrlHost, wordNumberInUrl, wordNumberInTitle, wordNumberInDoc;
+	public int wordNumberInUrlHost, wordNumberInUrl, wordNumberInTitle, wordNumberInDoc;
 	protected Queue<WordInfo> wordTitleQueue, wordDocQueue;
 	protected double indexTitleScore, indexDocScore, pagerankScore;
 	public double totalScore;
@@ -64,20 +64,25 @@ public class DocInfo implements Comparable<DocInfo> {
 			indexDocScore = indexDocScore * wordNumberInDoc * 0.05
 					+ indexDocScore * wordNumberInDoc * 0.05 / diffDocInOrder;
 			indexTitleScore = (indexTitleScore * wordNumberInTitle * 0.05
-					+ indexTitleScore * wordNumberInTitle * 0.05 / diffTitleInOrder) * 100;
+					+ indexTitleScore * wordNumberInTitle * 0.05 / diffTitleInOrder) * 10;
 		}
 		if (querySize == wordNumberInUrl) {
 			if (wordNumberInUrlHost > 0) {
-				hostScore = 10000 * (2 + wordNumberInUrlHost);
+				hostScore = 10000 * (1 + wordNumberInUrlHost);
 			}
 			if (wordNumberInUrl > 0) {
-				urlScore = 1000 * (2 + wordNumberInUrl);
+				urlScore = 1000 * (1 + wordNumberInUrl);
 			}
 		}
-		if (docGeoLocation.equals(queryGeoLocation)) {
-			geoScore = 50;
-		}
-		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore + geoScore)); //* 0.7 + 0.3 * pagerankScore);
+		// if (docGeoLocation.equals(queryGeoLocation)) {
+		// geoScore = 50;
+		// }
+		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore + geoScore)); // *
+																							// 0.7
+																							// +
+																							// 0.3
+																							// *
+																							// pagerankScore);
 	}
 
 	/**
@@ -117,7 +122,7 @@ public class DocInfo implements Comparable<DocInfo> {
 		// 3 check if host contains word
 		if (hostName.contains(word)) {
 			wordNumberInUrlHost++;
-		} 
+		}
 		// 4 check if url contains word
 		if (url.contains(word)) {
 			wordNumberInUrl++;
