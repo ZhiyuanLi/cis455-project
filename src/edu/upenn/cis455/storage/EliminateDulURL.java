@@ -16,14 +16,15 @@ public class EliminateDulURL {
 		RabinHashFunction32 hash = RabinHashFunction32.DEFAULT_HASH_FUNCTION;
 		HashSet<Integer> URLhashs = new HashSet<Integer>();
 
-		File output = new File("/Users/woody/Downloads/455ProjectData/IndexerInput/link/link_url.txt");
-		File inputDir = new File("/Users/woody/Downloads/455ProjectData/CrawlerOutput/link");
+		File output = new File("/Users/woody/Downloads/455ProjectData/IndexerInput/image/image_url.txt");
+		File inputDir = new File("/Users/woody/Downloads/455ProjectData/CrawlerOutput/image");
 		output.createNewFile();
 		FileWriter fileWriter = new FileWriter(output);
 		BufferedReader reader = null;
 		String line = null;
 		String key = null;
 		int checksum = 0;
+		int count = 0;
 		for (File f : inputDir.listFiles()) {
 			System.out.println(f.getName());
 			reader = new BufferedReader(new FileReader(f));
@@ -36,6 +37,9 @@ public class EliminateDulURL {
 						if (!URLhashs.contains(checksum)) {
 							fileWriter.write(key + "\t" + s[1].trim() + "\n");
 							URLhashs.add(checksum);
+						} else {
+							count ++;
+//							System.out.println(f.getName() + ":" + line);
 						}
 					} else {
 						System.out.println(f.getName() + ":" + line);
@@ -43,6 +47,7 @@ public class EliminateDulURL {
 				}
 			}
 		}
+		System.out.println(count);
 		fileWriter.close();
 	}
 

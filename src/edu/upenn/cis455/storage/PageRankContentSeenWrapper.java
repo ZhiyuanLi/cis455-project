@@ -27,21 +27,23 @@ public class PageRankContentSeenWrapper {
 		reader = new BufferedReader(new FileReader(input));
 
 		int checksum = 0;
-
+		int count = 0;
 		while ((line = reader.readLine()) != null) {
 			if (!line.equals("")) {
 				String[] s = line.split("\t", 2);
 				if (s.length == 2) {
-					key = line;
+					key = s[1].trim();
 					checksum = hash.hash(key);
 					if (!URLhashs.contains(checksum)) {
-						fileWriter.write(s[0] + "\t" + s[1] + "\n");
+						fileWriter.write(s[0] + "\t" + key + "\n");
 						URLhashs.add(checksum);
+					} else {
+						count++;
 					}
-				} 
+				}
 			}
 		}
-
+		System.out.println(count);
 		fileWriter.close();
 	}
 }

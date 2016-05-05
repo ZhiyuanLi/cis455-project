@@ -16,9 +16,9 @@ public class ContentSeenWrapper {
 		RabinHashFunction32 hash = RabinHashFunction32.DEFAULT_HASH_FUNCTION;
 		HashSet<Integer> URLhashs = new HashSet<>();
 
-		File output = new File("/Users/woody/Downloads/455ProjectData/IndexerInput/title/title.txt");
+		File output = new File("/Users/woody/Downloads/455ProjectData/IndexerInput/index/index.txt");
 
-		File inputDir = new File("/Users/woody/Downloads/455ProjectData/CrawlerOutput/title");
+		File inputDir = new File("/Users/woody/Downloads/455ProjectData/IndexerInput/index/index_url.txt");
 		output.createNewFile();
 		FileWriter fileWriter = new FileWriter(output);
 
