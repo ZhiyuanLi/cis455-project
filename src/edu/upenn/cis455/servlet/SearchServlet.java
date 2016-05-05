@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import edu.upenn.cis455.search.DocInfo;
 import edu.upenn.cis455.search.SearchEngineMultiThread;
 import edu.upenn.cis455.search.SpellCheck;
+import edu.upenn.cis455.search.WordTitle;
 
 /**
  * Search Servlet
@@ -103,7 +104,7 @@ public class SearchServlet extends HttpServlet {
 		out.println("h2 {font-size: 1.5em;margin-bottom: .5em;font-weight: 700;}");
 		out.println("button[type=submit]:hover{text-decoration:underline;color: #fff;}");
 		out.println(
-				"p {    margin-bottom: 1.5em;}a {    text-decoration: none;    font-weight: 700;    color: #ff9;}#search {    -webkit-appearance: none;    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;    width: 24px;    padding: 0 10px;    height: 24px;    font-size: 14px;    color: #666;    line-height: 24px;    border: 0;    border-radius: 50px;    box-shadow: 0 0 0 1px rgba(0,150,200,.5), inset 0 2px 5px rgba(0,100,150,.3), 0 2px 0 rgba(255,255,255,.6);    position: relative;    z-index: 5;    -webkit-transition: .3s ease;    -moz-transition: .3s ease;}#search:focus {    outline: none;    width: 180px;}p.s {    z-index: 4;    position: relative;    padding: 5px;    line-height: 0;    border-radius: 100px;    background: #b9ecfe;    background-image: -webkit-linear-gradient(#dbf6ff,#b9ecfe);    background-image: -moz-linear-gradient(#dbf6ff,#b9ecfe);    display: inline-block;    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 5px rgba(0,100,150,.4);}p.s:hover {    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 3px 2px rgba(100,200,255,.5);}p.s:after {    content: '';    display: block;    position: absolute;    width: 5px;    height: 30px;    background: #b9ecfe;    bottom: -10px;    right: -3px;    border-radius: 0 0 5px 5px;    -webkit-transform: rotate(-45deg);    -moz-transform: rotate(-45deg);    box-shadow: inset 0 -1px 0 rgbA(255,255,255,.6), -2px 2px 2px rgba(0,100,150,.4);}p.s:hover:after {    box-shadow: inset 0 -1px 0 rgba(255,255,255,.6), -2px 2px 2px 1px rgba(100,200,255,.5);}");
+				"p {    margin-bottom: 1.5em;}a {    text-decoration: none;    font-weight: 300;    color: #808080;}#search {    -webkit-appearance: none;    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;    width: 24px;    padding: 0 10px;    height: 24px;    font-size: 14px;    color: #666;    line-height: 24px;    border: 0;    border-radius: 50px;    box-shadow: 0 0 0 1px rgba(0,150,200,.5), inset 0 2px 5px rgba(0,100,150,.3), 0 2px 0 rgba(255,255,255,.6);    position: relative;    z-index: 5;    -webkit-transition: .3s ease;    -moz-transition: .3s ease;}#search:focus {    outline: none;    width: 180px;}p.s {    z-index: 4;    position: relative;    padding: 5px;    line-height: 0;    border-radius: 100px;    background: #b9ecfe;    background-image: -webkit-linear-gradient(#dbf6ff,#b9ecfe);    background-image: -moz-linear-gradient(#dbf6ff,#b9ecfe);    display: inline-block;    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 5px rgba(0,100,150,.4);}p.s:hover {    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 3px 2px rgba(100,200,255,.5);}p.s:after {    content: '';    display: block;    position: absolute;    width: 5px;    height: 30px;    background: #b9ecfe;    bottom: -10px;    right: -3px;    border-radius: 0 0 5px 5px;    -webkit-transform: rotate(-45deg);    -moz-transform: rotate(-45deg);    box-shadow: inset 0 -1px 0 rgbA(255,255,255,.6), -2px 2px 2px rgba(0,100,150,.4);}p.s:hover:after {    box-shadow: inset 0 -1px 0 rgba(255,255,255,.6), -2px 2px 2px 1px rgba(100,200,255,.5);}");
 		out.println("</style></head>");
 
 		out.println(
@@ -157,9 +158,10 @@ public class SearchServlet extends HttpServlet {
 		default:
 			searchEngine.doSearchQuery(query, "word");
 			String url;
+			out.println(
+					"About " + searchEngine.numberItemRetrived + " results(" + searchEngine.queryTime + " seconds)");
 			for (DocInfo docInfo : searchEngine.getResults()) {
 				url = docInfo.url;
-
 				out.println("<div>");
 				out.println("<h2>" + docInfo.title + "</h2>");
 				out.println("<a href=\"" + url + "\">" + " " + url + " " + "</a>");
@@ -179,9 +181,10 @@ public class SearchServlet extends HttpServlet {
 	public void init() throws ServletException {
 		String dictPath = "/home/cis455/big.txt";
 		// String filePath = "/home/ubuntu/big.txt";
-		String rankPath = "/home/cis455/pagerank";
+		// String rankPath = "/home/cis455/pagerank";
 		// String rankPath = "/home/ubuntu/pagerank";
 		SpellCheck.readDict(dictPath);
+		WordTitle.loadWordTitle("/home/cis455/title");
 		// PageRank.loadPageRank(rankPath);
 
 	}

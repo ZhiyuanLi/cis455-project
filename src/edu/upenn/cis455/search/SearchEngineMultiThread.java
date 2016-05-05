@@ -53,6 +53,8 @@ public class SearchEngineMultiThread {
 	 *            query to be search
 	 */
 	public void doSearchQuery(String queryS, String searchType) {
+		System.gc();
+		long startTime = System.currentTimeMillis();
 		// 1. set query to query computer
 		this.query = queryS;
 		qComputer.setQuery(queryS);
@@ -77,6 +79,8 @@ public class SearchEngineMultiThread {
 
 		// 6. sort doc list by score
 		Collections.sort(results);
+		long endTime = System.currentTimeMillis();
+		queryTime = (double) (endTime - startTime) / 1000;
 	}
 
 	/**
@@ -267,8 +271,8 @@ public class SearchEngineMultiThread {
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, url);
 				docInfo.title = WordTitle.getTitle(url);
-//				docInfo.pagerankScore = PageRank.getRank(url);
-//				System.out.println(url + " " + docInfo.pagerankScore);
+				// docInfo.pagerankScore = PageRank.getRank(url);
+				// System.out.println(url + " " + docInfo.pagerankScore);
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits, false);
 			if (!docInfo.queryInTitle) {
@@ -303,7 +307,7 @@ public class SearchEngineMultiThread {
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, url);
 				docInfo.title = WordTitle.getTitle(url);
-//				docInfo.pagerankScore = PageRank.getRank(url);
+				// docInfo.pagerankScore = PageRank.getRank(url);
 				docInfo.queryInTitle = true;
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits, true);
@@ -339,7 +343,7 @@ public class SearchEngineMultiThread {
 				docInfo = new DocInfo(querySize, url);
 				docInfo.pagerankScore = PageRank.getRank(url);
 			}
-			docInfo.addWord(word, queryWordInfo.getPosition(), hits,false);
+			docInfo.addWord(word, queryWordInfo.getPosition(), hits, false);
 			docInfo.indexDocScore += item.getTf_idf() * queryWordInfo.getWeight();
 			docList.put(url, docInfo);
 		}
@@ -355,8 +359,8 @@ public class SearchEngineMultiThread {
 	}
 
 	public static void main(String[] args) {
-//		PageRank.loadPageRank("pagerank");
-		
+		// PageRank.loadPageRank("pagerank");
+
 		WordTitle.loadWordTitle("/Users/woody/Downloads/455ProjectData/IndexerInput/title");
 		SearchEngineMultiThread engine = new SearchEngineMultiThread();
 		System.gc();
@@ -371,6 +375,6 @@ public class SearchEngineMultiThread {
 				System.out.println(docInfo.url + ":" + docInfo.title + ":" + docInfo.totalScore);
 			}
 		}
-		
+
 	}
 }
