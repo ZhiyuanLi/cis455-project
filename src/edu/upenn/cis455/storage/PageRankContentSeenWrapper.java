@@ -15,6 +15,9 @@ public class PageRankContentSeenWrapper {
 		RabinHashFunction32 hash = RabinHashFunction32.DEFAULT_HASH_FUNCTION;
 		HashSet<Integer> URLhashs = new HashSet<>();
 
+		// File output = new File("images_unique.txt");
+		// File input = new File("images_contentseeninput.txt");
+
 		File output = new File("/Users/woody/Downloads/455ProjectData/IndexerInput/link/link.txt");
 
 		File input = new File("/Users/woody/Downloads/455ProjectData/IndexerInput/link/link_url.txt");

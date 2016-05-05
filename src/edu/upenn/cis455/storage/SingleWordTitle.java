@@ -11,7 +11,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
  * @author zhiyuanli
  *
  */
-@DynamoDBTable(tableName = "SingleWordTitle")
+@DynamoDBTable(tableName = "Title")
 public class SingleWordTitle {
 	private String word;
 	private String url;

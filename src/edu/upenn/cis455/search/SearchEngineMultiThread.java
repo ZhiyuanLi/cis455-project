@@ -79,8 +79,8 @@ public class SearchEngineMultiThread {
 	public void issueThreads(String searchType) throws InterruptedException {
 		switch (searchType) {
 		case "word":
-			// issueWordContentThread();
 			issueWordTitleThread();
+			 issueWordContentThread();
 			break;
 
 		case "image":
@@ -114,6 +114,7 @@ public class SearchEngineMultiThread {
 		for (i = 0; i < querySize; i++) {
 			threadPool[i].join();
 		}
+		System.out.println("Content retrieved");
 
 		// 4. compute doc list score
 		List<SingleWordContent> items;
@@ -151,13 +152,12 @@ public class SearchEngineMultiThread {
 			threadPool[i].start();
 		}
 
-		
 		// 3. join thread, wait all thread to get items back
 		System.out.println(querySize);
 		for (i = 0; i < querySize; i++) {
 			threadPool[i].join();
 		}
-
+		System.out.println("Title retrived");
 		// 4. compute doc list score
 		List<SingleWordTitle> items;
 		for (i = 0; i < querySize; i++) {
@@ -272,6 +272,7 @@ public class SearchEngineMultiThread {
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, url);
 				docInfo.pagerankScore = db.getPageRankScore(url);
+				docInfo.queryInTitle = true;
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits);
 			docInfo.indexScore += item.getTf_idf() * queryWordInfo.getWeight();
@@ -323,9 +324,14 @@ public class SearchEngineMultiThread {
 
 	public static void main(String[] args) {
 		SearchEngineMultiThread engine = new SearchEngineMultiThread();
-		engine.doSearchQuery("buzz food", "word");
+		engine.doSearchQuery("university of pennsylvania", "word");
+		int i = 0;
 		for (DocInfo docInfo : engine.results) {
-			System.out.println(docInfo.url + "" + docInfo.totalScore);
+			if (i < 10) {
+				i++;
+				System.out.println(docInfo.url + "" + docInfo.totalScore);
+			}
+
 		}
 	}
 }

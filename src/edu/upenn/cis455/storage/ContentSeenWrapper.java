@@ -33,15 +33,15 @@ public class ContentSeenWrapper {
 			while ((line = reader.readLine()) != null) {
 				if (!line.equals("")) {
 					String[] s = line.split("\t", 2);
-					if(s.length==2){
+					if (s.length == 2) {
 						key = s[1].trim();
 						checksum = hash.hash(key);
 						if (!URLhashs.contains(checksum)) {
 							fileWriter.write(s[0] + "\t" + key + "\n");
 							URLhashs.add(checksum);
 						}
-					}else {
-						System.out.println(file.getName() +  " :  " +line);
+					} else {
+						System.out.println(file.getName() + " :  " + line);
 					}
 				}
 			}
@@ -49,6 +49,6 @@ public class ContentSeenWrapper {
 		}
 
 		fileWriter.close();
-		
+
 	}
 }

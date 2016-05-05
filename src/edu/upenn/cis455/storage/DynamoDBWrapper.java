@@ -318,6 +318,7 @@ public class DynamoDBWrapper {
 			break;
 		case "image":
 			w.pushDataToImageContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/ImageOut");
+
 			break;
 		}
 	}

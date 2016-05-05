@@ -11,7 +11,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
  * @author zhiyuanli
  *
  */
-@DynamoDBTable(tableName = "ImageContent")
+@DynamoDBTable(tableName = "Image")
 public class ImageContent {
 	private String word;
 	private String url;

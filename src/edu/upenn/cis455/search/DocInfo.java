@@ -17,6 +17,8 @@ public class DocInfo implements Comparable<DocInfo> {
 	 */
 	public String url;
 	protected int querySize;
+	public String title;
+	protected boolean queryInTitle;
 	protected int wordNumberInDoc;
 	protected Queue<WordInfo> wordQueue;
 	protected double indexScore;
@@ -34,6 +36,8 @@ public class DocInfo implements Comparable<DocInfo> {
 		this.url = url;
 		this.wordNumberInDoc = 0;
 		this.wordQueue = new PriorityQueue<WordInfo>();
+		this.title = "";
+		this.queryInTitle = false;
 		this.indexScore = 0;
 		this.pagerankScore = 0;
 		this.totalScore = 0;
@@ -44,9 +48,13 @@ public class DocInfo implements Comparable<DocInfo> {
 	 */
 	public void calculateTotalScore() {
 		int diffInOrder = getWordsDiffInOrder();
-		if (querySize != 1) {
-			// TODO: more tunning!!! & add pagerank
-			indexScore = indexScore * wordNumberInDoc * 0.5 + indexScore * wordNumberInDoc * 0.5 / diffInOrder;
+		if (queryInTitle) {
+			indexScore = indexScore * 100;
+		} else {
+			if (querySize != 1) {
+				// TODO: more tunning!!! & add pagerank
+				indexScore = indexScore * wordNumberInDoc * 0.05 + indexScore * wordNumberInDoc * 0.05 / diffInOrder;
+			}
 		}
 		totalScore = indexScore + pagerankScore;
 	}
@@ -82,7 +90,7 @@ public class DocInfo implements Comparable<DocInfo> {
 		boolean inOrder = false;
 		WordInfo prev;
 		WordInfo cur;
-		
+
 		// 1. if the word queue has more than 3 words
 		while ((wordQueue.size() >= 3)) {
 			prev = wordQueue.poll();
@@ -96,7 +104,7 @@ public class DocInfo implements Comparable<DocInfo> {
 			prev = cur;
 			cur = wordQueue.poll();
 		}
-		
+
 		// 2. after setp1 or word queue originally has size equals 2
 		if (wordQueue.size() == 2) {
 			prev = wordQueue.poll();
@@ -106,13 +114,13 @@ public class DocInfo implements Comparable<DocInfo> {
 				diff += (cur.hit - prev.hit);
 				inOrder = true;
 			}
-		} 
-		
+		}
+
 		// 3. word queue originally has size equals 1
-		else if (wordQueue.size() == 1) {	
+		else if (wordQueue.size() == 1) {
 			inOrder = false;
 		}
-		
+
 		// 4. no words in order ,the order difference is huge
 		if (inOrder == false) {
 			return Integer.MAX_VALUE;
@@ -123,7 +131,7 @@ public class DocInfo implements Comparable<DocInfo> {
 	@Override
 	public int compareTo(DocInfo o) {
 		if (totalScore == o.totalScore) {
-			return 0;
+			return url.length() > o.url.length() ? 1 : -1;
 		} else {
 			// descending order
 			return totalScore < o.totalScore ? 1 : -1;
