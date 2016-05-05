@@ -35,8 +35,8 @@ public class DocInfo implements Comparable<DocInfo> {
 	public DocInfo(int querySize, String url) {
 		this.querySize = querySize;
 		this.url = url;
-		this.normalUrl = url.replace(":80", "").replace(":443", "");
-		this.hostName = normalUrl.replace("http://", "").replace("https://", "").substring(0, url.indexOf("/"));
+		this.normalUrl = url.replace(":80", "").replace(":443", "").replace("http://", "").replace("https://", "");
+		this.hostName = normalUrl.substring(0, url.indexOf("/"));
 		this.wordNumberInUrlHost = 0;
 		this.wordNumberInUrl = 0;
 		this.wordNumberInTitle = 0;

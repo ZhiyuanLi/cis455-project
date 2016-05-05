@@ -58,8 +58,12 @@ public class WordTitle {
 		if (contains(url)) {
 			return wordtitle.get(url);
 		}
-		return url.replace("http://", "").replace("https://", "").replace(":80", "").replace(":443", "").substring(0,
-				url.indexOf("/"));
+		url = url.replace("http://", "");
+		url = url.replace("https://", "");
+		url = url.replace(":80", "");
+		url = url.replace(":443", "");
+		url = url.substring(0, url.indexOf("/"));
+		return url;
 	}
 
 }
