@@ -180,7 +180,6 @@ public class DynamoDBWrapper {
 	public void pushDataToSingleWordTitle(String path) throws IOException {
 		File dir = new File(path);
 		BufferedReader br;
-		int i = 0;
 		if (dir.isDirectory()) {
 			for (File file : dir.listFiles()) {
 				br = new BufferedReader(new FileReader(file));
@@ -193,7 +192,6 @@ public class DynamoDBWrapper {
 					if (s.length == 5) {
 						key = s[0] + " " + s[1];
 						checksum = hash.hash(key);
-						i++;
 						if (!URLhashes.contains(checksum)) {
 							addSingleWordTitle(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
 							URLhashes.add(checksum);
@@ -202,7 +200,6 @@ public class DynamoDBWrapper {
 					line = br.readLine();
 				}
 
-				System.out.println("i : " + i);
 				System.out.println(titleList.size());
 				for (int j = 0; j <= titleList.size() / 100; j++) {
 					if (j == titleList.size() / 100) {
@@ -228,7 +225,6 @@ public class DynamoDBWrapper {
 	public void pushDataToSingleWordContent(String path) throws IOException {
 		File dir = new File(path);
 		BufferedReader br;
-		int i = 0;
 		if (dir.isDirectory()) {
 			for (File file : dir.listFiles()) {
 				br = new BufferedReader(new FileReader(file));
@@ -241,7 +237,6 @@ public class DynamoDBWrapper {
 					if (s.length == 5) {
 						key = s[0] + " " + s[1];
 						checksum = hash.hash(key);
-						i++;
 						if (!URLhashes.contains(checksum)) {
 							addSingleWordContent(s[0], s[1], s[2], Double.parseDouble(s[3]), Double.parseDouble(s[4]));
 							URLhashes.add(checksum);
@@ -249,7 +244,6 @@ public class DynamoDBWrapper {
 					}
 					line = br.readLine();
 				}
-				System.out.println("i : " + i);
 				System.out.println(contentList.size());
 				for (int j = 0; j <= contentList.size() / 100; j++) {
 					if (j == contentList.size() / 100) {
@@ -317,13 +311,14 @@ public class DynamoDBWrapper {
 		DynamoDBWrapper w = new DynamoDBWrapper();
 		switch (args[0]) {
 		case "title":
-			w.pushDataToSingleWordTitle("/Users/woody/Downloads/TitleIn");
+			w.pushDataToSingleWordTitle("/Users/woody/Downloads/455ProjectData/IndexerOutput/TitleOut");
 			break;
 		case "content":
-			w.pushDataToSingleWordContent("/Users/zhiyuanli/Downloads/ContentIn");
+			w.pushDataToSingleWordContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/ContentOut");
 			break;
 		case "image":
-			w.pushDataToImageContent("/Users/zhiyuanli/Downloads/imagesout");
+			w.pushDataToImageContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/ImageOut");
+
 			break;
 		}
 	}

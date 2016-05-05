@@ -9,34 +9,42 @@ import java.util.HashSet;
 
 import com.planetj.math.rabinhash.RabinHashFunction32;
 
-public class PageRankWrapper {
+public class PageRankContentSeenWrapper {
 
 	public static void main(String[] args) throws IOException {
-
 		RabinHashFunction32 hash = RabinHashFunction32.DEFAULT_HASH_FUNCTION;
 		HashSet<Integer> URLhashs = new HashSet<>();
 
-		File output = new File("images_unique.txt");
-		File input = new File("images_contentseeninput.txt");
+		// File output = new File("images_unique.txt");
+		// File input = new File("images_contentseeninput.txt");
+
+		File output = new File("/Users/woody/Downloads/455ProjectData/IndexerInput/link/link.txt");
+
+		File input = new File("/Users/woody/Downloads/455ProjectData/IndexerInput/link/link_url.txt");
 		output.createNewFile();
 		FileWriter fileWriter = new FileWriter(output);
-		BufferedReader reader = new BufferedReader(new FileReader(input));
-		String line = null;
-		String key = null;
+
+		BufferedReader reader;
+		String line, key;
+
+		reader = new BufferedReader(new FileReader(input));
+
 		int checksum = 0;
+
 		while ((line = reader.readLine()) != null) {
 			if (!line.equals("")) {
 				String[] s = line.split("\t", 2);
-				key = s[0];
-				checksum = hash.hash(key);
-				if (!URLhashs.contains(checksum)) {
-					fileWriter.write(key + "\t" + s[1].trim() + "\n");
-					URLhashs.add(checksum);
+				if (s.length == 2) {
+					key = line;
+					checksum = hash.hash(key);
+					if (!URLhashs.contains(checksum)) {
+						fileWriter.write(s[0] + "\t" + s[1] + "\n");
+						URLhashs.add(checksum);
+					}
 				}
 			}
 		}
-		fileWriter.close();
-		reader.close();
-	}
 
+		fileWriter.close();
+	}
 }

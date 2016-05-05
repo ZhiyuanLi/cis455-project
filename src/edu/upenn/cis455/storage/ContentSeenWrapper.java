@@ -16,26 +16,63 @@ public class ContentSeenWrapper {
 		RabinHashFunction32 hash = RabinHashFunction32.DEFAULT_HASH_FUNCTION;
 		HashSet<Integer> URLhashs = new HashSet<>();
 
-		File output = new File("images_contentseen.txt");
-		File input = new File("imagesInput.txt");
+		// File output = new File("images_contentseen.txt");
+		// File input = new File("imagesInput.txt");
+		// output.createNewFile();
+		// FileWriter fileWriter = new FileWriter(output);
+		// BufferedReader reader = new BufferedReader(new FileReader(input));
+		// String line = null;
+		// String key = null;
+		// int checksum = 0;
+		// while ((line = reader.readLine()) != null) {
+		// if (!line.equals("")) {
+		// String[] s = line.split("\t", 2);
+		// key = s[1];
+		// checksum = hash.hash(key);
+		// if (!URLhashs.contains(checksum)) {
+		// fileWriter.write(s[0] + "\t" + key.trim() + "\n");
+		// URLhashs.add(checksum);
+		// }
+		// }
+		// }
+		// fileWriter.close();
+		// reader.close();
+		// }
+		// }
+
+		File output = new File("/Users/woody/Downloads/455ProjectData/IndexerInput/title/title.txt");
+
+		File inputDir = new File("/Users/woody/Downloads/455ProjectData/CrawlerOutput/title");
 		output.createNewFile();
 		FileWriter fileWriter = new FileWriter(output);
-		BufferedReader reader = new BufferedReader(new FileReader(input));
-		String line = null;
-		String key = null;
-		int checksum = 0;
-		while ((line = reader.readLine()) != null) {
-			if (!line.equals("")) {
-				String[] s = line.split("\t", 2);
-				key = s[1];
-				checksum = hash.hash(key);
-				if (!URLhashs.contains(checksum)) {
-					fileWriter.write(s[0] + "\t" + key.trim() + "\n");
-					URLhashs.add(checksum);
+
+		BufferedReader reader;
+		String line, key;
+		for (File file : inputDir.listFiles()) {
+			System.out.println(file.getName());
+			reader = new BufferedReader(new FileReader(file));
+
+			int checksum = 0;
+
+			while ((line = reader.readLine()) != null) {
+				if (!line.equals("")) {
+					String[] s = line.split("\t", 2);
+					if (s.length == 2) {
+						key = s[1].trim();
+						checksum = hash.hash(key);
+						if (!URLhashs.contains(checksum)) {
+							fileWriter.write(s[0] + "\t" + key + "\n");
+							URLhashs.add(checksum);
+						}
+					} else {
+						System.out.println(file.getName() + " :  " + line);
+					}
 				}
 			}
+			System.out.println(file.getName() + " done");
 		}
+
 		fileWriter.close();
-		reader.close();
+
 	}
 }
