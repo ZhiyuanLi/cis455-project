@@ -22,6 +22,7 @@ public class SearchEngineMultiThread {
 	private DynamoDBWrapper db;
 	protected QueryComputer qComputer;
 	private int querySize;
+	private String geolocation;
 	private ArrayList<String> queryWords;
 	private Hashtable<String, DocInfo> docList;
 	private ArrayList<DocInfo> results;
@@ -52,7 +53,7 @@ public class SearchEngineMultiThread {
 	 * @param queryS
 	 *            query to be search
 	 */
-	public void doSearchQuery(String queryS, String searchType) {
+	public void doSearchQuery(String queryS, String searchType, String geolocation) {
 		// 1. set query to query computer
 		this.query = queryS;
 		qComputer.setQuery(queryS);
@@ -62,6 +63,9 @@ public class SearchEngineMultiThread {
 
 		// 3. get query size from query computer
 		querySize = qComputer.getQuerySize();
+		
+		// 4. set geolocation
+		this.geolocation = geolocation;
 
 		// 4. issue thread to get every word doc list and compute the score for
 		// each doc
@@ -268,6 +272,8 @@ public class SearchEngineMultiThread {
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, url);
 				docInfo.title = WordTitle.getTitle(url);
+				docInfo.queryGeoLocation = geolocation;
+				docInfo.docGeoLocation = PageRank.getGeolocation(url);
 				// docInfo.pagerankScore = PageRank.getRank(url);
 				// System.out.println(url + " " + docInfo.pagerankScore);
 			}
@@ -306,6 +312,8 @@ public class SearchEngineMultiThread {
 				docInfo.title = WordTitle.getTitle(url);
 				// docInfo.pagerankScore = PageRank.getRank(url);
 				docInfo.queryInTitle = true;
+				docInfo.queryGeoLocation = geolocation;
+				docInfo.docGeoLocation = PageRank.getGeolocation(url);
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits, true);
 			docInfo.indexTitleScore += item.getTf_idf() * queryWordInfo.getWeight();
@@ -338,7 +346,9 @@ public class SearchEngineMultiThread {
 			DocInfo docInfo = docList.get(url);
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, url);
-				docInfo.pagerankScore = PageRank.getRank(url);
+				docInfo.queryGeoLocation = geolocation;
+				docInfo.docGeoLocation = PageRank.getGeolocation(url);
+//				docInfo.pagerankScore = PageRank.getRank(url);		
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits, false);
 			docInfo.indexDocScore += item.getTf_idf() * queryWordInfo.getWeight();
@@ -356,13 +366,13 @@ public class SearchEngineMultiThread {
 	}
 
 	public static void main(String[] args) {
-		// PageRank.loadPageRank("pagerank");
+		PageRank.loadPageRank("pagerank");
 
 		WordTitle.loadWordTitle("/Users/woody/Downloads/455ProjectData/IndexerInput/title");
 		SearchEngineMultiThread engine = new SearchEngineMultiThread();
 		System.gc();
 		long time1 = System.currentTimeMillis();
-		engine.doSearchQuery("mathematical experimental", "word");
+		engine.doSearchQuery("mathematical experimental", "word", "philly");
 		long time2 = System.currentTimeMillis();
 		engine.queryTime = time2 - time1;
 		int i = 0;
@@ -372,6 +382,5 @@ public class SearchEngineMultiThread {
 				System.out.println(docInfo.url + ":" + docInfo.title + ":" + docInfo.totalScore);
 			}
 		}
-
 	}
 }

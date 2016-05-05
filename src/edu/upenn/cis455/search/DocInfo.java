@@ -19,6 +19,7 @@ public class DocInfo implements Comparable<DocInfo> {
 	protected String normalUrl, hostName;
 	protected int querySize;
 	public String title;
+	public String queryGeoLocation, docGeoLocation;
 	protected boolean queryInTitle;
 	protected int wordNumberInUrlHost, wordNumberInUrl, wordNumberInTitle, wordNumberInDoc;
 	protected Queue<WordInfo> wordTitleQueue, wordDocQueue;
@@ -37,6 +38,7 @@ public class DocInfo implements Comparable<DocInfo> {
 		this.url = url;
 		this.normalUrl = url.replace(":80", "").replace(":443", "").replace("http://", "").replace("https://", "");
 		this.hostName = normalUrl.substring(0, url.indexOf("/"));
+		this.docGeoLocation = "";
 		this.wordNumberInUrlHost = 0;
 		this.wordNumberInUrl = 0;
 		this.wordNumberInTitle = 0;
@@ -57,7 +59,7 @@ public class DocInfo implements Comparable<DocInfo> {
 	public void calculateTotalScore() {
 		int diffTitleInOrder = getWordsDiffInOrder(wordTitleQueue);
 		int diffDocInOrder = getWordsDiffInOrder(wordDocQueue);
-		double hostScore = 0, urlScore = 0;
+		double hostScore = 0, urlScore = 0, geoScore = 0;
 		if (querySize != 1) {
 			indexDocScore = indexDocScore * wordNumberInDoc * 0.05
 					+ indexDocScore * wordNumberInDoc * 0.05 / diffDocInOrder;
@@ -72,7 +74,10 @@ public class DocInfo implements Comparable<DocInfo> {
 				urlScore = 1000 * (2 + wordNumberInUrl);
 			}
 		}
-		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore)); //* 0.7 + 0.3 * pagerankScore);
+		if (docGeoLocation.equals(queryGeoLocation)) {
+			geoScore = 50;
+		}
+		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore + geoScore)); //* 0.7 + 0.3 * pagerankScore);
 	}
 
 	/**
