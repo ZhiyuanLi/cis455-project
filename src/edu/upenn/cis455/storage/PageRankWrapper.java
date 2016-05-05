@@ -16,8 +16,8 @@ public class PageRankWrapper {
 		RabinHashFunction32 hash = RabinHashFunction32.DEFAULT_HASH_FUNCTION;
 		HashSet<Integer> URLhashs = new HashSet<>();
 
-		File output = new File("pagerankInput.txt");
-		File input = new File("pagerank.txt");
+		File output = new File("images_unique.txt");
+		File input = new File("images_contentseeninput.txt");
 		output.createNewFile();
 		FileWriter fileWriter = new FileWriter(output);
 		BufferedReader reader = new BufferedReader(new FileReader(input));

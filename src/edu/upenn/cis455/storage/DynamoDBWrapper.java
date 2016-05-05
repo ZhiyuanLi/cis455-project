@@ -320,10 +320,10 @@ public class DynamoDBWrapper {
 			w.pushDataToSingleWordTitle("/Users/woody/Downloads/TitleIn");
 			break;
 		case "content":
-			w.pushDataToSingleWordContent("/Users/woody/Downloads/ContentIn");
+			w.pushDataToSingleWordContent("/Users/zhiyuanli/Downloads/ContentIn");
 			break;
 		case "image":
-			w.pushDataToImageContent("/Users/woody/Downloads/ImageIn");
+			w.pushDataToImageContent("/Users/zhiyuanli/Downloads/imagesout");
 			break;
 		}
 	}
