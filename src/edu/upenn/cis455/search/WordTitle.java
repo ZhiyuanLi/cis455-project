@@ -32,7 +32,7 @@ public class WordTitle {
 	 * @param line
 	 */
 	private static void parseWordTitleLine(String line) {
-		String[] tempLine = line.split("\t");
+		String[] tempLine = line.split("\t", 2);
 		if (tempLine.length == 2) {
 			wordtitle.put(tempLine[0], tempLine[1]);
 		}

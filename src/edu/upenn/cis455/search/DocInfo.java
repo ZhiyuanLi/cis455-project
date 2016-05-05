@@ -66,10 +66,10 @@ public class DocInfo implements Comparable<DocInfo> {
 		}
 		if (querySize == wordNumberInUrl) {
 			if (wordNumberInUrlHost > 0) {
-				hostScore = 10000 * (1 + wordNumberInUrlHost);
+				hostScore = 10000 * (2 + wordNumberInUrlHost);
 			}
 			if (wordNumberInUrl > 0) {
-				urlScore = 1000 * (1 + wordNumberInUrl);
+				urlScore = 1000 * (2 + wordNumberInUrl);
 			}
 		}
 		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore)); //* 0.7 + 0.3 * pagerankScore);
@@ -172,7 +172,10 @@ public class DocInfo implements Comparable<DocInfo> {
 	public int compareTo(DocInfo o) {
 		if (totalScore == o.totalScore) {
 			// tie breaking cheak length of url
-			return normalUrl.length() >= o.normalUrl.length() ? 1 : -1;
+			if (normalUrl.length() == o.normalUrl.length()) {
+				return 0;
+			}
+			return normalUrl.length() > o.normalUrl.length() ? 1 : -1;
 		} else {
 			// descending order
 			return totalScore < o.totalScore ? 1 : -1;

@@ -356,7 +356,7 @@ public class SearchEngineMultiThread {
 		SearchEngineMultiThread engine = new SearchEngineMultiThread();
 		System.gc();
 		long time1 = System.currentTimeMillis();
-		engine.doSearchQuery("university of southern california", "word");
+		engine.doSearchQuery("mathematical experimental", "word");
 		long time2 = System.currentTimeMillis();
 		System.out.println(time2-time1);
 		int i = 0;
