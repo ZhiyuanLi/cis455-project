@@ -127,7 +127,7 @@ public class SearchServlet extends HttpServlet {
 		out.println("<h4>Search Results</h4>");
 		switch (mode) {
 		case "image":
-			searchEngine.doSearchQuery(query, "image");
+			searchEngine.doSearchQuery(query, "image", geoLocation);
 			int i = 0;
 			List<DocInfo> resluts = searchEngine.getResults();
 			if (resluts.size() > 100) {
@@ -147,7 +147,7 @@ public class SearchServlet extends HttpServlet {
 			}
 			break;
 		case "weather":
-			searchEngine.doSearchQuery(query, "weather");
+			searchEngine.doSearchQuery(query, "weather", geoLocation);
 			Hashtable<String, String> weatherTable = searchEngine.getWeatherTable();
 			if (weatherTable.isEmpty()) {
 				out.println("<p>OOPS! No weather information for your search!</p>");
@@ -157,7 +157,7 @@ public class SearchServlet extends HttpServlet {
 
 		case "web":
 		default:
-			searchEngine.doSearchQuery(query, "word");
+			searchEngine.doSearchQuery(query, "word", geoLocation);
 			String url;
 			out.println(
 					"About " + searchEngine.numberItemRetrived + " results(" + searchEngine.queryTime + " seconds)");
