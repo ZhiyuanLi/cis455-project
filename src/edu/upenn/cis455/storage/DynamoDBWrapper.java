@@ -308,10 +308,16 @@ public class DynamoDBWrapper {
 	}
 
 	public static void main(String[] args) throws Exception {
-		final DynamoDBWrapper w0 = new DynamoDBWrapper();
-		final DynamoDBWrapper w1 = new DynamoDBWrapper();
-		final DynamoDBWrapper w2 = new DynamoDBWrapper();
-		final DynamoDBWrapper w3 = new DynamoDBWrapper();
+		final DynamoDBWrapper w21 = new DynamoDBWrapper();
+		final DynamoDBWrapper w22 = new DynamoDBWrapper();
+		final DynamoDBWrapper w23 = new DynamoDBWrapper();
+		final DynamoDBWrapper w24 = new DynamoDBWrapper();
+		final DynamoDBWrapper w25 = new DynamoDBWrapper();
+//		final DynamoDBWrapper w26 = new DynamoDBWrapper();
+//		final DynamoDBWrapper w27 = new DynamoDBWrapper();
+//		final DynamoDBWrapper w28 = new DynamoDBWrapper();
+//		final DynamoDBWrapper w29 = new DynamoDBWrapper();
+//		final DynamoDBWrapper w30 = new DynamoDBWrapper();
 		// switch (args[0]) {
 		// case "title":
 		// w.pushDataToSingleWordTitle("/Users/woody/Downloads/455ProjectData/IndexerOutput/TitleOut");
@@ -324,12 +330,12 @@ public class DynamoDBWrapper {
 		//
 		// break;
 		// }
-		Thread[] threads = new Thread[4];
+		Thread[] threads = new Thread[5];
 		threads[0] = new Thread() {
 
 			public void run() {
 				try {
-					w0.pushDataToImageContent("/Users/zhiyuanli/Downloads/image/3");
+					w21.pushDataToSingleWordContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/SmallContentOut/16");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -341,7 +347,7 @@ public class DynamoDBWrapper {
 
 			public void run() {
 				try {
-					w1.pushDataToImageContent("/Users/zhiyuanli/Downloads/image/4");
+					w22.pushDataToSingleWordContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/SmallContentOut/17");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -353,19 +359,7 @@ public class DynamoDBWrapper {
 
 			public void run() {
 				try {
-					w2.pushDataToImageContent("/Users/zhiyuanli/Downloads/image/5");
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		};
-
-		threads[3] = new Thread() {
-
-			public void run() {
-				try {
-					w3.pushDataToImageContent("/Users/zhiyuanli/Downloads/image/6");
+					w23.pushDataToSingleWordContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/SmallContentOut/18");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -373,10 +367,103 @@ public class DynamoDBWrapper {
 			}
 		};
 		
+		threads[3] = new Thread() {
+
+			public void run() {
+				try {
+					w24.pushDataToSingleWordContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/SmallContentOut/19");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+
+		threads[4] = new Thread() {
+
+			public void run() {
+				try {
+					w25.pushDataToSingleWordContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/SmallContentOut/20");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+
+//		threads[5] = new Thread() {
+//
+//			public void run() {
+//				try {
+//					w26.pushDataToSingleWordContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/SmallContentOut/26");
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		};
+//		
+//		threads[6] = new Thread() {
+//
+//			public void run() {
+//				try {
+//					w27.pushDataToSingleWordContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/SmallContentOut/27");
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		};
+//
+//		threads[7] = new Thread() {
+//
+//			public void run() {
+//				try {
+//					w28.pushDataToSingleWordContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/SmallContentOut/28");
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		};
+//
+//		threads[8] = new Thread() {
+//
+//			public void run() {
+//				try {
+//					w29.pushDataToSingleWordContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/SmallContentOut/29");
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		};
+//		
+//		threads[9] = new Thread() {
+//
+//			public void run() {
+//				try {
+//					w30.pushDataToSingleWordContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/SmallContentOut/30");
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//			}
+//		};
+		
 		threads[0].start();
 		threads[1].start();
 		threads[2].start();
+		
 		threads[3].start();
+		threads[4].start();
+//		threads[5].start();
+		
+//		threads[6].start();
+//		threads[7].start();
+//		threads[8].start();
+//		threads[9].start();
+//		threads[3].start();
 
 	}
 }
