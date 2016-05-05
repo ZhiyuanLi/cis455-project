@@ -52,7 +52,6 @@ public class SpellCheck {
 		for (String s : resultList) {
 			result += s + " ";
 		}
-		System.out.println(result);
 	}
 
 	public static void readDict(String filePath) {
