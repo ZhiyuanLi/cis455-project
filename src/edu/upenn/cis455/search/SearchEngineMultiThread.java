@@ -242,7 +242,9 @@ public class SearchEngineMultiThread {
 				docInfo.pagerankScore = db.getPageRankScore(url);
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits);
-			docInfo.indexScore += item.getTf_idf() * queryWordInfo.getWeight();
+			if(!docInfo.queryInTitle){
+				docInfo.indexScore += item.getTf_idf() * queryWordInfo.getWeight();
+			}
 			docList.put(url, docInfo);
 		}
 	}
@@ -324,7 +326,7 @@ public class SearchEngineMultiThread {
 
 	public static void main(String[] args) {
 		SearchEngineMultiThread engine = new SearchEngineMultiThread();
-		engine.doSearchQuery("university of pennsylvania", "word");
+		engine.doSearchQuery("pennsylvania state university", "word");
 		int i = 0;
 		for (DocInfo docInfo : engine.results) {
 			if (i < 10) {
