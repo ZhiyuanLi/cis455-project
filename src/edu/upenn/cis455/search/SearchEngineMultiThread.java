@@ -25,6 +25,9 @@ public class SearchEngineMultiThread {
 	private ArrayList<String> queryWords;
 	private Hashtable<String, DocInfo> docList;
 	private ArrayList<DocInfo> results;
+	private String query;
+	private Weather weather;
+	private Hashtable<String, String> weatherTable;
 
 	/**
 	 * Constructor for SearchEngineMultiThread
@@ -47,6 +50,7 @@ public class SearchEngineMultiThread {
 	 */
 	public void doSearchQuery(String queryS, String searchType) {
 		// 1. set query to query computer
+		this.query = queryS;
 		qComputer.setQuery(queryS);
 
 		// 2. get query words from query
@@ -80,14 +84,34 @@ public class SearchEngineMultiThread {
 		switch (searchType) {
 		case "word":
 			issueWordTitleThread();
-			 issueWordContentThread();
+			issueWordContentThread();
 			break;
 
 		case "image":
 			issueImageThread();
 			break;
+
+		case "weather":
+			weather = new Weather();
+			weatherTable = weather.getWeather(query, "us");
+			break;
+
 		}
 
+	}
+
+	/**
+	 * @return the weatherTable
+	 */
+	public Hashtable<String, String> getWeatherTable() {
+		return weatherTable;
+	}
+
+	/**
+	 * @param weatherTable the weatherTable to set
+	 */
+	public void setWeatherTable(Hashtable<String, String> weatherTable) {
+		this.weatherTable = weatherTable;
 	}
 
 	private void issueWordContentThread() throws InterruptedException {
@@ -242,7 +266,7 @@ public class SearchEngineMultiThread {
 				docInfo.pagerankScore = db.getPageRankScore(url);
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits);
-			if(!docInfo.queryInTitle){
+			if (!docInfo.queryInTitle) {
 				docInfo.indexScore += item.getTf_idf() * queryWordInfo.getWeight();
 			}
 			docList.put(url, docInfo);

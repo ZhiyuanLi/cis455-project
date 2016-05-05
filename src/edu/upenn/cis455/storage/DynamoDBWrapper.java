@@ -312,6 +312,10 @@ public class DynamoDBWrapper {
 		final DynamoDBWrapper w1 = new DynamoDBWrapper();
 		final DynamoDBWrapper w2 = new DynamoDBWrapper();
 		final DynamoDBWrapper w3 = new DynamoDBWrapper();
+		final DynamoDBWrapper w4 = new DynamoDBWrapper();
+		final DynamoDBWrapper w10 = new DynamoDBWrapper();
+		final DynamoDBWrapper w11 = new DynamoDBWrapper();
+		final DynamoDBWrapper w12 = new DynamoDBWrapper();
 		// switch (args[0]) {
 		// case "title":
 		// w.pushDataToSingleWordTitle("/Users/woody/Downloads/455ProjectData/IndexerOutput/TitleOut");
@@ -324,12 +328,12 @@ public class DynamoDBWrapper {
 		//
 		// break;
 		// }
-		Thread[] threads = new Thread[4];
+		Thread[] threads = new Thread[8];
 		threads[0] = new Thread() {
 
 			public void run() {
 				try {
-					w0.pushDataToImageContent("/Users/zhiyuanli/Downloads/image/3");
+					w0.pushDataToSingleWordContent("/Users/zhiyuanli/Downloads/content/5");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -341,7 +345,7 @@ public class DynamoDBWrapper {
 
 			public void run() {
 				try {
-					w1.pushDataToImageContent("/Users/zhiyuanli/Downloads/image/4");
+					w1.pushDataToSingleWordContent("/Users/zhiyuanli/Downloads/content/6");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -353,7 +357,7 @@ public class DynamoDBWrapper {
 
 			public void run() {
 				try {
-					w2.pushDataToImageContent("/Users/zhiyuanli/Downloads/image/5");
+					w2.pushDataToSingleWordContent("/Users/zhiyuanli/Downloads/content/7");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -365,7 +369,53 @@ public class DynamoDBWrapper {
 
 			public void run() {
 				try {
-					w3.pushDataToImageContent("/Users/zhiyuanli/Downloads/image/6");
+					w3.pushDataToSingleWordContent("/Users/zhiyuanli/Downloads/content/8");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		threads[4] = new Thread() {
+
+			public void run() {
+				try {
+					w4.pushDataToSingleWordContent("/Users/zhiyuanli/Downloads/content/9");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		
+		threads[5] = new Thread() {
+
+			public void run() {
+				try {
+					w10.pushDataToSingleWordContent("/Users/zhiyuanli/Downloads/content/13");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		threads[6] = new Thread() {
+
+			public void run() {
+				try {
+					w11.pushDataToSingleWordContent("/Users/zhiyuanli/Downloads/content/14");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		
+		threads[7] = new Thread() {
+
+			public void run() {
+				try {
+					w12.pushDataToSingleWordContent("/Users/zhiyuanli/Downloads/content/15");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -376,7 +426,15 @@ public class DynamoDBWrapper {
 		threads[0].start();
 		threads[1].start();
 		threads[2].start();
+		
 		threads[3].start();
+		threads[4].start();
+		threads[5].start();
+		
+		threads[6].start();
+		threads[7].start();
+//		threads[2].start();
+//		threads[3].start();
 
 	}
 }
