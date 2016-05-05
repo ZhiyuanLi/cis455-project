@@ -16,11 +16,10 @@ public class DocInfo implements Comparable<DocInfo> {
 	 * Instance of DocInfo
 	 */
 	public String url;
-	protected String normalUrl;
-	protected String hostName;
+	protected String normalUrl, hostName;
 	protected int querySize;
 	public String title;
-	protected boolean queryInUrlHost, queryInUrl, queryInTitle;
+	protected boolean queryInTitle;
 	protected int wordNumberInUrlHost, wordNumberInUrl, wordNumberInTitle, wordNumberInDoc;
 	protected Queue<WordInfo> wordTitleQueue, wordDocQueue;
 	protected double indexTitleScore, indexDocScore, pagerankScore;
@@ -44,8 +43,6 @@ public class DocInfo implements Comparable<DocInfo> {
 		this.wordNumberInDoc = 0;
 		this.wordTitleQueue = new PriorityQueue<WordInfo>();
 		this.wordDocQueue = new PriorityQueue<WordInfo>();
-		this.queryInUrlHost = false;
-		this.queryInUrl = false;
 		this.queryInTitle = false;
 		this.title = "";
 		this.indexTitleScore = 0;
@@ -68,15 +65,14 @@ public class DocInfo implements Comparable<DocInfo> {
 					+ indexTitleScore * wordNumberInTitle * 0.05 / diffTitleInOrder) * 100;
 		}
 		if (querySize == wordNumberInUrl) {
-			if (queryInUrlHost) {
+			if (wordNumberInUrlHost > 0) {
 				hostScore = 10000 * (1 + wordNumberInUrlHost);
 			}
-			if (queryInUrl) {
+			if (wordNumberInUrl > 0) {
 				urlScore = 1000 * (1 + wordNumberInUrl);
 			}
 		}
-
-		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore) * 0.7 + 0.3 * pagerankScore);
+		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore)); //* 0.7 + 0.3 * pagerankScore);
 	}
 
 	/**
@@ -113,12 +109,12 @@ public class DocInfo implements Comparable<DocInfo> {
 			}
 		}
 
-		// 3 check if host & url contains word
+		// 3 check if host contains word
 		if (hostName.contains(word)) {
 			wordNumberInUrlHost++;
-			queryInUrlHost = true;
-		} else if (url.contains(word)) {
-			queryInUrl = true;
+		} 
+		// 4 check if url contains word
+		if (url.contains(word)) {
 			wordNumberInUrl++;
 		}
 	}

@@ -49,5 +49,4 @@ public class ImageSearchWorker implements Runnable{
 		return imageItems;
 	}
 
-
 }

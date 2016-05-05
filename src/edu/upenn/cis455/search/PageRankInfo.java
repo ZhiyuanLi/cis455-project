@@ -8,10 +8,9 @@ public class PageRankInfo {
 	public String city;
 
 	public PageRankInfo(String url, String rank, String state, String city) {
-			this.url = url;
-			this.rank = Double.parseDouble(rank);
-			this.state = state;
-			this.city = city;
-		}
-
+		this.url = url;
+		this.rank = Double.parseDouble(rank);
+		this.state = state;
+		this.city = city;
+	}
 }

@@ -95,9 +95,7 @@ public class SearchEngineMultiThread {
 			weather = new Weather();
 			weatherTable = weather.getWeather(query, "us");
 			break;
-
 		}
-
 	}
 
 	/**
@@ -178,7 +176,6 @@ public class SearchEngineMultiThread {
 		}
 
 		// 3. join thread, wait all thread to get items back
-		System.out.println(querySize);
 		for (i = 0; i < querySize; i++) {
 			threadPool[i].join();
 		}
@@ -354,9 +351,14 @@ public class SearchEngineMultiThread {
 
 	public static void main(String[] args) {
 //		PageRank.loadPageRank("pagerank");
+		
 		WordTitle.loadWordTitle("/Users/woody/Downloads/455ProjectData/IndexerInput/title");
 		SearchEngineMultiThread engine = new SearchEngineMultiThread();
-		engine.doSearchQuery("university of pennsylvania", "word");
+		System.gc();
+		long time1 = System.currentTimeMillis();
+		engine.doSearchQuery("university of southern california", "word");
+		long time2 = System.currentTimeMillis();
+		System.out.println(time2-time1);
 		int i = 0;
 		for (DocInfo docInfo : engine.results) {
 			if (i < 300) {
@@ -364,5 +366,6 @@ public class SearchEngineMultiThread {
 				System.out.println(docInfo.url + ":" + docInfo.title + ":" + docInfo.totalScore);
 			}
 		}
+		
 	}
 }
