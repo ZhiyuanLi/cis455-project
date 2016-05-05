@@ -54,6 +54,9 @@ public class SearchEngineMultiThread {
 	 *            query to be search
 	 */
 	public void doSearchQuery(String queryS, String searchType, String geolocation) {
+		System.gc();
+		long startTime = System.currentTimeMillis();
+
 		// 1. set query to query computer
 		this.query = queryS;
 		qComputer.setQuery(queryS);
@@ -63,7 +66,7 @@ public class SearchEngineMultiThread {
 
 		// 3. get query size from query computer
 		querySize = qComputer.getQuerySize();
-		
+
 		// 4. set geolocation
 		this.geolocation = geolocation;
 
@@ -82,6 +85,8 @@ public class SearchEngineMultiThread {
 
 		// 6. sort doc list by score
 		Collections.sort(results);
+		long endTime = System.currentTimeMillis();
+		queryTime = (double) (endTime - startTime) / 1000;
 	}
 
 	/**
@@ -349,7 +354,7 @@ public class SearchEngineMultiThread {
 				docInfo.title = WordTitle.getTitle(url);
 				docInfo.queryGeoLocation = geolocation;
 				docInfo.docGeoLocation = PageRank.getGeolocation(url);
-//				docInfo.pagerankScore = PageRank.getRank(url);		
+				// docInfo.pagerankScore = PageRank.getRank(url);
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits, false);
 			docInfo.indexDocScore += item.getTf_idf() * queryWordInfo.getWeight();
