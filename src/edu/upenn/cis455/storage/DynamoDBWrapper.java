@@ -308,18 +308,75 @@ public class DynamoDBWrapper {
 	}
 
 	public static void main(String[] args) throws Exception {
-		DynamoDBWrapper w = new DynamoDBWrapper();
-		switch (args[0]) {
-		case "title":
-			w.pushDataToSingleWordTitle("/Users/woody/Downloads/455ProjectData/IndexerOutput/TitleOut");
-			break;
-		case "content":
-			w.pushDataToSingleWordContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/ContentOut");
-			break;
-		case "image":
-			w.pushDataToImageContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/ImageOut");
+		final DynamoDBWrapper w0 = new DynamoDBWrapper();
+		final DynamoDBWrapper w1 = new DynamoDBWrapper();
+		final DynamoDBWrapper w2 = new DynamoDBWrapper();
+		final DynamoDBWrapper w3 = new DynamoDBWrapper();
+		// switch (args[0]) {
+		// case "title":
+		// w.pushDataToSingleWordTitle("/Users/woody/Downloads/455ProjectData/IndexerOutput/TitleOut");
+		// break;
+		// case "content":
+		// w.pushDataToSingleWordContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/ContentOut");
+		// break;
+		// case "image":
+		// w.pushDataToImageContent("/Users/woody/Downloads/455ProjectData/IndexerOutput/ImageOut");
+		//
+		// break;
+		// }
+		Thread[] threads = new Thread[4];
+		threads[0] = new Thread() {
 
-			break;
-		}
+			public void run() {
+				try {
+					w0.pushDataToImageContent("/Users/zhiyuanli/Downloads/image/3");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+
+		threads[1] = new Thread() {
+
+			public void run() {
+				try {
+					w1.pushDataToImageContent("/Users/zhiyuanli/Downloads/image/4");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+
+		threads[2] = new Thread() {
+
+			public void run() {
+				try {
+					w2.pushDataToImageContent("/Users/zhiyuanli/Downloads/image/5");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+
+		threads[3] = new Thread() {
+
+			public void run() {
+				try {
+					w3.pushDataToImageContent("/Users/zhiyuanli/Downloads/image/6");
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		
+		threads[0].start();
+		threads[1].start();
+		threads[2].start();
+		threads[3].start();
+
 	}
 }
