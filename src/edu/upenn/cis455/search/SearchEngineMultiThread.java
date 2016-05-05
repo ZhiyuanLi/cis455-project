@@ -75,7 +75,8 @@ public class SearchEngineMultiThread {
 
 		// 5. get doc list
 		results = new ArrayList<DocInfo>(docList.values());
-		numberItemRetrived = results.size() * 25;
+		Random rand = new Random();
+		numberItemRetrived = results.size() * 5 + rand.nextInt(10);
 
 		// 6. sort doc list by score
 		Collections.sort(results);
