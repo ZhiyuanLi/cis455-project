@@ -1,4 +1,4 @@
-package edu.upenn.cis455.storage;
+package edu.upenn.cis455.filehandler;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class Image {
+public class ImageWrapper {
 
 	public static void main(String[] args) throws IOException {
 		File output = new File("/Users/woody/Downloads/455ProjectData/IndexerInput/image/image.txt");
