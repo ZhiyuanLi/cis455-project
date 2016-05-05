@@ -95,9 +95,7 @@ public class SearchEngineMultiThread {
 			weather = new Weather();
 			weatherTable = weather.getWeather(query, "us");
 			break;
-
 		}
-
 	}
 
 	/**
@@ -178,7 +176,6 @@ public class SearchEngineMultiThread {
 		}
 
 		// 3. join thread, wait all thread to get items back
-		System.out.println(querySize);
 		for (i = 0; i < querySize; i++) {
 			threadPool[i].join();
 		}
@@ -264,7 +261,8 @@ public class SearchEngineMultiThread {
 			DocInfo docInfo = docList.get(url);
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, url);
-				docInfo.pagerankScore = PageRank.getRank(url);
+				docInfo.title = WordTitle.getTitle(url);
+//				docInfo.pagerankScore = PageRank.getRank(url);
 //				System.out.println(url + " " + docInfo.pagerankScore);
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits, false);
@@ -299,8 +297,8 @@ public class SearchEngineMultiThread {
 			DocInfo docInfo = docList.get(url);
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, url);
-				docInfo.pagerankScore = PageRank.getRank(url);
-//				System.out.println(url + " " + docInfo.pagerankScore);
+				docInfo.title = WordTitle.getTitle(url);
+//				docInfo.pagerankScore = PageRank.getRank(url);
 				docInfo.queryInTitle = true;
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits, true);
@@ -353,14 +351,21 @@ public class SearchEngineMultiThread {
 
 	public static void main(String[] args) {
 //		PageRank.loadPageRank("pagerank");
+		
+		WordTitle.loadWordTitle("/Users/woody/Downloads/455ProjectData/IndexerInput/title");
 		SearchEngineMultiThread engine = new SearchEngineMultiThread();
-		engine.doSearchQuery("facebook", "word");
+		System.gc();
+		long time1 = System.currentTimeMillis();
+		engine.doSearchQuery("mathematical experimental", "word");
+		long time2 = System.currentTimeMillis();
+		System.out.println(time2-time1);
 		int i = 0;
 		for (DocInfo docInfo : engine.results) {
 			if (i < 300) {
 				i++;
-				System.out.println(docInfo.url + "" + docInfo.totalScore);
+				System.out.println(docInfo.url + ":" + docInfo.title + ":" + docInfo.totalScore);
 			}
 		}
+		
 	}
 }
