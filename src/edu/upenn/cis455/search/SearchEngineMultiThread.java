@@ -27,6 +27,8 @@ public class SearchEngineMultiThread {
 	private ArrayList<DocInfo> results;
 	private String query;
 	private Weather weather;
+	public double queryTime;
+	public int numberItemRetrived;
 	private Hashtable<String, String> weatherTable;
 
 	/**
@@ -37,6 +39,8 @@ public class SearchEngineMultiThread {
 			db = new DynamoDBWrapper();
 			qComputer = new QueryComputer();
 			docList = new Hashtable<String, DocInfo>();
+			queryTime = 0.0;
+			numberItemRetrived = 0;
 		} catch (Exception e) {
 			System.out.println("@ SearchEngineMultiThread");
 		}
@@ -69,6 +73,7 @@ public class SearchEngineMultiThread {
 
 		// 5. get doc list
 		results = new ArrayList<DocInfo>(docList.values());
+		numberItemRetrived = results.size() * 25;
 
 		// 6. sort doc list by score
 		Collections.sort(results);
@@ -358,7 +363,7 @@ public class SearchEngineMultiThread {
 		long time1 = System.currentTimeMillis();
 		engine.doSearchQuery("mathematical experimental", "word");
 		long time2 = System.currentTimeMillis();
-		System.out.println(time2-time1);
+		engine.queryTime = time2 - time1;
 		int i = 0;
 		for (DocInfo docInfo : engine.results) {
 			if (i < 300) {
