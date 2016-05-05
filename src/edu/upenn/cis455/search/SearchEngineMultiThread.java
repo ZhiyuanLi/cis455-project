@@ -264,7 +264,8 @@ public class SearchEngineMultiThread {
 			DocInfo docInfo = docList.get(url);
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, url);
-				docInfo.pagerankScore = PageRank.getRank(url);
+				docInfo.title = WordTitle.getTitle(url);
+//				docInfo.pagerankScore = PageRank.getRank(url);
 //				System.out.println(url + " " + docInfo.pagerankScore);
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits, false);
@@ -299,8 +300,8 @@ public class SearchEngineMultiThread {
 			DocInfo docInfo = docList.get(url);
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, url);
-				docInfo.pagerankScore = PageRank.getRank(url);
-//				System.out.println(url + " " + docInfo.pagerankScore);
+				docInfo.title = WordTitle.getTitle(url);
+//				docInfo.pagerankScore = PageRank.getRank(url);
 				docInfo.queryInTitle = true;
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits, true);
@@ -353,13 +354,14 @@ public class SearchEngineMultiThread {
 
 	public static void main(String[] args) {
 //		PageRank.loadPageRank("pagerank");
+		WordTitle.loadWordTitle("/Users/woody/Downloads/455ProjectData/IndexerInput/title");
 		SearchEngineMultiThread engine = new SearchEngineMultiThread();
-		engine.doSearchQuery("facebook", "word");
+		engine.doSearchQuery("university of pennsylvania", "word");
 		int i = 0;
 		for (DocInfo docInfo : engine.results) {
 			if (i < 300) {
 				i++;
-				System.out.println(docInfo.url + "" + docInfo.totalScore);
+				System.out.println(docInfo.url + ":" + docInfo.title + ":" + docInfo.totalScore);
 			}
 		}
 	}
