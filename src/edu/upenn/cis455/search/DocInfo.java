@@ -16,13 +16,14 @@ public class DocInfo implements Comparable<DocInfo> {
 	 * Instance of DocInfo
 	 */
 	public String url;
+	protected String normalUrl;
+	protected String hostName;
 	protected int querySize;
 	public String title;
-	protected boolean queryInTitle;
-	protected int wordNumberInDoc;
-	protected Queue<WordInfo> wordQueue;
-	protected double indexScore;
-	protected double pagerankScore;
+	protected boolean queryInUrlHost, queryInUrl, queryInTitle;
+	protected int wordNumberInUrlHost, wordNumberInUrl, wordNumberInTitle, wordNumberInDoc;
+	protected Queue<WordInfo> wordTitleQueue, wordDocQueue;
+	protected double indexTitleScore, indexDocScore, pagerankScore;
 	public double totalScore;
 
 	/**
@@ -30,16 +31,26 @@ public class DocInfo implements Comparable<DocInfo> {
 	 * 
 	 * @param querySize
 	 * @param url
+	 * @throws MalformedURLException
 	 */
 	public DocInfo(int querySize, String url) {
 		this.querySize = querySize;
 		this.url = url;
+		this.normalUrl = url.replace(":80", "").replace(":443", "");
+		this.hostName = normalUrl.replace("http://", "").replace("https://", "").substring(0, url.indexOf("/"));
+		this.wordNumberInUrlHost = 0;
+		this.wordNumberInUrl = 0;
+		this.wordNumberInTitle = 0;
 		this.wordNumberInDoc = 0;
-		this.wordQueue = new PriorityQueue<WordInfo>();
-		this.title = "";
+		this.wordTitleQueue = new PriorityQueue<WordInfo>();
+		this.wordDocQueue = new PriorityQueue<WordInfo>();
+		this.queryInUrlHost = false;
+		this.queryInUrl = false;
 		this.queryInTitle = false;
-		this.indexScore = 0;
-		this.pagerankScore = 0;
+		this.title = "";
+		this.indexTitleScore = 0;
+		this.indexDocScore = 0;
+		this.pagerankScore = 1;
 		this.totalScore = 0;
 	}
 
@@ -47,16 +58,25 @@ public class DocInfo implements Comparable<DocInfo> {
 	 * get the total score
 	 */
 	public void calculateTotalScore() {
-		int diffInOrder = getWordsDiffInOrder();
-		if (queryInTitle) {
-			indexScore = indexScore * 100;
-		} else {
-			if (querySize != 1) {
-				// TODO: more tunning!!! & add pagerank
-				indexScore = indexScore * wordNumberInDoc * 0.05 + indexScore * wordNumberInDoc * 0.05 / diffInOrder;
+		int diffTitleInOrder = getWordsDiffInOrder(wordTitleQueue);
+		int diffDocInOrder = getWordsDiffInOrder(wordDocQueue);
+		double hostScore = 0, urlScore = 0;
+		if (querySize != 1) {
+			indexDocScore = indexDocScore * wordNumberInDoc * 0.05
+					+ indexDocScore * wordNumberInDoc * 0.05 / diffDocInOrder;
+			indexTitleScore = (indexTitleScore * wordNumberInTitle * 0.05
+					+ indexTitleScore * wordNumberInTitle * 0.05 / diffTitleInOrder) * 100;
+		}
+		if (querySize == wordNumberInUrl) {
+			if (queryInUrlHost) {
+				hostScore = 10000 * (1 + wordNumberInUrlHost);
+			}
+			if (queryInUrl) {
+				urlScore = 1000 * (1 + wordNumberInUrl);
 			}
 		}
-		totalScore = indexScore + pagerankScore;
+
+		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore) * 0.7 + 0.3 * pagerankScore);
 	}
 
 	/**
@@ -65,17 +85,41 @@ public class DocInfo implements Comparable<DocInfo> {
 	 * @param word
 	 * @param hits
 	 */
-	public void addWord(String word, int position, String hits) {
-		// 1. update query word number occurs in doc
-		wordNumberInDoc++;
-		// 2. add word info to word queue
-		// 2.1 declare variable to help add word info
-		WordInfo w;
-		// 2.2 create word info for every position and add it to word queue
-		String[] temp = hits.split(",");
-		for (int i = 0; i < temp.length; i++) {
-			w = new WordInfo(word, position, Integer.parseInt(temp[i]));
-			wordQueue.offer(w);
+	public void addWord(String word, int position, String hits, boolean isTitle) {
+		if (isTitle) {
+			// 1. update query word number occurs in doc
+			wordNumberInTitle++;
+			// 2. add word info to word queue
+			// 2.1 declare variable to help add word info
+			WordInfo w;
+			// 2.2 create word info for every position and add it to word queue
+			String[] temp = hits.split(",");
+			for (int i = 0; i < temp.length; i++) {
+				w = new WordInfo(word, position, Integer.parseInt(temp[i]));
+				wordTitleQueue.offer(w);
+			}
+
+		} else {
+			// 1. update query word number occurs in doc
+			wordNumberInDoc++;
+			// 2. add word info to word queue
+			// 2.1 declare variable to help add word info
+			WordInfo w;
+			// 2.2 create word info for every position and add it to word queue
+			String[] temp = hits.split(",");
+			for (int i = 0; i < temp.length; i++) {
+				w = new WordInfo(word, position, Integer.parseInt(temp[i]));
+				wordDocQueue.offer(w);
+			}
+		}
+
+		// 3 check if host & url contains word
+		if (hostName.contains(word)) {
+			wordNumberInUrlHost++;
+			queryInUrlHost = true;
+		} else if (url.contains(word)) {
+			queryInUrl = true;
+			wordNumberInUrl++;
 		}
 	}
 
@@ -84,7 +128,7 @@ public class DocInfo implements Comparable<DocInfo> {
 	 * 
 	 * @return words hits difference
 	 */
-	private int getWordsDiffInOrder() {
+	private int getWordsDiffInOrder(Queue<WordInfo> queue) {
 		// 0. initialize variables to help get word diff in order
 		int diff = 0;
 		boolean inOrder = false;
@@ -92,9 +136,9 @@ public class DocInfo implements Comparable<DocInfo> {
 		WordInfo cur;
 
 		// 1. if the word queue has more than 3 words
-		while ((wordQueue.size() >= 3)) {
-			prev = wordQueue.poll();
-			cur = wordQueue.poll();
+		while ((queue.size() >= 3)) {
+			prev = queue.poll();
+			cur = queue.poll();
 			// calculate closest distinct words difference
 			if (cur.position > prev.position) {
 				diff += (cur.hit - prev.hit);
@@ -102,13 +146,13 @@ public class DocInfo implements Comparable<DocInfo> {
 			}
 			// move to next
 			prev = cur;
-			cur = wordQueue.poll();
+			cur = queue.poll();
 		}
 
 		// 2. after setp1 or word queue originally has size equals 2
-		if (wordQueue.size() == 2) {
-			prev = wordQueue.poll();
-			cur = wordQueue.poll();
+		if (queue.size() == 2) {
+			prev = queue.poll();
+			cur = queue.poll();
 			// calculate closest distinct words difference
 			if (cur.position > prev.position) {
 				diff += (cur.hit - prev.hit);
@@ -117,7 +161,7 @@ public class DocInfo implements Comparable<DocInfo> {
 		}
 
 		// 3. word queue originally has size equals 1
-		else if (wordQueue.size() == 1) {
+		else if (queue.size() == 1) {
 			inOrder = false;
 		}
 
@@ -131,7 +175,8 @@ public class DocInfo implements Comparable<DocInfo> {
 	@Override
 	public int compareTo(DocInfo o) {
 		if (totalScore == o.totalScore) {
-			return url.length() > o.url.length() ? 1 : -1;
+			// tie breaking cheak length of url
+			return normalUrl.length() >= o.normalUrl.length() ? 1 : -1;
 		} else {
 			// descending order
 			return totalScore < o.totalScore ? 1 : -1;

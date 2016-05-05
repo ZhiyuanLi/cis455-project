@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import edu.upenn.cis455.search.DocInfo;
+import edu.upenn.cis455.search.PageRank;
+import edu.upenn.cis455.search.PageRankInfo;
 import edu.upenn.cis455.search.SearchEngine;
 import edu.upenn.cis455.search.SearchEngineMultiThread;
 import edu.upenn.cis455.search.SpellCheck;
@@ -50,8 +52,7 @@ public class SearchServlet extends HttpServlet {
 		out.println(
 				"<form method=\"post\"><side><select name= \"mode\"><option value=\"web\">Web</option><option value=\"image\">Image</option></option><option value=\"weather\">Weather</option></select></side>");
 
-		out.println(
-				"<p class=\"s\"><input name=\"query\" id=\"search\" type=\"search\" required></p>");
+		out.println("<p class=\"s\"><input name=\"query\" id=\"search\" type=\"search\" required></p>");
 		// check box
 		out.println("<br><input type=\"checkbox\" name=\"spellcheck\" value=\"true\">Spell Check");
 		out.println("<br><input type=\"checkbox\" name=\"debug\" value=\"true\">Debug Mode");
@@ -107,8 +108,7 @@ public class SearchServlet extends HttpServlet {
 		out.println(
 				"<form method=\"post\"><side><select name= \"mode\"><option value=\"web\">Web</option><option value=\"image\">Image</option></option><option value=\"weather\">Weather</option></select></side>");
 
-		out.println(
-				"<p class=\"s\"><input name=\"query\" id=\"search\" type=\"search\" required></p>");
+		out.println("<p class=\"s\"><input name=\"query\" id=\"search\" type=\"search\" required></p>");
 		// check box
 		out.println("<br><input type=\"checkbox\" name=\"spellcheck\" value=\"true\">Spell Check");
 		out.println("<br><input type=\"checkbox\" name=\"debug\" value=\"true\">Debug Mode");
@@ -147,7 +147,7 @@ public class SearchServlet extends HttpServlet {
 					out.println("<div style=\"width:830px; background-color:white; height:320px; overflow:auto;\">");
 					out.println("<div style=\"width: 2000px; height: 290px;\">");
 				}
-				out.println("<img src=\"" + docInfo.url + "\" width=\"160\" height=\"90\" alt=\"bbc news special\" />");
+				out.println("<img src=\"" + docInfo.url + "\" width=\"160\" height=\"290\" alt=\"bbc news special\" />");
 				if (i % 10 == 9 || i == resluts.size() - 1) {
 					out.println("</div></div>");
 				}
@@ -160,7 +160,7 @@ public class SearchServlet extends HttpServlet {
 			if (weatherTable.isEmpty()) {
 				out.println("<p>OOPS! No weather information for your search!</p>");
 			} else {
-				out.println("<p>" + weatherTable.get("weather") + " " + weatherTable.get("temp_f")+" Fahrenheit");
+				out.println("<p>" + weatherTable.get("weather") + " " + weatherTable.get("temp_f") + " Fahrenheit");
 			}
 
 		default:
@@ -172,8 +172,13 @@ public class SearchServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
-		String filePath = "/home/ubuntu/big.txt";
-		SpellCheck.readDict(filePath);
+		String dictPath = "/home/cis455/big.txt";
+		// String filePath = "/home/ubuntu/big.txt";
+		String rankPath = "/home/cis455/pagerank";
+		// String rankPath = "/home/ubuntu/pagerank";
+		SpellCheck.readDict(dictPath);
+		// PageRank.loadPageRank(rankPath);
+
 	}
 
 }

@@ -108,7 +108,8 @@ public class SearchEngineMultiThread {
 	}
 
 	/**
-	 * @param weatherTable the weatherTable to set
+	 * @param weatherTable
+	 *            the weatherTable to set
 	 */
 	public void setWeatherTable(Hashtable<String, String> weatherTable) {
 		this.weatherTable = weatherTable;
@@ -263,11 +264,12 @@ public class SearchEngineMultiThread {
 			DocInfo docInfo = docList.get(url);
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, url);
-				docInfo.pagerankScore = db.getPageRankScore(url);
+				docInfo.pagerankScore = PageRank.getRank(url);
+//				System.out.println(url + " " + docInfo.pagerankScore);
 			}
-			docInfo.addWord(word, queryWordInfo.getPosition(), hits);
+			docInfo.addWord(word, queryWordInfo.getPosition(), hits, false);
 			if (!docInfo.queryInTitle) {
-				docInfo.indexScore += item.getTf_idf() * queryWordInfo.getWeight();
+				docInfo.indexDocScore += item.getTf_idf() * queryWordInfo.getWeight();
 			}
 			docList.put(url, docInfo);
 		}
@@ -297,11 +299,12 @@ public class SearchEngineMultiThread {
 			DocInfo docInfo = docList.get(url);
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, url);
-				docInfo.pagerankScore = db.getPageRankScore(url);
+				docInfo.pagerankScore = PageRank.getRank(url);
+//				System.out.println(url + " " + docInfo.pagerankScore);
 				docInfo.queryInTitle = true;
 			}
-			docInfo.addWord(word, queryWordInfo.getPosition(), hits);
-			docInfo.indexScore += item.getTf_idf() * queryWordInfo.getWeight();
+			docInfo.addWord(word, queryWordInfo.getPosition(), hits, true);
+			docInfo.indexTitleScore += item.getTf_idf() * queryWordInfo.getWeight();
 			docList.put(url, docInfo);
 		}
 
@@ -331,10 +334,10 @@ public class SearchEngineMultiThread {
 			DocInfo docInfo = docList.get(url);
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, url);
-				docInfo.pagerankScore = db.getPageRankScore(url);
+				docInfo.pagerankScore = PageRank.getRank(url);
 			}
-			docInfo.addWord(word, queryWordInfo.getPosition(), hits);
-			docInfo.indexScore += item.getTf_idf() * queryWordInfo.getWeight();
+			docInfo.addWord(word, queryWordInfo.getPosition(), hits,false);
+			docInfo.indexDocScore += item.getTf_idf() * queryWordInfo.getWeight();
 			docList.put(url, docInfo);
 		}
 
@@ -349,15 +352,15 @@ public class SearchEngineMultiThread {
 	}
 
 	public static void main(String[] args) {
+//		PageRank.loadPageRank("pagerank");
 		SearchEngineMultiThread engine = new SearchEngineMultiThread();
-		engine.doSearchQuery("pennsylvania state university", "word");
+		engine.doSearchQuery("facebook", "word");
 		int i = 0;
 		for (DocInfo docInfo : engine.results) {
-			if (i < 10) {
+			if (i < 300) {
 				i++;
 				System.out.println(docInfo.url + "" + docInfo.totalScore);
 			}
-
 		}
 	}
 }

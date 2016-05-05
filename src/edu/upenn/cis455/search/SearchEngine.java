@@ -87,8 +87,8 @@ public class SearchEngine {
 						docInfo.pagerankScore = db.getPageRankScore(url);
 					}
 					docInfo.url = url;
-					docInfo.addWord(word.getWord(), position, hits);
-					docInfo.indexScore += item.getTf_idf() * singleWordWeight.get(word);
+					docInfo.addWord(word.getWord(), position, hits,false);
+					docInfo.indexDocScore += item.getTf_idf() * singleWordWeight.get(word);
 					docList.put(url, docInfo);
 				}
 
@@ -121,8 +121,8 @@ public class SearchEngine {
 						docInfo = new DocInfo(singleWordList.size(), url);
 						docInfo.pagerankScore = db.getPageRankScore(url);
 					}
-					docInfo.addWord(word.getWord(), position, hits);
-					docInfo.indexScore += item.getTf_idf() * singleWordWeight.get(word);
+					docInfo.addWord(word.getWord(), position, hits,true);
+					docInfo.indexTitleScore += item.getTf_idf() * singleWordWeight.get(word);
 					docList.put(url, docInfo);
 				}
 
