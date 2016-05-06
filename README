@@ -1,0 +1,39 @@
+Full names: Christopher Besser, Di Wu, Wei Song, Zhiyuan Li
+SEAS logins: cbesser, diwu2, weisong, zhil
+
+Which features did you implement?  (list features, or write 'Entire assignment')
+
+Chris implemented the Thread based Mercator Web Crawler.
+Di implemented the MapReduce page indexer.
+Wei implemented the MapReduce PageRank engine.
+Zhiyuan implemented the UI and search engine.
+
+Did you complete any extra-credit tasks? If so, which ones? (list extra-credit tasks)
+
+   Crawler:
+	    Chris implemented functionality to check if the content of a web page has already been seen. However, he does not
+	        record hits when he detects them (this functionality was removed due to time constraints).
+	    Chris implemented image link extraction, and wrote them to text files for Di and Zhiyuan to process.
+	    Wei implemented geolocating crawled URLs' host server IP addresses, and wrote them to the PageRank outputs.
+   User Interface and Search Engine:
+	    Zhiyuan extended the ranking function to account for the user's geolocation, and increase weights of pages close to the user.
+	    Zhiyuan used the openweathermap.org API to allow users to search for the current weather in specified cities.
+	    Wei implemented a simple spellcheck engine for user queries that suggests corrected spellings, within two edit distances
+		(insertion, deletion, swap, and replacement). The UI includes a link that when clicked on, launches another search using the updated spelling.
+
+Any special instructions for building and running your solution? (include detailed instructions, or write 'None')
+
+   See crawler-README.txt, pagerank-README.txt, index-README.txt, ui-and-data-README.txt, and ui-README.txt for detailed instructions on running each component.
+
+Did you and your teammates personally write all the code you are submitting (other than code from the course web page and code we have explicitly
+    authorized on Piazza)?
+  [X] Yes
+  [ ] No
+
+Did you copy any code from the Internet (other than code that was explicitly authorized on Piazza), or from classmates that are not your teammates?
+  [ ] Yes
+  [X] No
+
+Did you collaborate with anyone on this assignment, other than your teammates?
+  [ ] Yes
+  [X] No
