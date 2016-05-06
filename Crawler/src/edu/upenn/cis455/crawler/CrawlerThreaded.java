@@ -316,6 +316,7 @@ public class CrawlerThreaded
 				{
 					frontierLock.unlock();
 				}
+				System.out.println("CurrentURL = " + currentURL);
 				// Step 2. send head and get response to check if document is valid
 				HttpCrawlerClient client = new HttpCrawlerClient();
 				try
@@ -339,6 +340,9 @@ public class CrawlerThreaded
 				// Partly guard against spider traps not flagged in robots.txt by limiting URL length to 200 characters
 				if (URLHashes.contains(hash.hash(currentURL)) || (currentURL.length() > 200) || !isValidFile(client, 700))
 				{
+					System.out.println("Contains Hash " + URLHashes.contains(hash.hash(currentURL)));
+					System.out.println("CurrentURL Length " + currentURL.length());
+					System.out.println("isValidFile " + !isValidFile(client, 700));
 					continue;
 				}
 				try
@@ -355,6 +359,7 @@ public class CrawlerThreaded
 				boolean isValidByRobot = isPolite(client, host, client.getPort(), currentURL);
 				if (!isValidByRobot)
 				{
+					System.out.println(currentURL + ": Blocked by robots.txt");
 					continue;
 				}
 				if (!timeMap.containsKey(currentURL))
@@ -670,20 +675,24 @@ public class CrawlerThreaded
 						frontierLock.unlock();
 					}
 				}
+				System.out.println("Redirected to URL " + location);
 				return false;
 			}
 			else if (client.getCode() != 200)
 			{
+				System.out.println("Error code " + client.getCode());
 				return false;
 			}
 			// check type
 			if (!contentType.trim().toLowerCase().contains("text/html"))
 			{
+				System.out.println("Content Type " + contentType.trim().toLowerCase());
 				return false;
 			}
 			// check length
 			if (contentLen > 700000)
 			{
+				System.out.println("Content Length " + contentLen);
 				return false;
 			}
 			return true;
