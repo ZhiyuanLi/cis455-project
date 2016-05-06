@@ -63,8 +63,8 @@ public class WordProcessor {
 	}
 	
 
-//	public static void main(String[] args) {
-//		System.out.println(preProcess("000"));
-//		System.out.println(concat("ny", "times"));
-//	}
+	public static void main(String[] args) {
+		System.out.println(process("apple"));
+		System.out.println(concat("ny", "times"));
+	}
 }

@@ -1,5 +1,6 @@
 package edu.upenn.cis455.search;
 
+import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -18,6 +19,7 @@ public class DocInfo implements Comparable<DocInfo> {
 	public String url;
 	protected String normalUrl, hostName;
 	protected int querySize;
+	protected ArrayList<String> queryWords;
 	public String title;
 	public String queryGeoLocation, docGeoLocation;
 	protected boolean queryInTitle;
@@ -33,11 +35,12 @@ public class DocInfo implements Comparable<DocInfo> {
 	 * @param url
 	 * @throws MalformedURLException
 	 */
-	public DocInfo(int querySize, String url) {
+	public DocInfo(int querySize, ArrayList<String> queryWords, String url) {
 		this.querySize = querySize;
+		this.queryWords = queryWords;
 		this.url = url;
 		this.normalUrl = url.replace(":80", "").replace(":443", "").replace("http://", "").replace("https://", "");
-		this.hostName = normalUrl.substring(0, url.indexOf("/"));
+		this.hostName = normalUrl.substring(0, normalUrl.indexOf("/"));
 		this.docGeoLocation = "";
 		this.wordNumberInUrlHost = 0;
 		this.wordNumberInUrl = 0;
@@ -57,6 +60,14 @@ public class DocInfo implements Comparable<DocInfo> {
 	 * get the total score
 	 */
 	public void calculateTotalScore() {
+		for (String word : queryWords) {
+			if (hostName.contains(word)) {
+				wordNumberInUrlHost++;
+			}
+			if (url.contains(word)) {
+				wordNumberInUrl++;
+			}
+		}
 		int diffTitleInOrder = getWordsDiffInOrder(wordTitleQueue);
 		int diffDocInOrder = getWordsDiffInOrder(wordDocQueue);
 		double hostScore = 0, urlScore = 0, geoScore = 0;
@@ -64,25 +75,20 @@ public class DocInfo implements Comparable<DocInfo> {
 			indexDocScore = indexDocScore * wordNumberInDoc * 0.05
 					+ indexDocScore * wordNumberInDoc * 0.05 / diffDocInOrder;
 			indexTitleScore = (indexTitleScore * wordNumberInTitle * 0.05
-					+ indexTitleScore * wordNumberInTitle * 0.05 / diffTitleInOrder) * 10;
+					+ indexTitleScore * wordNumberInTitle * 0.05 / diffTitleInOrder) * 100;
 		}
 		if (querySize == wordNumberInUrl) {
 			if (wordNumberInUrlHost > 0) {
-				hostScore = 10000 * (1 + wordNumberInUrlHost);
-			}
-			if (wordNumberInUrl > 0) {
-				urlScore = 1000 * (1 + wordNumberInUrl);
+				hostScore = 100 * (1 + wordNumberInUrlHost);
+				if (wordNumberInUrl > 0) {
+					urlScore = 1 * (1 + wordNumberInUrl);
+				}
 			}
 		}
-		// if (docGeoLocation.equals(queryGeoLocation)) {
-		// geoScore = 50;
-		// }
-		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore + geoScore)); // *
-																							// 0.7
-																							// +
-																							// 0.3
-																							// *
-																							// pagerankScore);
+		if (docGeoLocation.equalsIgnoreCase(queryGeoLocation)) {
+			geoScore = 50;
+		}
+		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore + geoScore)) + pagerankScore;
 	}
 
 	/**
@@ -119,14 +125,6 @@ public class DocInfo implements Comparable<DocInfo> {
 			}
 		}
 
-		// 3 check if host contains word
-		if (hostName.contains(word)) {
-			wordNumberInUrlHost++;
-		}
-		// 4 check if url contains word
-		if (url.contains(word)) {
-			wordNumberInUrl++;
-		}
 	}
 
 	/**

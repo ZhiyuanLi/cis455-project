@@ -77,6 +77,11 @@ public class SearchEngineMultiThread {
 		} catch (InterruptedException e) {
 			System.out.println("@ doSearchQuery");
 		}
+		
+		// 5. sort doc list by its total score
+		for (DocInfo docInfo : docList.values()) {
+			docInfo.calculateTotalScore();
+		}
 
 		// 5. get doc list
 		results = new ArrayList<DocInfo>(docList.values());
@@ -163,11 +168,6 @@ public class SearchEngineMultiThread {
 				computeContentDoc(word, items);
 			}
 		}
-
-		// 5. sort doc list by its total score
-		for (DocInfo docInfo : docList.values()) {
-			docInfo.calculateTotalScore();
-		}
 	}
 
 	private void issueWordTitleThread() throws InterruptedException {
@@ -206,9 +206,7 @@ public class SearchEngineMultiThread {
 		}
 
 		// 5. sort doc list by its total score
-		for (DocInfo docInfo : docList.values()) {
-			docInfo.calculateTotalScore();
-		}
+		
 	}
 
 	private void issueImageThread() throws InterruptedException {
@@ -246,10 +244,6 @@ public class SearchEngineMultiThread {
 			}
 		}
 
-		// 5. sort doc list by its total score
-		for (DocInfo docInfo : docList.values()) {
-			docInfo.calculateTotalScore();
-		}
 	}
 
 	/**
@@ -275,12 +269,10 @@ public class SearchEngineMultiThread {
 			hits = item.getHits();
 			DocInfo docInfo = docList.get(url);
 			if (docInfo == null) {
-				docInfo = new DocInfo(querySize, url);
+				docInfo = new DocInfo(querySize, queryWords, url);
 				docInfo.title = WordTitle.getTitle(url);
 				docInfo.queryGeoLocation = geolocation;
 				docInfo.docGeoLocation = PageRank.getGeolocation(url);
-				// docInfo.pagerankScore = PageRank.getRank(url);
-				// System.out.println(url + " " + docInfo.pagerankScore);
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits, false);
 			if (!docInfo.queryInTitle) {
@@ -313,9 +305,8 @@ public class SearchEngineMultiThread {
 			hits = item.getHits();
 			DocInfo docInfo = docList.get(url);
 			if (docInfo == null) {
-				docInfo = new DocInfo(querySize, url);
+				docInfo = new DocInfo(querySize, queryWords, url);
 				docInfo.title = WordTitle.getTitle(url);
-				// docInfo.pagerankScore = PageRank.getRank(url);
 				docInfo.queryInTitle = true;
 				docInfo.queryGeoLocation = geolocation;
 				docInfo.docGeoLocation = PageRank.getGeolocation(url);
@@ -350,11 +341,10 @@ public class SearchEngineMultiThread {
 			hits = item.getHits();
 			DocInfo docInfo = docList.get(url);
 			if (docInfo == null) {
-				docInfo = new DocInfo(querySize, url);
+				docInfo = new DocInfo(querySize,queryWords, url);
 				docInfo.title = WordTitle.getTitle(url);
 				docInfo.queryGeoLocation = geolocation;
 				docInfo.docGeoLocation = PageRank.getGeolocation(url);
-				// docInfo.pagerankScore = PageRank.getRank(url);
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits, false);
 			docInfo.indexDocScore += item.getTf_idf() * queryWordInfo.getWeight();
@@ -372,20 +362,23 @@ public class SearchEngineMultiThread {
 	}
 
 	public static void main(String[] args) {
-//		PageRank.loadPageRank("pagerank");
+		PageRank.loadPageRank("pagerank");
 
 		WordTitle.loadWordTitle("/Users/woody/Downloads/455ProjectData/IndexerInput/title");
 		SearchEngineMultiThread engine = new SearchEngineMultiThread();
 		System.gc();
 		long time1 = System.currentTimeMillis();
-		engine.doSearchQuery("apple watch", "word", "philly");
+		engine.doSearchQuery("museum", "word", "pennsylvania");
 		long time2 = System.currentTimeMillis();
 		engine.queryTime = time2 - time1;
+		System.out.println(Arrays.toString(engine.queryWords.toArray()));
 		int i = 0;
 		for (DocInfo docInfo : engine.results) {
 			if (i < 300) {
 				i++;
-				System.out.println(docInfo.url + ":" + docInfo.title + ":"  + docInfo.wordNumberInUrlHost + ":"+ docInfo.totalScore);
+				System.out.println(docInfo.title);
+				System.out.println(docInfo.url + ":" + docInfo.hostName + ":"  + docInfo.wordNumberInUrlHost + ":"+docInfo.wordNumberInUrl + ":" + docInfo.totalScore);
+				System.out.println();
 			}
 		}
 	}
