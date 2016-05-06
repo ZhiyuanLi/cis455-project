@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import edu.upenn.cis455.search.DocInfo;
-import edu.upenn.cis455.search.GeoLocation;
+//import edu.upenn.cis455.search.GeoLocation;
 import edu.upenn.cis455.search.PageRank;
 import edu.upenn.cis455.search.SearchEngineMultiThread;
 import edu.upenn.cis455.search.SpellCheck;
@@ -71,8 +71,13 @@ public class SearchServlet extends HttpServlet {
 		String debug = request.getParameter("debug");
 		String query = request.getParameter("query");
 		String newquery = request.getParameter("newquery");
-		String ip = request.getRemoteAddr();
-		String geoLocation = GeoLocation.calculateLocation(ip);
+		// String ip = request.getRemoteAddr();
+		String state = "Pennsylvania";
+		String city = "Philadelphia";
+		// if (ip.matches("\\d+\\.\\d+\\.\\d+\\.\\d")) {
+		// geoLocation = GeoLocation.calculateLocation(ip);
+		// }
+
 		System.out.println("query " + query);
 		System.out.println("newquery " + newquery);
 		if (newquery != null) {
@@ -100,9 +105,9 @@ public class SearchServlet extends HttpServlet {
 		out.println("<style>");
 		out.println(
 				"html,body{background: #34addb;color: #fff;padding: 12px;position: relative;z-index: 0;font-family: Helvetica Neue, Helvetica, Arial, sans-serif;text-shadow: 0 1px 1px rgba(0,150,200,.5);line-height: 1.5;}");
-		out.println("body {margin: 30px;width: 500px;}");
+		out.println("body {margin: 100px;width: 500px;}");
 		out.println("h1 {font-size: 3.5em;margin-bottom: .5em;font-weight: 700;}");
-		out.println("h2 {font-size: 1.5em;margin-bottom: .5em;font-weight: 700; color: #000;}");
+		out.println("a {font-size: 1em;margin-bottom: .5em;font-weight: 700; color: #000;}");
 		out.println("button[type=submit]:hover{text-decoration:underline;color: #fff;}");
 		out.println(
 				"p {    margin-bottom: 1.5em;}b {    text-decoration: none;    font-weight: 300;    color: #808080;}#search {    -webkit-appearance: none;    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;    width: 24px;    padding: 0 10px;    height: 24px;    font-size: 14px;    color: #666;    line-height: 24px;    border: 0;    border-radius: 50px;    box-shadow: 0 0 0 1px rgba(0,150,200,.5), inset 0 2px 5px rgba(0,100,150,.3), 0 2px 0 rgba(255,255,255,.6);    position: relative;    z-index: 5;    -webkit-transition: .3s ease;    -moz-transition: .3s ease;}#search:focus {    outline: none;    width: 180px;}p.s {    z-index: 4;    position: relative;    padding: 5px;    line-height: 0;    border-radius: 100px;    background: #b9ecfe;    background-image: -webkit-linear-gradient(#dbf6ff,#b9ecfe);    background-image: -moz-linear-gradient(#dbf6ff,#b9ecfe);    display: inline-block;    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 5px rgba(0,100,150,.4);}p.s:hover {    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 2px 3px 2px rgba(100,200,255,.5);}p.s:after {    content: '';    display: block;    position: absolute;    width: 5px;    height: 30px;    background: #b9ecfe;    bottom: -10px;    right: -3px;    border-radius: 0 0 5px 5px;    -webkit-transform: rotate(-45deg);    -moz-transform: rotate(-45deg);    box-shadow: inset 0 -1px 0 rgbA(255,255,255,.6), -2px 2px 2px rgba(0,100,150,.4);}p.s:hover:after {    box-shadow: inset 0 -1px 0 rgba(255,255,255,.6), -2px 2px 2px 1px rgba(100,200,255,.5);}");
@@ -127,7 +132,7 @@ public class SearchServlet extends HttpServlet {
 		out.println("<h4>Search Results</h4>");
 		switch (mode) {
 		case "image":
-			searchEngine.doSearchQuery(query, "image", geoLocation);
+			searchEngine.doSearchQuery(query, "image", state, city);
 			int i = 0;
 			List<DocInfo> resluts = searchEngine.getResults();
 			if (resluts.size() > 100) {
@@ -147,17 +152,20 @@ public class SearchServlet extends HttpServlet {
 			}
 			break;
 		case "weather":
-			searchEngine.doSearchQuery(query, "weather", geoLocation);
+			searchEngine.doSearchQuery(query, "weather", state, city);
 			Hashtable<String, String> weatherTable = searchEngine.getWeatherTable();
 			if (weatherTable.isEmpty()) {
 				out.println("<p>OOPS! No weather information for your search!</p>");
 			} else {
-				out.println("<p>" + weatherTable.get("weather") + " " + weatherTable.get("temp_f") + " Fahrenheit");
+				out.println("<p>Weather: " + weatherTable.get("weather") + "<p>");
+				out.println("<p>Temperature: " + weatherTable.get("temp_f") + " Fahrenheit<p>");
+				// out.println("<p>Visibility: " +
+				// weatherTable.get("visibility") + " meters<p>");
 			}
 
 		case "web":
 		default:
-			searchEngine.doSearchQuery(query, "word", geoLocation);
+			searchEngine.doSearchQuery(query, "word", state, city);
 			String url;
 			out.println(
 					"About " + searchEngine.numberItemRetrived + " results(" + searchEngine.queryTime + " seconds)");
@@ -180,20 +188,20 @@ public class SearchServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
-		String dictPath = "/home/cis455/big.txt";
-		// String dicPath = "/home/ubuntu/big.txt";
-		String titlePath = "/home/cis455/title";
-		// String titlePath = "/home/ubuntu/title";
+		// String dictPath = "/home/cis455/big.txt";
+		String dictPath = "/home/ubuntu/big.txt";
+		// String titlePath = "/home/cis455/title";
+		String titlePath = "/home/ubuntu/title";
 
-		String rankPath = "/home/cis455/pagerank";
-		// String rankPath = "/home/ubuntu/pagerank";
+		// String rankPath = "/home/cis455/pagerank";
+		String rankPath = "/home/ubuntu/pagerank";
 
-		String geoPath = "/home/cis455/cityNew.csv";
+		// String geoPath = "/home/cis455/cityNew.csv";
 		// String geoPath = "/home/ubuntu/cityNew.csv";
 		SpellCheck.readDict(dictPath);
 		PageRank.loadPageRank(rankPath);
 		WordTitle.loadWordTitle(titlePath);
-		GeoLocation.readCityDB(geoPath);
+		// GeoLocation.readCityDB(geoPath);
 	}
 
 }

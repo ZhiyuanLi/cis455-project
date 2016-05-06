@@ -46,6 +46,8 @@ public class Weather {
 			weatherTable.put("weather", weatherDescription);
 			double temp = object.getAsJsonObject("main").get("temp").getAsDouble() * 1.8 - 459.67;
 			weatherTable.put("temp_f", String.format("%.2f", temp));
+//			int visibility = object.getAsJsonObject("visibility").getAsInt();
+//			weatherTable.put("visibility", new String(visibility + ""));
 
 		} catch (Exception e) {
 			return null;

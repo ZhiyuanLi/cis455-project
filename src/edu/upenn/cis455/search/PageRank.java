@@ -79,9 +79,22 @@ public class PageRank {
 	 * @param url
 	 * @return
 	 */
-	public static String getGeolocation(String url) {
+	public static String getState(String url) {
 		if (contains(url)) {
 			return pagerank.get(url).state;
+		}
+		return "N/A";
+	}
+	
+	/**
+	 * Get Geolocation
+	 * 
+	 * @param url
+	 * @return
+	 */
+	public static String getCity(String url) {
+		if (contains(url)) {
+			return pagerank.get(url).city;
 		}
 		return "N/A";
 	}

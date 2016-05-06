@@ -21,7 +21,7 @@ public class DocInfo implements Comparable<DocInfo> {
 	protected int querySize;
 	protected ArrayList<String> queryWords;
 	public String title;
-	public String queryGeoLocation, docGeoLocation;
+	public String qState, qCity, dState, dCity;
 	protected boolean queryInTitle;
 	public int wordNumberInUrlHost, wordNumberInUrl, wordNumberInTitle, wordNumberInDoc;
 	protected Queue<WordInfo> wordTitleQueue, wordDocQueue;
@@ -41,7 +41,8 @@ public class DocInfo implements Comparable<DocInfo> {
 		this.url = url;
 		this.normalUrl = url.replace(":80", "").replace(":443", "").replace("http://", "").replace("https://", "");
 		this.hostName = normalUrl.substring(0, normalUrl.indexOf("/"));
-		this.docGeoLocation = "";
+		this.dState = "";
+		this.dCity = "";
 		this.wordNumberInUrlHost = 0;
 		this.wordNumberInUrl = 0;
 		this.wordNumberInTitle = 0;
@@ -85,8 +86,11 @@ public class DocInfo implements Comparable<DocInfo> {
 				}
 			}
 		}
-		if (docGeoLocation.equalsIgnoreCase(queryGeoLocation)) {
-			geoScore = 50;
+		if (dState.equalsIgnoreCase(qState)) {
+			geoScore += 5;
+		}
+		if (dCity.equalsIgnoreCase(qCity)) {
+			geoScore += 10;
 		}
 		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore + geoScore)) + pagerankScore;
 	}
