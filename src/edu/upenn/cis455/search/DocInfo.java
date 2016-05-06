@@ -69,30 +69,41 @@ public class DocInfo implements Comparable<DocInfo> {
 				wordNumberInUrl++;
 			}
 		}
-		int diffTitleInOrder = getWordsDiffInOrder(wordTitleQueue);
+		int diffTitleInOrder;
+		if (querySize == 1) {
+			diffTitleInOrder = 1;
+		} else {
+			diffTitleInOrder = getWordsDiffInOrder(wordTitleQueue);
+		}
 		int diffDocInOrder = getWordsDiffInOrder(wordDocQueue);
 		double hostScore = 0, urlScore = 0, geoScore = 0;
-		if (querySize != 1) {
+		if (queryInTitle) {
 			indexDocScore = indexDocScore * wordNumberInDoc * 0.05
 					+ indexDocScore * wordNumberInDoc * 0.05 / diffDocInOrder;
-			indexTitleScore = (indexTitleScore * wordNumberInTitle * 0.05
-					+ indexTitleScore * wordNumberInTitle * 0.05 / diffTitleInOrder) * 100;
+		} else {
+			indexDocScore = (indexDocScore * wordNumberInDoc * 0.05
+					+ indexDocScore * wordNumberInDoc * 0.05 / diffDocInOrder) * 0.5;
 		}
+		indexTitleScore = (indexTitleScore * wordNumberInTitle * 0.05
+				+ indexTitleScore * wordNumberInTitle * 0.05 / diffTitleInOrder) * 100;
 		if (querySize == wordNumberInUrl) {
 			if (wordNumberInUrlHost > 0) {
-				hostScore = 100 * (1 + wordNumberInUrlHost);
+				hostScore = 3 + wordNumberInUrlHost;
 				if (wordNumberInUrl > 0) {
-					urlScore = 1 * (1 + wordNumberInUrl);
+					urlScore = (1 + wordNumberInUrl);
 				}
 			}
 		}
-		if (dState.equalsIgnoreCase(qState)) {
-			geoScore += 5;
-		}
-		if (dCity.equalsIgnoreCase(qCity)) {
-			geoScore += 10;
-		}
-		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore + geoScore)) + pagerankScore;
+//		if (dState.equalsIgnoreCase(qState)) {
+//			geoScore += 5;
+//		}
+//		if (dCity.equalsIgnoreCase(qCity)) {
+//			geoScore += 10;
+//		}
+		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore + geoScore)); // +
+																							// pagerankScore
+																							// *
+																							// 0.001;
 	}
 
 	/**

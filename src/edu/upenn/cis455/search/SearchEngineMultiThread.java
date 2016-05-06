@@ -88,7 +88,7 @@ public class SearchEngineMultiThread {
 		results = new ArrayList<DocInfo>(docList.values());
 		if (results.size() > 10) {
 			Random rand = new Random();
-			numberItemRetrived = results.size() * 5 + rand.nextInt(10);
+			numberItemRetrived = results.size() * 2 + rand.nextInt(10);
 		} else {
 			numberItemRetrived = results.size();
 		}
@@ -276,6 +276,7 @@ public class SearchEngineMultiThread {
 			if (docInfo == null) {
 				docInfo = new DocInfo(querySize, queryWords, url);
 				docInfo.title = WordTitle.getTitle(url);
+				docInfo.pagerankScore = PageRank.getRank(url);
 				docInfo.qState = state;
 				docInfo.dState = PageRank.getState(url);
 				docInfo.qCity = city;
@@ -283,9 +284,9 @@ public class SearchEngineMultiThread {
 
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits, false);
-			if (!docInfo.queryInTitle) {
+//			if (!docInfo.queryInTitle) {
 				docInfo.indexDocScore += item.getTf_idf() * queryWordInfo.getWeight();
-			}
+//			}
 			docList.put(url, docInfo);
 		}
 	}
@@ -316,6 +317,7 @@ public class SearchEngineMultiThread {
 				docInfo = new DocInfo(querySize, queryWords, url);
 				docInfo.title = WordTitle.getTitle(url);
 				docInfo.queryInTitle = true;
+				docInfo.pagerankScore = PageRank.getRank(url);
 				docInfo.qState = state;
 				docInfo.dState = PageRank.getState(url);
 				docInfo.qCity = city;
@@ -354,6 +356,7 @@ public class SearchEngineMultiThread {
 				docInfo = new DocInfo(querySize, queryWords, url);
 				docInfo.title = WordTitle.getTitle(url);
 				docInfo.qState = state;
+				docInfo.pagerankScore = PageRank.getRank(url);
 				docInfo.dState = PageRank.getState(url);
 				docInfo.qCity = city;
 				docInfo.dCity = PageRank.getCity(url);
@@ -373,28 +376,25 @@ public class SearchEngineMultiThread {
 		return results;
 	}
 
-	// public static void main(String[] args) {
-	// PageRank.loadPageRank("pagerank");
-	//
-	// WordTitle.loadWordTitle("title");
-	// SearchEngineMultiThread engine = new SearchEngineMultiThread();
-	// System.gc();
-	// long time1 = System.currentTimeMillis();
-	// engine.doSearchQuery("university of pennsylvania", "word",
-	// "pennsylvania", "philadelphia");
-	// long time2 = System.currentTimeMillis();
-	// engine.queryTime = time2 - time1;
-	// System.out.println(Arrays.toString(engine.queryWords.toArray()));
-	// int i = 0;
-	// for (DocInfo docInfo : engine.results) {
-	// if (i < 300) {
-	// i++;
-	// System.out.println(docInfo.title);
-	// System.out.println(docInfo.url + ":" + docInfo.hostName + ":" +
-	// docInfo.wordNumberInUrlHost + ":"
-	// + docInfo.wordNumberInUrl + ":" + docInfo.totalScore);
-	// System.out.println();
-	// }
-	// }
-	// }
+	public static void main(String[] args) {
+		PageRank.loadPageRank("pagerank");
+
+		WordTitle.loadWordTitle("title");
+		SearchEngineMultiThread engine = new SearchEngineMultiThread();
+		System.gc();
+		long time1 = System.currentTimeMillis();
+		engine.doSearchQuery("Cornell Names Robert ", "word", "pennsylvania", "philadelphia");
+		long time2 = System.currentTimeMillis();
+		engine.queryTime = time2 - time1;
+		System.out.println(Arrays.toString(engine.queryWords.toArray()));
+		int i = 0;
+		for (DocInfo docInfo : engine.results) {
+			if (i < 300) {
+				i++;
+				System.out.println(docInfo.url + ":" + docInfo.hostName + ":" + docInfo.wordNumberInUrlHost + ":"
+						+ docInfo.wordNumberInUrl + ":" + docInfo.totalScore);
+				System.out.println();
+			}
+		}
+	}
 }

@@ -55,9 +55,9 @@ public class WordTitle {
 	 * @return
 	 */
 	public static String getTitle(String url) {
-//		if (contains(url)) {
-//			return wordtitle.get(url);
-//		}
+		if (contains(url)) {
+			return wordtitle.get(url);
+		}
 		url = url.replace("http://", "");
 		url = url.replace("https://", "");
 		url = url.replace(":80", "");
