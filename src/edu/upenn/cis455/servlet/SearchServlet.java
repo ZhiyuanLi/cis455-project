@@ -31,7 +31,6 @@ public class SearchServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		String docType = "<!DOCTYPE html>\n";
@@ -61,7 +60,6 @@ public class SearchServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
 
 		/**
 		 * get parameters
@@ -159,8 +157,6 @@ public class SearchServlet extends HttpServlet {
 			} else {
 				out.println("<p>Weather: " + weatherTable.get("weather") + "<p>");
 				out.println("<p>Temperature: " + weatherTable.get("temp_f") + " Fahrenheit<p>");
-				// out.println("<p>Visibility: " +
-				// weatherTable.get("visibility") + " meters<p>");
 			}
 
 		case "web":

@@ -71,7 +71,7 @@ public class SearchEngineMultiThread {
 		this.state = state;
 		this.city = city;
 
-		// 4. issue thread to get every word doc list and compute the score for
+		// 5. issue thread to get every word doc list and compute the score for
 		// each doc
 		try {
 			issueThreads(searchType);
@@ -79,21 +79,16 @@ public class SearchEngineMultiThread {
 			System.out.println("@ doSearchQuery");
 		}
 
-		// 5. sort doc list by its total score
+		// 6. sort doc list by its total score
 		for (DocInfo docInfo : docList.values()) {
 			docInfo.calculateTotalScore();
 		}
 
-		// 5. get doc list
+		// 7. get doc list
 		results = new ArrayList<DocInfo>(docList.values());
-		if (results.size() > 10) {
-			Random rand = new Random();
-			numberItemRetrived = results.size() * 2 + rand.nextInt(10);
-		} else {
-			numberItemRetrived = results.size();
-		}
+		numberItemRetrived = results.size();
 
-		// 6. sort doc list by score
+		// 8. sort doc list by score
 		Collections.sort(results);
 		long endTime = System.currentTimeMillis();
 		queryTime = (double) (endTime - startTime) / 1000;
@@ -209,9 +204,6 @@ public class SearchEngineMultiThread {
 				computeTitleDoc(word, items);
 			}
 		}
-
-		// 5. sort doc list by its total score
-
 	}
 
 	private void issueImageThread() throws InterruptedException {
@@ -284,9 +276,7 @@ public class SearchEngineMultiThread {
 
 			}
 			docInfo.addWord(word, queryWordInfo.getPosition(), hits, false);
-//			if (!docInfo.queryInTitle) {
-				docInfo.indexDocScore += item.getTf_idf() * queryWordInfo.getWeight();
-//			}
+			docInfo.indexDocScore += item.getTf_idf() * queryWordInfo.getWeight();
 			docList.put(url, docInfo);
 		}
 	}
@@ -376,25 +366,27 @@ public class SearchEngineMultiThread {
 		return results;
 	}
 
-	public static void main(String[] args) {
-		PageRank.loadPageRank("pagerank");
-
-		WordTitle.loadWordTitle("title");
-		SearchEngineMultiThread engine = new SearchEngineMultiThread();
-		System.gc();
-		long time1 = System.currentTimeMillis();
-		engine.doSearchQuery("Cornell Names Robert ", "word", "pennsylvania", "philadelphia");
-		long time2 = System.currentTimeMillis();
-		engine.queryTime = time2 - time1;
-		System.out.println(Arrays.toString(engine.queryWords.toArray()));
-		int i = 0;
-		for (DocInfo docInfo : engine.results) {
-			if (i < 300) {
-				i++;
-				System.out.println(docInfo.url + ":" + docInfo.hostName + ":" + docInfo.wordNumberInUrlHost + ":"
-						+ docInfo.wordNumberInUrl + ":" + docInfo.totalScore);
-				System.out.println();
-			}
-		}
-	}
+	// public static void main(String[] args) {
+	// PageRank.loadPageRank("pagerank");
+	//
+	// WordTitle.loadWordTitle("title");
+	// SearchEngineMultiThread engine = new SearchEngineMultiThread();
+	// System.gc();
+	// long time1 = System.currentTimeMillis();
+	// engine.doSearchQuery("Cornell Names Robert ", "word", "pennsylvania",
+	// "philadelphia");
+	// long time2 = System.currentTimeMillis();
+	// engine.queryTime = time2 - time1;
+	// System.out.println(Arrays.toString(engine.queryWords.toArray()));
+	// int i = 0;
+	// for (DocInfo docInfo : engine.results) {
+	// if (i < 300) {
+	// i++;
+	// System.out.println(docInfo.url + ":" + docInfo.hostName + ":" +
+	// docInfo.wordNumberInUrlHost + ":"
+	// + docInfo.wordNumberInUrl + ":" + docInfo.totalScore);
+	// System.out.println();
+	// }
+	// }
+	// }
 }

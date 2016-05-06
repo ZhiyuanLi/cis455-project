@@ -94,16 +94,13 @@ public class DocInfo implements Comparable<DocInfo> {
 				}
 			}
 		}
-//		if (dState.equalsIgnoreCase(qState)) {
-//			geoScore += 5;
-//		}
-//		if (dCity.equalsIgnoreCase(qCity)) {
-//			geoScore += 10;
-//		}
-		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore + geoScore)); // +
-																							// pagerankScore
-																							// *
-																							// 0.001;
+		if (dState.equalsIgnoreCase(qState)) {
+			geoScore += 5;
+		}
+		if (dCity.equalsIgnoreCase(qCity)) {
+			geoScore += 10;
+		}
+		totalScore = ((indexDocScore + indexTitleScore + hostScore + urlScore + geoScore) * 0.7 + pagerankScore * 0.03);
 	}
 
 	/**
