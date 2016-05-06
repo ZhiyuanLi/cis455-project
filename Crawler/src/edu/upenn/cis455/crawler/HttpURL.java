@@ -23,7 +23,7 @@ public class HttpURL
 		{
 			throw new MalformedURLException("@HttpURL: **** Only support http scheme ****");
 		}
-		/* get the fragment part */ 
+		// get the fragment part */
 		if (temp.contains("#"))
 		{
 			fragment = temp.substring(temp.indexOf("#"));
@@ -33,7 +33,7 @@ public class HttpURL
 		{
 			fragment = "";
 		}
-		/* get the query part */
+		// get the query part
 		if (temp.contains("?"))
 		{
 			query = temp.substring(temp.indexOf("?"));
@@ -43,7 +43,7 @@ public class HttpURL
 		{
 			query = "";
 		}
-		/* get the path part */
+		// get the path part
 		if (temp.contains("/"))
 		{
 			path = temp.substring(temp.indexOf("/"));
@@ -53,7 +53,7 @@ public class HttpURL
 		{
 			path = "/";
 		}
-		/* get the port number part */
+		// get the port number part
 		if (temp.contains(":"))
 		{
 			try
@@ -70,7 +70,7 @@ public class HttpURL
 		{
 			port = secure ? 443 : 80;
 		}
-		/* get the host part */
+		// get the host part
 		host = temp;
 		if (host.equals(""))
 		{
